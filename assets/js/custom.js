@@ -11,6 +11,211 @@ $('#slick1').slick({rows:2,dots:false,arrows:true,infinite:true,autoplay:true,au
 input.val(value.toString().padStart(2,'0'));});$('.quantity__plus').click(function(e){e.preventDefault();var input=$(this).siblings('.quantity__input');var value=parseInt(input.val());value++;input.val(value.toString().padStart(2,'0'));});document.querySelector('.sidebar-button').addEventListener('click',()=>document.querySelector('.main-menu, .sidebar-menu').classList.toggle('show-menu'));$('.menu-close-btn').on("click",function(){$('.sidebar-menu').removeClass('show-menu');});$("#eg-range-slider").slider({range:true,min:0,max:3000,values:[200,2000],slide:function(event,ui){$(".from").val(ui.values[0]);$(".to").val(ui.values[1]);}});$(".from").change(function(){var value=$(this).val();console.log(typeof(value));$("#eg-range-slider").slider("values",0,value);});$(".to").change(function(){var value=$(this).val();console.log(typeof(value));$("#eg-range-slider").slider("values",1,value);});$("[data-countdown]").each(function(){var $deadline=new Date($(this).data("countdown")).getTime();var $dataDays=$(this).children("[data-days]");var $dataHours=$(this).children("[data-hours]");var $dataMinutes=$(this).children("[data-minutes]");var $dataSeconds=$(this).children("[data-seconds]");var x=setInterval(function(){var now=new Date().getTime();var t=$deadline-now;var days=Math.floor(t/(1000*60*60*24));var hours=Math.floor((t%(1000*60*60*24))/(1000*60*60));var minutes=Math.floor((t%(1000*60*60))/(1000*60));var seconds=Math.floor((t%(1000*60))/1000);$dataDays.html(`${days} <span>D</span>`);$dataHours.html(`${hours} <span>H</span>`);$dataMinutes.html(`${minutes} <span>M</span>`);$dataSeconds.html(`${seconds} <span>S</span>`);if(t<=0){clearInterval(x);$dataDays.html("00 <span>D</span>");$dataHours.html("00 <span>H</span>");$dataMinutes.html("00 <span>M</span>");$dataSeconds.html("00 <span>S</span>");}},1000);});}(jQuery));
 
 
+class AuctionTimer {
+    constructor(element) {
+        this.element = element;
+        this.carId = element.dataset.carId;
+        this.createdTimestamp = parseInt(element.dataset.createdTimestamp);
+        this.showTimer = element.dataset.showTimer === '1';
+        this.timerInterval = null;
+        this.lastExtensionCheck = Date.now();
+        
+        // Auction duration: 14 days in milliseconds
+        this.AUCTION_DURATION = 14 * 24 * 60 * 60 * 1000;
+        
+        // Timer visibility threshold: 24 hours
+        this.TIMER_THRESHOLD = 24 * 60 * 60 * 1000;
+        
+        // Extension threshold: 3 minutes
+        this.EXTENSION_THRESHOLD = 3 * 60 * 1000;
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.showTimer) {
+            this.element.innerHTML = '<div class="auction-timer-hidden"></div>';
+            return;
+        }
+        
+        this.render();
+        this.startTimer();
+        
+        // Listen for bid events to check for extensions
+        this.setupEventListeners();
+    }
+    
+    getRemainingTime() {
+        const now = Date.now();
+        const elapsed = now - this.createdTimestamp;
+        const remaining = this.AUCTION_DURATION - elapsed;
+        return Math.max(0, remaining);
+    }
+    
+    formatTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        return {
+            hours: String(hours).padStart(2, '0'),
+            minutes: String(minutes).padStart(2, '0'),
+            seconds: String(seconds).padStart(2, '0'),
+            display: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+        };
+    }
+    
+    render() {
+        const remaining = this.getRemainingTime();
+        const time = this.formatTime(remaining);
+        
+        let timerClass = 'auction-timer';
+        let icon = '⏱️';
+        let label = 'Tid kvar';
+        
+        if (remaining === 0) {
+            timerClass += ' expired';
+            icon = '🏁';
+            label = 'Auktion avslutad';
+        } else if (remaining <= this.EXTENSION_THRESHOLD) {
+            timerClass += ' warning';
+            icon = '🔥';
+            label = 'Sista minuterna!';
+        }
+        
+        this.element.innerHTML = `
+            <div class="${timerClass}">
+                <span class="timer-icon">${icon}</span>
+                <div>
+                    <div class="timer-value">${time.display}</div>
+                    <div class="timer-label">${label}</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    startTimer() {
+        this.timerInterval = setInterval(() => {
+            const remaining = this.getRemainingTime();
+            
+            if (remaining === 0) {
+                this.stopTimer();
+                this.onTimerExpired();
+            }
+            
+            this.render();
+            
+            // Check server for updates every 30 seconds
+            if (Date.now() - this.lastExtensionCheck > 30000) {
+                this.syncWithServer();
+                this.lastExtensionCheck = Date.now();
+            }
+        }, 1000);
+    }
+    
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+    
+    onTimerExpired() {
+        // Trigger auction expiry check
+        this.checkAuctionExpiry();
+        
+        // Dispatch custom event
+        const event = new CustomEvent('auctionExpired', {
+            detail: { carId: this.carId }
+        });
+        window.dispatchEvent(event);
+    }
+    
+    async syncWithServer() {
+        try {
+            const response = await fetch('<?php echo base_url("auth/get_timer_data"); ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `car_id=${this.carId}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.created_timestamp && data.created_timestamp !== this.createdTimestamp) {
+                // Timestamp changed - auction was extended
+                this.createdTimestamp = data.created_timestamp;
+                this.showExtensionNotice();
+            }
+        } catch (error) {
+            console.error('Timer sync error:', error);
+        }
+    }
+    
+    async checkAuctionExpiry() {
+        try {
+            await fetch('<?php echo base_url("auth/check_expiry"); ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `car_id=${this.carId}`
+            });
+        } catch (error) {
+            console.error('Expiry check error:', error);
+        }
+    }
+    
+    showExtensionNotice() {
+        const notice = document.createElement('div');
+        notice.className = 'extension-notice';
+        notice.textContent = '⏰ Auktion förlängd med 3 minuter!';
+        document.body.appendChild(notice);
+        
+        setTimeout(() => {
+            notice.remove();
+        }, 3000);
+    }
+    
+    setupEventListeners() {
+        // Listen for bid success events
+        window.addEventListener('bidPlaced', (e) => {
+            if (e.detail.carId == this.carId) {
+                // Force sync immediately after bid
+                this.syncWithServer();
+            }
+        });
+        
+        // Listen for page visibility change to sync when user returns
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.syncWithServer();
+            }
+        });
+    }
+    
+    destroy() {
+        this.stopTimer();
+    }
+}
+
+// Auto-initialize all timer elements on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const timerElements = document.querySelectorAll('.auction-timer-wrapper');
+    const timers = [];
+    
+    timerElements.forEach(element => {
+        timers.push(new AuctionTimer(element));
+    });
+    
+    // Store timers globally for debugging
+    window.auctionTimers = timers;
+});
+
+
+
 function switchMobileLayout(columns) {
     const grid = document.getElementById('cars-grid-container');
     const btn1 = document.getElementById('layout-btn-1');

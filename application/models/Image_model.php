@@ -3,12 +3,46 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
 class Image_model extends CI_Model {
 
     public function __construct() {
         parent::__construct();
         $this->load->database();
     }
+
+    /**
+ * Get auction timer information
+ * 
+ * @param int $car_id
+ * @return object|null
+ */
+public function get_auction_timer_info($car_id) {
+    $this->db->select('id, created, auction_status');
+    $this->db->from('cars');
+    $this->db->where('id', $car_id);
+    $query = $this->db->get();
+    
+    if ($query->num_rows() > 0) {
+        return $query->row();
+    }
+    return null;
+}
+
+/**
+ * Update auction created timestamp (for time extension)
+ * 
+ * @param array $data Must contain 'id' and 'created'
+ * @return bool
+ */
+public function update_auction_created_time($data) {
+    if (!isset($data['id']) || !isset($data['created'])) {
+        return false;
+    }
+    
+    $this->db->where('id', $data['id']);
+    return $this->db->update('cars', array('created' => $data['created']));
+}
 
     // Function to get the image path by ID
     public function get_image_path($id) {

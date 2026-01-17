@@ -1,6 +1,131 @@
 <?php 
 // application/helpers/image_helper.php
 
+
+
+if (!function_exists('get_auction_timer_data')) {
+    /**
+     * Get auction timer data including created timestamp and remaining time
+     * 
+     * @param int $car_id The car/auction ID
+     * @return array|null Timer data or null if auction not found
+     */
+    function get_auction_timer_data($car_id) {
+        $CI =& get_instance();
+        $CI->load->model('Image_model');
+        
+        $auction = $CI->Image_model->get_auction_timer_info($car_id);
+        
+        if (!$auction) {
+            return null;
+        }
+        
+        $created_at = new DateTime($auction->created);
+        $current_time = new DateTime();
+        
+        // Calculate time elapsed since creation
+        $interval = $created_at->diff($current_time);
+        $elapsed_seconds = ($interval->days * 24 * 60 * 60) + 
+                          ($interval->h * 60 * 60) + 
+                          ($interval->i * 60) + 
+                          $interval->s;
+        
+        // Auction duration is 14 days (but timer shows only last 24 hours)
+        $auction_duration_seconds = 14 * 24 * 60 * 60;
+        $remaining_seconds = $auction_duration_seconds - $elapsed_seconds;
+        
+        // Only show timer in last 24 hours
+        $show_timer = $remaining_seconds <= (24 * 60 * 60) && $remaining_seconds > 0;
+        
+        return array(
+            'car_id' => $car_id,
+            'created_at' => $created_at->format('Y-m-d H:i:s'),
+            'created_timestamp' => $created_at->getTimestamp() * 1000, // milliseconds for JS
+            'remaining_seconds' => max(0, $remaining_seconds),
+            'show_timer' => $show_timer,
+            'is_expired' => $remaining_seconds <= 0,
+            'auction_status' => $auction->auction_status
+        );
+    }
+}
+
+if (!function_exists('extend_auction_time')) {
+    /**
+     * Extend auction time by pushing created timestamp back by 3 minutes
+     * Only applies if bid placed in last 3 minutes
+     * 
+     * @param int $car_id The car/auction ID
+     * @return array Response with status and message
+     */
+    function extend_auction_time($car_id) {
+        $CI =& get_instance();
+        $CI->load->model('Image_model');
+        
+        $timer_data = get_auction_timer_data($car_id);
+        
+        if (!$timer_data) {
+            return array('status' => 'error', 'message' => 'Auction not found');
+        }
+        
+        // Check if auction is in last 3 minutes
+        $three_minutes = 3 * 60;
+        
+        if ($timer_data['remaining_seconds'] <= $three_minutes && $timer_data['remaining_seconds'] > 0) {
+            // Push created timestamp back by 3 minutes
+            $current_created = new DateTime($timer_data['created_at']);
+            $current_created->modify('3 minutes');
+            
+            $update_data = array(
+                'id' => $car_id,
+                'created' => $current_created->format('Y-m-d H:i:s')
+            );
+            
+            $success = $CI->Image_model->update_auction_created_time($update_data);
+            
+            if ($success) {
+                return array(
+                    'status' => 'success', 
+                    'message' => 'Auction extended by 3 minutes',
+                    'new_created_timestamp' => $current_created->getTimestamp() * 1000
+                );
+            } else {
+                return array('status' => 'error', 'message' => 'Failed to extend auction');
+            }
+        }
+        
+        return array('status' => 'no_extension', 'message' => 'Extension not needed');
+    }
+}
+
+if (!function_exists('check_auction_expiry')) {
+    /**
+     * Check if auction has expired and update status
+     * 
+     * @param int $car_id The car/auction ID
+     * @return bool True if expired and updated
+     */
+    function check_auction_expiry($car_id) {
+        $CI =& get_instance();
+        $CI->load->model('Image_model');
+        
+        $timer_data = get_auction_timer_data($car_id);
+        
+        if ($timer_data && $timer_data['is_expired'] && $timer_data['auction_status'] == '0') {
+            // Update auction status to completed
+            $update_data = array(
+                'id' => $car_id,
+                'auction_status' => '1',
+                'auction_completed_date' => date('Y-m-d H:i:s')
+            );
+            
+            return $CI->Image_model->update_car($update_data);
+        }
+        
+        return false;
+    }
+}
+
+
 if (!function_exists('get_image_path_by_id')) {
   function get_image_path_by_id($id) {
       // Get the CodeIgniter instance

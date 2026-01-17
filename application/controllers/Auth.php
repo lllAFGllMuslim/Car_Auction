@@ -101,6 +101,168 @@ class Auth extends CI_Controller {
 
     }
 
+    
+/**
+ * Real-time Bid Updates Endpoint
+ * Returns current bid data, timer status, and auction state
+ */
+public function get_bid_updates() {
+    $car_id = $this->input->post('car_id');
+        $post_status = get_post_status($car_id);
+    
+    // If it's in timer mode, calculate the actual countdown
+    $time_remaining = '';
+    if ($post_status === 'timer') {
+        $post = $this->Image_model->get_post($car_id);
+        $created_at = new DateTime($post->created);
+        $expiration_time = clone $created_at;
+        $expiration_time->add(new DateInterval('P14D'));
+        
+        $current_time = new DateTime();
+        $interval = $current_time->diff($expiration_time);
+        
+        $time_remaining = sprintf('%dh %dm %ds', $interval->h, $interval->i, $interval->s);
+    }
+
+    if (!$car_id) {
+        echo json_encode(array('success' => false, 'message' => 'Car ID required'));
+        return;
+    }
+    
+    // Get car data
+    $car_data = $this->User_model->get_car_by_id($car_id);
+    
+    if (!$car_data) {
+        echo json_encode(array('success' => false, 'message' => 'Car not found'));
+        return;
+    }
+    
+    // Get highest bid
+    $highest_bid = $this->User_model->get_highest_bid($car_id);
+    
+    // Calculate recommended bid
+    if (!empty($highest_bid)) {
+        $recommended_bid = $highest_bid + 1000;
+    } else {
+        $recommended_bid = !empty($car_data['fixed_price']) ? $car_data['fixed_price'] * 0.7 : 10000;
+    }
+    
+    // Get total bid count
+    $bid_count = $this->User_model->get_total_bid_count($car_id);
+    
+    // Get reservation status
+    $reservation_met = false;
+    if (!empty($car_data['reservation_price']) && !empty($highest_bid)) {
+        $reservation_met = $highest_bid >= $car_data['reservation_price'];
+    }
+    
+    // Get bid list with user names and time ago
+    $bids = $this->User_model->get_bid_with_name($car_id);
+    $bid_list = array();
+    
+    if (!empty($bids)) {
+        foreach ($bids as $bid) {
+            // Calculate time ago
+            // Get bid list with user names and time ago
+            $bids = $this->User_model->get_bid_with_name($car_id);
+            $bid_list = array();
+
+if (!empty($bids)) {
+    foreach ($bids as $bid) {
+        // FIX: Use 'created' not 'created_at'
+        $time_ago = isset($bid['created']) ? $this->time_ago($bid['created']) : 'Unknown';
+        
+        $bid_list[] = array(
+            'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
+            'amount' => $bid['bidding_price'],
+            'time_ago' => $time_ago,
+            'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0
+        );
+    }
+}
+            $bid_list[] = array(
+    'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
+    'amount' => $bid['bidding_price'],
+    'time_ago' => $time_ago,
+    'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0
+);
+        }
+    }
+    
+    // **IMPORTANT: Get timer data for sync**
+    $timer_data = get_auction_timer_data($car_id);
+    $timer_timestamp = isset($timer_data['created_timestamp']) ? $timer_data['created_timestamp'] : null;
+    
+    // **IMPORTANT: Check if auction is still active**
+    $auction_active = true;
+    if ($car_data['auction_status'] == 1) {
+        $auction_active = false; // Auction completed
+    } else {
+        // Check if timer expired
+        if ($timer_timestamp) {
+            $current_time = time();
+            $elapsed = $current_time - $timer_timestamp;
+            $three_minutes = 3 * 60;
+            
+            if ($elapsed >= $three_minutes) {
+                $auction_active = false;
+            }
+        }
+    }
+    
+    // Build response
+    $response = array(
+        'success' => true,
+        'data' => array(
+                        'post_status' => $post_status,
+            'time_remaining' => $time_remaining,
+
+            'bid_count' => $bid_count,
+            'highest_bid' => $highest_bid ? $highest_bid : 0,
+            'recommended_bid' => $recommended_bid,
+            'reservation_met' => $reservation_met,
+            'bids' => $bid_list,
+            'timer_timestamp' => $timer_timestamp,
+            'auction_active' => $auction_active,
+            'auction_status' => $car_data['auction_status']
+        )
+    );
+    
+    echo json_encode($response);
+}
+
+/**
+ * Helper function to calculate time ago
+ */
+private function time_ago($datetime) {
+    $time_ago = strtotime($datetime);
+    $current_time = time();
+    $time_difference = $current_time - $time_ago;
+    $seconds = $time_difference;
+    
+    $minutes = round($seconds / 60);
+    $hours = round($seconds / 3600);
+    $days = round($seconds / 86400);
+    $weeks = round($seconds / 604800);
+    $months = round($seconds / 2629440);
+    $years = round($seconds / 31553280);
+    
+    if ($seconds <= 60) {
+        return "Just now";
+    } else if ($minutes <= 60) {
+        return ($minutes == 1) ? "1 minute ago" : "$minutes minutes ago";
+    } else if ($hours <= 24) {
+        return ($hours == 1) ? "1 hour ago" : "$hours hours ago";
+    } else if ($days <= 7) {
+        return ($days == 1) ? "1 day ago" : "$days days ago";
+    } else if ($weeks <= 4.3) {
+        return ($weeks == 1) ? "1 week ago" : "$weeks weeks ago";
+    } else if ($months <= 12) {
+        return ($months == 1) ? "1 month ago" : "$months months ago";
+    } else {
+        return ($years == 1) ? "1 year ago" : "$years years ago";
+    }
+}
 
     public function profile(){
   
@@ -1102,6 +1264,43 @@ public function favourite_add(){
 
 // }
 
+public function get_timer_data() {
+    $car_id = $this->input->post('car_id');
+    
+    if (!$car_id) {
+        echo json_encode(array('status' => 'error', 'message' => 'Car ID required'));
+        return;
+    }
+    
+    $timer_data = get_auction_timer_data($car_id);
+    
+    if ($timer_data) {
+        echo json_encode($timer_data);
+    } else {
+        echo json_encode(array('status' => 'error', 'message' => 'Auction not found'));
+    }
+}
+
+/**
+ * AJAX endpoint to check and update auction expiry
+ */
+public function check_expiry() {
+    $car_id = $this->input->post('car_id');
+    
+    if (!$car_id) {
+        echo json_encode(array('status' => 'error', 'message' => 'Car ID required'));
+        return;
+    }
+    
+    $expired = check_auction_expiry($car_id);
+    
+    echo json_encode(array(
+        'status' => 'success',
+        'expired' => $expired,
+        'message' => $expired ? 'Auction marked as completed' : 'Auction still active'
+    ));
+}
+
 public function bid_added()
 {
     $this->load->library('form_validation');
@@ -1146,10 +1345,17 @@ public function bid_added()
             );
             $this->User_model->insert_bid($data);
 
+            // ✅ Check and extend auction time if bid placed in last 3 minutes
+            $extension_result = extend_auction_time($car_id);
+
             // Process auto-bid logic: check if someone else has auto-bid enabled
             $this->process_auto_bidding($car_id, $bidprice, $this->session->userdata('user_id'), $bid_increment);
 
-            $response = array('status' => 'success', 'message' => 'Bid placed successfully.');
+            $response = array(
+                'status' => 'success', 
+                'message' => 'Bid placed successfully.',
+                'extension' => $extension_result
+            );
         } else {
             // Error message
             $response = array('status' => 'error', 'message' => 'Your minimum bid amount should be '.$minimum_bid.' SEK or more you can place.');
@@ -1203,6 +1409,9 @@ private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_
             
             $this->User_model->insert_bid($auto_bid_data);
             
+            // ✅ Extend auction time for auto-bid too
+            extend_auction_time($car_id);
+            
             // Recursively check if other auto-bidders need to respond
             // But only if we haven't reached the max limit
             if ($next_bid_price < $max_auto_bid) {
@@ -1213,7 +1422,6 @@ private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_
         }
     }
 }
-
 
 
 public function get_bid(){

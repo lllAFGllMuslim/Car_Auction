@@ -1,8 +1,6 @@
 <?php 
 // application/helpers/image_helper.php
 
-
-
 if (!function_exists('get_auction_timer_data')) {
     /**
      * Get auction timer data including created timestamp and remaining time
@@ -51,8 +49,8 @@ if (!function_exists('get_auction_timer_data')) {
 
 if (!function_exists('extend_auction_time')) {
     /**
-     * Extend auction time by pushing created timestamp back by 3 minutes
-     * Only applies if bid placed in last 3 minutes
+     * Reset auction timer to exactly 3 minutes when bid placed in final 3 minutes
+     * Calculates how much time to add to make remaining time = 3 minutes
      * 
      * @param int $car_id The car/auction ID
      * @return array Response with status and message
@@ -68,12 +66,15 @@ if (!function_exists('extend_auction_time')) {
         }
         
         // Check if auction is in last 3 minutes
-        $three_minutes = 3 * 60;
+        $three_minutes = 3 * 60; // 180 seconds
         
         if ($timer_data['remaining_seconds'] <= $three_minutes && $timer_data['remaining_seconds'] > 0) {
-            // Push created timestamp back by 3 minutes
+            // Calculate how many seconds we need to add to get back to exactly 3 minutes
+            $seconds_to_add = $three_minutes - $timer_data['remaining_seconds'];
+            
+            // Push created timestamp back by the calculated amount
             $current_created = new DateTime($timer_data['created_at']);
-            $current_created->modify('3 minutes');
+            $current_created->modify("+{$seconds_to_add} seconds");
             
             $update_data = array(
                 'id' => $car_id,
@@ -85,7 +86,8 @@ if (!function_exists('extend_auction_time')) {
             if ($success) {
                 return array(
                     'status' => 'success', 
-                    'message' => 'Auction extended by 3 minutes',
+                    'message' => 'Auction timer reset to 3 minutes',
+                    'seconds_added' => $seconds_to_add,
                     'new_created_timestamp' => $current_created->getTimestamp() * 1000
                 );
             } else {

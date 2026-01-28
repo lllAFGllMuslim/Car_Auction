@@ -28,7 +28,21 @@ public function get_auction_timer_info($car_id) {
     }
     return null;
 }
-
+public function get_highest_bidder_info($car_id) {
+    $this->db->select('user_id, bidding_price, is_auto_bid, created');
+    $this->db->from('bidding');
+    $this->db->where('car_id', $car_id);
+    $this->db->order_by('bidding_price', 'DESC');
+    $this->db->limit(1);
+    
+    $query = $this->db->get();
+    
+    if ($query->num_rows() > 0) {
+        return $query->row_array();
+    }
+    
+    return null;
+}
 /**
  * Update auction created timestamp (for time extension)
  * 

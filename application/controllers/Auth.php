@@ -101,7 +101,32 @@ class Auth extends CI_Controller {
 
     }
 
+public function get_current_highest_bidder() {
+    $car_id = $this->input->post('car_id');
     
+    if (!$car_id) {
+        echo json_encode(array('status' => 'error', 'message' => 'Car ID required'));
+        return;
+    }
+    
+    // Get highest bid with user info
+    $highest_bid = $this->User_model->get_highest_bidder_info($car_id);
+    
+    if ($highest_bid) {
+        echo json_encode(array(
+            'status' => 'success',
+            'user_id' => $highest_bid['user_id'],
+            'bid_amount' => $highest_bid['bidding_price'],
+            'is_auto_bid' => $highest_bid['is_auto_bid'],
+            'bid_time' => $highest_bid['created']
+        ));
+    } else {
+        echo json_encode(array(
+            'status' => 'no_bids',
+            'message' => 'No bids yet'
+        ));
+    }
+}
 /**
  * Real-time Bid Updates Endpoint
  * Returns current bid data, timer status, and auction state

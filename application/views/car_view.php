@@ -10,12 +10,25 @@ $footer_data = get_header_footer_by_id(1);
 <?php
 // Calculate if bid has reached 90% of fixed price
 $hide_fast_pris = false;
+
+// Hide if fixed price is not entered or is 0
+if (empty($car_view["fixed_price"]) || $car_view["fixed_price"] == 0) {
+    $hide_fast_pris = true;
+}
+
+// Hide if bid reached 90% of fixed price
 if (!empty($highest_bid) && !empty($car_view["fixed_price"]) && $car_view["fixed_price"] > 0) {
     $target_price = !empty($car_view["reduce_price"]) ? $car_view["reduce_price"] : $car_view["fixed_price"];
-    $threshold = $target_price * 0.90; // 90% of fixed price
+    $threshold = $target_price * 0.90;
     if ($highest_bid >= $threshold) {
         $hide_fast_pris = true;
     }
+}
+
+// Hide in last 24 hours of auction
+$timer_data = get_auction_timer_data($car_view['id']);
+if ($timer_data['show_timer']) {
+    $hide_fast_pris = true;
 }
 ?>
 
@@ -51,7 +64,8 @@ li span {
     color: black;
 }
     </style>
-<div class="car-details-area pt-50 mb-40" style="padding-top:0px;">
+    
+<div class="car-details-area mt-4 pt-50 mb-40" style="padding-top:0px;">
 <div class="container">
 <div class="row mt_po5 mb-50">
 <div class="col-lg-12 position-relative">
@@ -741,7 +755,7 @@ if(!empty($cat_engine)){
   <div class="overview-content">
 	<ul class="add15468">
     <li class="brad_inq">
-      <span><img src="<?php echo base_url();  ?>assets/img/icon2.jpg" alt="" /> <?php echo $footer_data["tires_text"]; ?></span> 
+      <span><img src="<?php echo base_url();  ?>assets/img/icon3.jpg" alt="" /> <?php echo $footer_data["tires_text"]; ?></span> 
       <div class="star-rating">
         <?php for($i = 1; $i <= 5; $i++): ?>
           <span class="star <?php echo ($i <= $car_view['tires']) ? 'active' : ''; ?>">★</span>
@@ -757,7 +771,7 @@ if(!empty($cat_engine)){
   <div class="overview-content">
 	<ul class="add15468">
     <li class="brad_inq">
-      <span><img src="<?php echo base_url();  ?>assets/img/icon3.jpg" alt="" /> <?php echo $footer_data["exterior_body_text"]; ?> </span> 
+      <span><img src="<?php echo base_url();  ?>assets/img/icon2.jpg" alt="" /> <?php echo $footer_data["exterior_body_text"]; ?> </span> 
       <div class="star-rating">
         <?php for($i = 1; $i <= 5; $i++): ?>
           <span class="star <?php echo ($i <= $car_view['exterior_body']) ? 'active' : ''; ?>">★</span>
@@ -949,11 +963,6 @@ if ($timer_data['show_timer']):
 <h4>Återförsäljarinformation</h4>
 </div>
 <form>
-  <?php if(!empty($profile_data["address"])){ ?>
-<div class="form-inner mb-20">
-<label>Adress</label>
-<input type="text" disabled class="mrt_wrp5" value="<?php echo $profile_data["address"]; ?>"> <?php } ?>
-</div>
 <?php if(!empty($profile_data["city"])){ ?>
 <div class="form-inner mb-20">
 <label>Stad</label>
@@ -1130,7 +1139,9 @@ if(!empty($car->reduce_price)){
     <?php if(!empty($car->city)): ?>
 <div class="city_wrap">
     <i class="fa fa-map-marker"></i> 
-    <span><?php echo $car->city; ?></span>
+        <span style="text-transform: capitalize;">
+            <?php echo strtolower($car->city); ?>
+        </span>
 </div>
 <?php endif; ?>
 <?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
@@ -1280,8 +1291,73 @@ $gallery_images = json_decode($car_view["car_photo_gallery_ids"], true);
            <img src="<?php if (!empty($gallery_images[0])) { echo get_image_path_by_id($gallery_images[0]); } ?>" class="mrapp_mk5" alt="" />
            <h2><?php echo $car_view["car_title"]; ?></h2>
            <p><?php echo $car_view["car_sub_title"]; ?></p>
+            <ul class="list-unstyled d-flex flex-wrap align-items-center gap-5 mt-3">
+
+                <!-- Mileage -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/mileage.svg" width="24" height="24" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php echo !empty($car_view["mileage"]) ? $car_view["mileage"] : "-"; ?>
+                        </h6>
+                        <small class="text-muted">
+                            <?php echo $footer_data["mileage_text"]; ?>
+                        </small>
+                    </div>
+                </li>
+
+                <!-- Engine -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/engine.svg" width="24" height="24" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php 
+                            if(!empty($car_view["cat_engine"])) {
+                                $cat_engine = get_car_cat_by_id_and_table_name($car_view["cat_engine"], 'engine_category');
+                                echo !empty($cat_engine) ? $cat_engine["engine_name"] : "-";
+                            } else { echo "-"; }
+                            ?>
+                        </h6>
+                        <small class="text-muted">
+                            <?php echo $footer_data["engine_text"]; ?>
+                        </small>
+                    </div>
+                </li>
+
+                <!-- Fuel -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/fuel.svg" width="24" height="24" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php 
+                            if(!empty($car_view["cat_fuel"])) {
+                                $cat_fuel = get_car_cat_by_id_and_table_name($car_view["cat_fuel"], 'fuel_category');
+                                echo !empty($cat_fuel) ? $cat_fuel["fuel_name"] : "-";
+                            } else { echo "-"; }
+                            ?>
+                        </h6>
+                        <small class="text-muted">
+                            <?php echo $footer_data["fuel_type_text"]; ?>
+                        </small>
+                    </div>
+                </li>
+
+                <!-- Year -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/condition.svg" width="24" height="24" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php echo !empty($year_data['year_name']) ? $year_data['year_name'] : "-"; ?>
+                        </h6>
+                        <small class="text-muted">Fordonsår</small>
+                    </div>
+                </li>
+
+            </ul>
+
            </div>
           </div>
+          
           <div class="col-md-4">
           <div class="bid_wrap_call">
           <span id="bidcount" > </span>
@@ -1290,7 +1366,6 @@ $gallery_images = json_decode($car_view["car_photo_gallery_ids"], true);
           </div>
           </div>
         </div>
-        
         <div class="row mt_r155" >
           <div class="col-md-5">
           <div class="par_wrap_time">
@@ -1591,7 +1666,7 @@ document.querySelectorAll('a.nav-link').forEach(anchor => {
         
             <style>
 #ninja-slider {
-    width:80%;
+    width:82%;
     padding: 0px;
 
     margin:0 auto;
@@ -1806,8 +1881,8 @@ document.querySelectorAll('a.nav-link').forEach(anchor => {
     user-select: none;}
 
 #thumbnail-slider {    
-    height:567px; 
-	width:20%;
+    height:800px; 
+	width:18%;
     display:inline-block;
     padding:0px;
     position:relative;
@@ -2188,9 +2263,6 @@ loadBidData() {
                 }
             }
 
-            if (data.bids && data.bids.length > 0) {
-                this.updateBidList(data.bids);
-            }
 
             if (data.timer_timestamp !== undefined) {
                 this.updateTimer(data.timer_timestamp);
@@ -2230,43 +2302,9 @@ loadBidData() {
         disableBidding() {
             console.log('🛑 Auction ended, disabling bidding');
             $('#bidformbox').hide();
-            $('.message').html('<p style="color:red;">Auction Time Completed</p>');
+            $('.message').html('<p style="color:red;">Auktionstiden avslutad</p>');
         }
 
-        updateBidList(bids) {
-            const container = $('#yourContainerId');
-            container.empty();
-
-            bids.forEach((bid, index) => {
-                const bgColor = index === 0 ? '#e8f5e9' : '#f5f5f5';
-                const textColor = index === 0 ? '#2e7d32' : '#333';
-                const trophy = index === 0 ? '🏆 ' : '';
-                const autoBadge = bid.is_auto_bid 
-                    ? '<span style="font-size:11px;color:#ff9800;margin-left:5px;">(Auto)</span>' 
-                    : '';
-
-                const html = `
-                    <div class="col-md-12" style="margin-bottom:10px;padding:10px;background:${bgColor};border-radius:5px;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                                <strong style="color:${textColor};">${trophy}${bid.bidder_name}</strong>
-                                ${autoBadge}
-                            </div>
-                            <div>
-                                <strong style="font-size:16px;color:${textColor};">
-                                    ${this.formatNumber(bid.amount)} SEK
-                                </strong>
-                            </div>
-                        </div>
-                        <div style="font-size:11px;color:#999;margin-top:3px;">
-                            ${bid.time_ago}
-                        </div>
-                    </div>
-                `;
-
-                container.append(html);
-            });
-        }
 
         formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -2414,3 +2452,4 @@ loadBidData() {
 initializeBidSystem();
 
 </script>
+

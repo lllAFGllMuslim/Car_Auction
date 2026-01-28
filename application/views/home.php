@@ -325,7 +325,9 @@ if(!empty($car->reduce_price)){
     <?php if(!empty($car->city)): ?>
 <div class="city_wrap">
     <i class="fa fa-map-marker"></i> 
-    <span><?php echo $car->city; ?></span>
+        <span style="text-transform: capitalize;">
+            <?php echo strtolower($car->city); ?>
+        </span>
 </div>
 <?php endif; ?>
 <!-- Add this after your car title -->

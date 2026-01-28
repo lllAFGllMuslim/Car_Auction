@@ -28,8 +28,10 @@ display : none;
            <li><a href="<?= base_url('profile') ?>"><span> My Profile</span></a></li>
       </ul>
    </li>
-	<li class="dwmain"><a href="<?= base_url('admin/car/sellyourcarlist') ?>" target="_blank"><span> Sell Your Car Equiries</span></a></li>
-	<li class="dropdown dwmain"><a href="javascript:void(0)" class="<?php if(($this->uri->segment(1)=="car-list") || ($this->uri->segment(2)=="market_price")){echo "active2"; }?>"><span><i class="fa fa-automobile"></i> Car Management <i class="fa fa fa-caret-down"></i></span></a>
+<li><a href="<?= base_url('admin/car/sellyourcarlist') ?>" target="_blank"><span><i class="fa fa-list-alt"></i> Sell Your Car Enquiries</span></a></li>
+
+
+<li class="dropdown dwmain"><a href="javascript:void(0)" class="<?php if(($this->uri->segment(1)=="car-list") || ($this->uri->segment(2)=="market_price")){echo "active2"; }?>"><span><i class="fa fa-automobile"></i> Car Management <i class="fa fa fa-caret-down"></i></span></a>
       <ul class="subdropdown" <?php if(($this->uri->segment(1)=="car-list") || ($this->uri->segment(1)=="favourite") || ($this->uri->segment(2)=="market_price")){?> style="display:block;" <?php }?>>
            <li><a href="<?= base_url('car-list') ?>" ><span> Cars List</span></a></li>
 		   <li><a href="<?= base_url('admin/car/categories') ?>" <?php if(@$active=='categories'){ echo"active fff"; } ?>><span> Car Category</span></a></li>

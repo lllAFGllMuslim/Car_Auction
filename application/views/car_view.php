@@ -543,7 +543,11 @@ li span {
                 <?php if (get_post_status($car_view["id"]) == 'timer'): ?>
                     <b id="countdown_mobile_<?php echo $car_view["id"]; ?>" style="color:red;"></b>
                 <?php else: ?>
-                    <b><?php echo get_post_status($car_view["id"]); ?></b>
+                    <b><?php 
+                        $status = get_post_status($car_view["id"]);
+                        echo ($status == "Auction Time Completed") ? "Auktionstid avslutad" : $status; 
+                    ?></b>
+
                 <?php endif; ?>
             </span>
         </div>
@@ -953,7 +957,11 @@ if($car_view["cat_buy_method"]==2){
                 <?php if (get_post_status($car_view["id"]) == 'timer'): ?>
                     <b id="countdown_mobile_<?php echo $car_view["id"]; ?>" style="color:red;"></b>
                 <?php else: ?>
-                    <b><?php echo get_post_status($car_view["id"]); ?></b>
+                    <b><?php 
+                        $status = get_post_status($car_view["id"]);
+                        echo ($status == "Auction Time Completed") ? "Auktionstid avslutad" : $status; 
+                    ?></b>
+
                 <?php endif; ?>
             </span>
 
@@ -1508,17 +1516,20 @@ if ($timer_data['show_timer']):
 			if($car_view["auction_status"]!=1){ ?>
             
           <div class="plaf55" id="bidformbox">
-          <?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>  <h3>Lägg ett bud på detta fordon</h3><?php } ?>
-          <form name="bidform" id="bidform">
-                      <div id="recommended_bid" style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-left: 3px solid #2196F3; border-radius: 4px;">
-            <small style="color: #666; font-size: 12px;">Rekommenderat bud:</small>
-            <div style="font-size: 16px; font-weight: 600; color: #2196F3; margin-top: 3px;">
-              <?php 
-              $recommended = !empty($highest_bid) ? $highest_bid + 1000 : (!empty($car_view["fixed_price"]) ? $car_view["fixed_price"] * 0.7 : 10000);
-              echo number_format($recommended, 0, '', ' ') . ' ' . $this->config->item('CURRENCY');
-              ?>
-            </div>
-          </div>
+<?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>  
+<h3>Lägg ett bud på detta fordon</h3>
+
+<div id="recommended_bid" style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-left: 3px solid #2196F3; border-radius: 4px;">
+    <small style="color: #666; font-size: 12px;">Rekommenderat bud:</small>
+    <div style="font-size: 16px; font-weight: 600; color: #2196F3; margin-top: 3px;">
+        <?php 
+        $recommended = !empty($highest_bid) ? $highest_bid + 1000 : (!empty($car_view["fixed_price"]) ? $car_view["fixed_price"] * 0.7 : 10000);
+        echo number_format($recommended, 0, '', ' ') . ' ' . $this->config->item('CURRENCY');
+        ?>
+    </div>
+</div>
+<?php } ?> 
+
 
           <div class="place_wrap_add">
           <?php if(($this->session->userdata('user_id')!=$car_view["post_author_id"]) && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
@@ -2212,6 +2223,15 @@ function ThumbnailSlider(a){"use strict";if(typeof String.prototype.trim!=="func
 
     <script type="text/javascript">
 // Immediately check if script is being loaded
+<?php 
+$current_user_id = $this->session->userdata('user_id');
+if (!empty($current_user_id)) {
+    echo "window.currentLoggedInUserId = " . intval($current_user_id) . ";";
+} else {
+    echo "window.currentLoggedInUserId = null;";
+    echo "console.warn('⚠️ No user logged in');";
+}
+?>
 
 // Function to initialize everything
 function initializeBidSystem() {
@@ -2365,6 +2385,13 @@ updateBidList(bids) {
     const container = $('#yourContainerId');
     container.empty();
     
+    // Get current user ID from window (set in PHP earlier)
+    const currentUserId = window.currentLoggedInUserId || null;
+    
+    if (!currentUserId) {
+        console.warn('⚠️ No user logged in or user ID not set');
+    }
+    
     // Track user's max auto-bid to detect when limit is reached
     const userMaxBids = {};
     
@@ -2372,22 +2399,17 @@ updateBidList(bids) {
     const reversedBids = [...bids].reverse();
     
     reversedBids.forEach((bid, index) => {
-        const userId = bid.user_id || bid.bidder_name;
+        const userId = bid.user_id; // FIXED: Only use user_id, no fallback to name
         const isAuto = bid.is_auto_bid == 1;
         const bidAmount = parseInt(bid.amount);
         
-        // Check if this user has reached their max auto-bid
-        let maxReached = false;
         if (userMaxBids[userId]) {
             const prevBid = userMaxBids[userId];
-            // If previous bid was auto, current is auto, and amount didn't increase
-            // OR if previous was auto and current is manual (switched from auto to manual)
             if (prevBid.wasAuto && (isAuto && prevBid.amount === bidAmount || !isAuto)) {
                 prevBid.maxReached = true;
             }
         }
         
-        // Store this bid info
         userMaxBids[userId] = {
             amount: bidAmount,
             wasAuto: isAuto,
@@ -2398,18 +2420,30 @@ updateBidList(bids) {
     
     // Now display bids in correct order (newest first)
     bids.forEach((bid, index) => {
-        const userId = bid.user_id || bid.bidder_name;
+        const userId = bid.user_id; // FIXED: Only use user_id
         const isAuto = bid.is_auto_bid == 1;
         const bidAmount = parseInt(bid.amount);
         const timeAgo = bid.time_ago || 'Unknown';
         const bidderName = bid.bidder_name || 'Anonymous';
+        
+        // FIXED: Strict comparison with type conversion
+        const isCurrentUser = currentUserId && (String(userId) === String(currentUserId));
+        
+        
+        // Display name: show actual name only to the bidder themselves
+        const displayName = isCurrentUser ? bidderName : 'Anonym budgivare';
+        
+        // Check if this is the top bid (index 0) and belongs to current user
+        const isTopBid = index === 0;
+        const showLeadingBadge = isTopBid && isCurrentUser;
+        
         
         // Check if this bid shows max reached
         const showMaxReached = userMaxBids[userId] && 
                                userMaxBids[userId].maxReached && 
                                userMaxBids[userId].index === index;
         
-// Determine badge
+        // Determine badge
         let badgeHTML = '';
         if (showMaxReached) {
             badgeHTML = '<span class="bid-type-badge bid-type-max-reached">⚠️ Max Auto-Bid Uppnådd</span>';
@@ -2419,12 +2453,17 @@ updateBidList(bids) {
             badgeHTML = '<span class="bid-type-badge bid-type-manual">✓ Manuellt</span>';
         }
         
+        // Special styling for top bid
+        const topBidClass = isTopBid ? 'top-bid-item' : '';
+        const colClass = isTopBid ? 'col-md-12' : 'col-md-6';
+        
         // Create bid item HTML
         const bidItemHTML = `
-            <div class="col-md-12">
-                <div class="bid-history-item">
+            <div class="${colClass}">
+                <div class="bid-history-item ${topBidClass}">
+                    ${showLeadingBadge ? '<div class="leading-bid-banner"><i class="fa fa-trophy"></i> Detta är ditt ledande bud</div>' : ''}
                     <div class="bidder-info">
-                        <span class="bidder-name">${bidderName}</span>
+                        <span class="bidder-name">${displayName}</span>
                         ${badgeHTML}
                     </div>
                     <div class="bid-amount-info">
@@ -2443,9 +2482,8 @@ updateBidList(bids) {
     if (bids.length === 0) {
         container.html('<div class="col-md-12"><p style="text-align:center; padding:20px; color:#999;">Inga bud har lagts ännu</p></div>');
     }
+    
 }
-
-
 
 updateTimer(newTimestamp) {
             

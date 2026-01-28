@@ -39,7 +39,7 @@
 <!-- Mobile Accordion - Only visible on mobile -->
 <div class="mobile-search-accordion d-block d-md-none">
 <div class="accordion-header" onclick="toggleAccordion()">
-<span>Sök Efter Din Bil</span>
+<span>Filtrera din bil</span>
 <span class="accordion-icon">+</span>
 </div>
 <div class="accordion-content" id="mobileSearchContent">
@@ -419,60 +419,21 @@ Rensa
 </div>
 </div>
 
-<style>
-.mobile-search-accordion {
-    margin-bottom: 20px;
-}
-
-.accordion-header {
-    background-color: #f8f9fa !important;
-    padding: 15px 20px !important;
-    cursor: pointer !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    border: 1px solid #dee2e6 !important;
-    border-radius: 5px !important;
-    font-weight: 600 !important;
-    font-size: 16px !important;
-    transition: all 0.3s ease !important;
-}
-
-.accordion-header:hover {
-    background-color: #e9ecef;
-}
-
-.accordion-icon {
-    font-size: 24px;
-    font-weight: 300;
-    transition: transform 0.3s ease;
-}
-
-.accordion-icon.active {
-    transform: rotate(45deg);
-}
-
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
-    border-top: none;
-}
-
-.accordion-content.active {
-    max-height: 3000px;
-    border-width: 1px;
-    border-top: none;
-}
-</style>
-
 <script>
 function toggleAccordion() {
-    const content = document.getElementById('mobileSearchContent');
-    const icon = document.querySelector('.accordion-icon');
-    
-    content.classList.toggle('active');
-    icon.classList.toggle('active');
+  const content = document.getElementById('mobileSearchContent');
+  const icon = document.querySelector('.accordion-icon');
+
+  const isOpening = !content.classList.contains('active');
+
+  content.classList.toggle('active');
+  icon.classList.toggle('active');
+
+  if (isOpening) {
+    document.body.classList.add('mobile-acc-open');
+  } else {
+    document.body.classList.remove('mobile-acc-open');
+  }
 }
 </script>
 

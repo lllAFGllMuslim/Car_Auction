@@ -470,63 +470,89 @@ if (!empty($equipment_category)) {
 </div>
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["breaks_text"]; ?> <span>*</span></label>
-<div class="brk_wrap">
-  <span class=" bracks_count <?php if($car['bracks_count']==1){ echo"active"; }  ?>" data-num="1"  >1</span>
- <span class="bracks_count <?php if($car['bracks_count']==2){ echo"active"; }  ?> " data-num="2" >2</span>
-  <span class="bracks_count <?php if($car['bracks_count']==3){ echo"active"; }  ?> " data-num="3" >3</span> 
-  <span class="bracks_count <?php if($car['bracks_count']==4){ echo"active"; }  ?>" data-num="4" >4</span> 
-  <span class="bracks_count <?php if($car['bracks_count']==5){ echo"active"; }  ?> " data-num="5" >5</span>
+<div class="brk_wrap"><span class=" bracks_count active" data-num="1"  >1</span>
+ <span class="bracks_count" data-num="2" >2</span>
+  <span class="bracks_count" data-num="3" >3</span> 
+  <span class="bracks_count" data-num="4" >4</span> 
+  <span class="bracks_count" data-num="5" >5</span>
 </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="Breaks_description" id="Breaks_description" cols="" rows=""><?php echo $car['Breaks_description']; ?></textarea>
-<input type="hidden" name="bracks_count" id="bracks_count" value="<?php echo $car['bracks_count']; ?>" />
+<select name="Breaks_description" id="Breaks_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="Excellent - Like new condition">Excellent - Like new condition</option>
+  <option value="Good - Minor wear, fully functional">Good - Minor wear, fully functional</option>
+  <option value="Fair - Visible wear, needs attention">Fair - Visible wear, needs attention</option>
+  <option value="Poor - Requires immediate replacement">Poor - Requires immediate replacement</option>
+  <option value="Recently Replaced">Recently Replaced</option>
+</select>
+<input type="hidden" name="bracks_count" id="bracks_count" value="1" />
 </div>
 </div>
 <div class="col-lg-6 add_sty1">
-<label><?php echo $footer_data["exterior_body_text"]; ?> <span>*</span></label>
+<label><?php echo $footer_data["exterior_body_text"]; ?>  <span>*</span></label>
 <div class="brk_wrap">
-<span class="exterior_body <?php if($car['exterior_body']==1){ echo"active"; }  ?>" data-num="1" >1</span> 
-<span class="exterior_body <?php if($car['exterior_body']==2){ echo"active"; }  ?>" data-num="2"  >2</span> 
-<span class="exterior_body <?php if($car['exterior_body']==3){ echo"active"; }  ?>" data-num="3"  >3</span> 
-<span class="exterior_body <?php if($car['exterior_body']==4){ echo"active"; }  ?>" data-num="4"  >4</span> 
-<span class="exterior_body <?php if($car['exterior_body']==5){ echo"active"; }  ?>"  data-num="5"  >5</span>
+<span class="exterior_body active" data-num="1" >1</span> 
+<span class="exterior_body" data-num="2"  >2</span> 
+<span class="exterior_body" data-num="3"  >3</span> 
+<span class="exterior_body" data-num="4"  >4</span> 
+<span class="exterior_body" data-num="5"  >5</span>
 </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="exterior_body_description" id="exterior_body_description" cols="" rows=""><?php echo $car['exterior_body_description']; ?></textarea>
-<input type="hidden" name="exterior_body" id="exterior_body" value="<?php echo $car['exterior_body']; ?>" />
-
+<select name="exterior_body_description" id="exterior_body_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="Pristine - No scratches or dents">Pristine - No scratches or dents</option>
+  <option value="Excellent - Minor imperfections">Excellent - Minor imperfections</option>
+  <option value="Good - Few scratches and small dents">Good - Few scratches and small dents</option>
+  <option value="Fair - Noticeable damage, paint issues">Fair - Noticeable damage, paint issues</option>
+  <option value="Poor - Significant body damage">Poor - Significant body damage</option>
+</select>
+<input type="hidden" name="exterior_body" id="exterior_body" value="1" />
 </div>
 </div>
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["tires_text"]; ?> <span>*</span></label>
 <div class="brk_wrap">
-  <span class="tires <?php if($car['tires']==1){ echo"active"; }  ?>" data-num="1">1</span> 
-  <span class="tires <?php if($car['tires']==2){ echo"active"; }  ?> " data-num="2">2</span>
-   <span class="tires <?php if($car['tires']==3){ echo"active"; }  ?>" data-num="3" >3</span> 
-   <span class="tires <?php if($car['tires']==4){ echo"active"; }  ?>" data-num="4" >4</span> 
-   <span class="tires <?php if($car['tires']==5){ echo"active"; }  ?>" data-num="5" >5</span>
+  <span class="tires active" data-num="1">1</span> 
+  <span class="tires" data-num="2">2</span>
+   <span class="tires" data-num="3" >3</span> 
+   <span class="tires" data-num="4" >4</span> 
+   <span class="tires" data-num="5" >5</span>
   </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="tires_description" id="tires_description" cols="" rows=""><?php echo $car['tires_description']; ?></textarea>
-<input type="hidden" name="tires" id="tires"  value="<?php echo $car['tires']; ?>" />
+<select name="tires_description" id="tires_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="New - Full tread depth">New - Full tread depth</option>
+  <option value="Excellent - 80%+ tread remaining">Excellent - 80%+ tread remaining</option>
+  <option value="Good - 50-80% tread remaining">Good - 50-80% tread remaining</option>
+  <option value="Fair - 30-50% tread remaining">Fair - 30-50% tread remaining</option>
+  <option value="Worn - Less than 30%, replacement needed">Worn - Less than 30%, replacement needed</option>
+</select>
+<input type="hidden" name="tires" id="tires" value="1" />
 </div>
 </div>
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["interior_body_text"]; ?> <span>*</span></label>
 <div class="brk_wrap">
-  <span class="interior_body <?php if($car['interior_body']==1){ echo"active"; }  ?> " data-num="1" >1</span> 
-  <span class="interior_body <?php if($car['interior_body']==2){ echo"active"; }  ?>" data-num="2" >2</span> 
-  <span class="interior_body <?php if($car['interior_body']==3){ echo"active"; }  ?>" data-num="3" >3</span>
-   <span class="interior_body <?php if($car['interior_body']==4){ echo"active"; }  ?>" data-num="4" >4</span> 
-   <span class="interior_body <?php if($car['interior_body']==5){ echo"active"; }  ?>" data-num="5" >5</span>
+  <span class="interior_body active" data-num="1" >1</span> 
+  <span class="interior_body" data-num="2" >2</span> 
+  <span class="interior_body" data-num="3" >3</span>
+   <span class="interior_body" data-num="4" >4</span> 
+   <span class="interior_body" data-num="5" >5</span>
   </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="interior_body_description" id="interior_body_description" cols="" rows=""><?php echo $car['interior_body_description']; ?></textarea>
-<input type="hidden" id="interior_body"  name="interior_body" value="<?php echo $car['interior_body']; ?>" />
+<select name="interior_body_description" id="interior_body_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="Immaculate - Spotless condition">Immaculate - Spotless condition</option>
+  <option value="Excellent - Clean, minimal wear">Excellent - Clean, minimal wear</option>
+  <option value="Good - Normal wear and tear">Good - Normal wear and tear</option>
+  <option value="Fair - Stains, tears, or odors present">Fair - Stains, tears, or odors present</option>
+  <option value="Poor - Heavy damage, needs refurbishing">Poor - Heavy damage, needs refurbishing</option>
+</select>
+<input type="hidden" id="interior_body"  name="interior_body" value="1" />
 </div>
 </div>
 <div class="col-lg-12 mt-0">

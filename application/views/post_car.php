@@ -484,7 +484,14 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="Breaks_description" id="Breaks_description" cols="" rows=""></textarea>
+<select name="Breaks_description" id="Breaks_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="Excellent - Like new condition">Excellent - Like new condition</option>
+  <option value="Good - Minor wear, fully functional">Good - Minor wear, fully functional</option>
+  <option value="Fair - Visible wear, needs attention">Fair - Visible wear, needs attention</option>
+  <option value="Poor - Requires immediate replacement">Poor - Requires immediate replacement</option>
+  <option value="Recently Replaced">Recently Replaced</option>
+</select>
 <input type="hidden" name="bracks_count" id="bracks_count" value="1" />
 </div>
 </div>
@@ -499,9 +506,15 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="exterior_body_description" id="exterior_body_description" cols="" rows=""></textarea>
+<select name="exterior_body_description" id="exterior_body_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="Pristine - No scratches or dents">Pristine - No scratches or dents</option>
+  <option value="Excellent - Minor imperfections">Excellent - Minor imperfections</option>
+  <option value="Good - Few scratches and small dents">Good - Few scratches and small dents</option>
+  <option value="Fair - Noticeable damage, paint issues">Fair - Noticeable damage, paint issues</option>
+  <option value="Poor - Significant body damage">Poor - Significant body damage</option>
+</select>
 <input type="hidden" name="exterior_body" id="exterior_body" value="1" />
-
 </div>
 </div>
 <div class="col-lg-6 add_sty1">
@@ -515,7 +528,14 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
   </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="tires_description" id="tires_description" cols="" rows=""></textarea>
+<select name="tires_description" id="tires_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="New - Full tread depth">New - Full tread depth</option>
+  <option value="Excellent - 80%+ tread remaining">Excellent - 80%+ tread remaining</option>
+  <option value="Good - 50-80% tread remaining">Good - 50-80% tread remaining</option>
+  <option value="Fair - 30-50% tread remaining">Fair - 30-50% tread remaining</option>
+  <option value="Worn - Less than 30%, replacement needed">Worn - Less than 30%, replacement needed</option>
+</select>
 <input type="hidden" name="tires" id="tires" value="1" />
 </div>
 </div>
@@ -530,10 +550,18 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
   </div>
 <div class="add_sty1 mt-3 mb-0">
 <label>Description</label>
-<textarea name="interior_body_description" id="interior_body_description" cols="" rows=""></textarea>
+<select name="interior_body_description" id="interior_body_description" class="form-control">
+  <option value="">Select Description</option>
+  <option value="Immaculate - Spotless condition">Immaculate - Spotless condition</option>
+  <option value="Excellent - Clean, minimal wear">Excellent - Clean, minimal wear</option>
+  <option value="Good - Normal wear and tear">Good - Normal wear and tear</option>
+  <option value="Fair - Stains, tears, or odors present">Fair - Stains, tears, or odors present</option>
+  <option value="Poor - Heavy damage, needs refurbishing">Poor - Heavy damage, needs refurbishing</option>
+</select>
 <input type="hidden" id="interior_body"  name="interior_body" value="1" />
 </div>
 </div>
+
 <div class="col-lg-12 mt-0">
 <button type="submit" class="primary-btn3">Submit Now</button>
 <input type="hidden" name="remark_image_ids" id="remark_image_ids" value="">
@@ -570,17 +598,7 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
                     }
                 });
                 
-                //  var service_book_slider = new rSlider({
-                //     target: '#service_book_slider',
-                //     values: [0, 1, 2],
-                //     range: false,
-                //     set: [0],
-                //     tooltip: false,
-                //     onChange: function (vals) {
-                //         console.log(vals);
-                //         $("#service_book").val(vals);
-                //     }
-                // });
+        
                 
                   var gearbox_slider = new rSlider({
                     target: '#gearbox_slider',

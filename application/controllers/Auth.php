@@ -198,6 +198,7 @@ if (!empty($bids)) {
         $time_ago = isset($bid['created']) ? $this->time_ago($bid['created']) : 'Unknown';
         
         $bid_list[] = array(
+            'user_id' => $bid['user_id'],
             'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
             'amount' => $bid['bidding_price'],
             'time_ago' => $time_ago,
@@ -206,6 +207,7 @@ if (!empty($bids)) {
     }
 }
             $bid_list[] = array(
+    'user_id' => $bid['user_id'],
     'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
     'amount' => $bid['bidding_price'],
     'time_ago' => $time_ago,
@@ -1480,22 +1482,6 @@ public function get_bid_with_name(){
 }
 
 
-
-public function test_email() {
-    $this->load->library('email');
-    
-    $this->email->from('info@zogglo.se', 'Zogglo Test');
-    $this->email->to('muslimraoufi123@gmail.com'); // Use your personal email
-    $this->email->subject('Test Email from Zogglo');
-    $this->email->message('<h1>Hello!</h1><p>This is a test email.</p>');
-    
-    if ($this->email->send()) {
-        echo "✅ Email sent successfully!";
-    } else {
-        echo "❌ Email failed!<br><br>";
-        echo $this->email->print_debugger();
-    }
-}
 
 
 public function get_total_bid_count(){

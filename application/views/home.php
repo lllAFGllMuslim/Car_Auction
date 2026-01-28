@@ -168,7 +168,10 @@ if(!empty($cars)){
 
 foreach ($cars as $car):
 
-  $gallery_images = json_decode($car->car_photo_gallery_ids, true); 
+$gallery_images = $car->car_photo_gallery_ids;
+if (is_string($gallery_images)) {
+    $gallery_images = json_decode($gallery_images, true);
+}
 
   $model_year= get_car_cat_by_id_and_table_name($car->cat_year,'model_year_category');
   $engine= get_car_cat_by_id_and_table_name($car->cat_engine,'engine_category');
@@ -491,9 +494,11 @@ Sök Efter Bilar
 <div class="marquee_text2">
 <?php 
 if(!empty($home_data['our_trusted_partners_id'])){
-   $gallery_images = json_decode($home_data['our_trusted_partners_id'], true); 
+$gallery_images = $home_data['our_trusted_partners_id'];
 
-   $gallery_images  =    json_decode( $gallery_images);
+if (is_string($gallery_images)) {
+    $gallery_images = json_decode($gallery_images, true);
+}
           
    if (is_array($gallery_images) && !empty($gallery_images)) {
        foreach ($gallery_images as $image) {        

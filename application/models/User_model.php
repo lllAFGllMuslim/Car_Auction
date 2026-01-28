@@ -483,25 +483,50 @@ public function get_highest_bid($car_id) {
 public function insert_bid($data) {
     $this->db->insert('bidding', $data);
 }
-
+/**
+ * Get highest bidder info with user details
+ */
+public function get_highest_bidder_info($car_id) {
+    $this->db->select('bidding.*, users.username, users.email');
+    $this->db->from('bidding');
+    $this->db->join('users', 'bidding.user_id = users.id', 'left');
+    $this->db->where('bidding.car_id', $car_id);
+    $this->db->order_by('bidding.bidding_price', 'DESC');
+    $this->db->limit(1);
+    $query = $this->db->get();
+    
+    if ($query->num_rows() > 0) {
+        return $query->row_array();
+    }
+    
+    return null;
+}
 /**
  * Get all active auto-bids for a specific car, excluding a specific user
  * Returns users who have auto-bid enabled and haven't reached their max yet
  */
 public function get_active_auto_bids($car_id, $exclude_user_id) {
-    $this->db->select('user_id, MAX(max_auto_bid) as max_auto_bid');
-    $this->db->from('bidding');
-    $this->db->where('car_id', $car_id);
-    $this->db->where('user_id !=', $exclude_user_id);
-    $this->db->where('is_auto_bid', 1);
-    $this->db->where('max_auto_bid IS NOT NULL');
-    $this->db->group_by('user_id');
-    $this->db->order_by('max_auto_bid', 'DESC'); // Highest max auto-bid first
+    // Get the LATEST bid from each user who has auto-bid enabled
+    // We need to find users who have max_auto_bid set in their MOST RECENT bid
     
-    $query = $this->db->get();
+    $sql = "
+        SELECT b1.*
+        FROM bidding b1
+        INNER JOIN (
+            SELECT user_id, MAX(id) as latest_bid_id
+            FROM bidding
+            WHERE car_id = ?
+            AND user_id != ?
+            GROUP BY user_id
+        ) b2 ON b1.id = b2.latest_bid_id
+        WHERE b1.max_auto_bid IS NOT NULL
+        AND b1.max_auto_bid > 0
+        AND b1.max_auto_bid > b1.bidding_price
+    ";
+    
+    $query = $this->db->query($sql, array($car_id, $exclude_user_id));
     return $query->result_array();
 }
-
 
 public function get_bid($car_id) {
     // Select all fields from both bidding and users tables

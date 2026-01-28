@@ -64,7 +64,95 @@ li span {
     color: black;
 }
     </style>
-    
+
+    <style>
+/* Existing styles... */
+
+/* NEW: Bid Type Badges */
+.bid-type-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.bid-type-manual {
+    background-color: #10b981;
+    color: white;
+}
+
+.bid-type-auto {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.bid-type-max-reached {
+    background-color: #f59e0b;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.bid-history-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s;
+}
+
+.bid-history-item:hover {
+    background-color: #f9fafb;
+}
+
+.bidder-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.bidder-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.bid-amount-info {
+    text-align: right;
+}
+
+.bid-amount {
+    font-weight: 700;
+    color: #111827;
+    font-size: 16px;
+}
+
+.bid-time {
+    font-size: 11px;
+    color: #6b7280;
+    display: block;
+    margin-top: 2px;
+}
+
+.max-reached-notice {
+    display: block;
+    font-size: 10px;
+    color: #f59e0b;
+    font-style: italic;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.auto-bid-icon {
+    color: #3b82f6;
+    margin-left: 4px;
+}
+</style>
 <div class="car-details-area mt-4 pt-50 mb-40" style="padding-top:0px;">
 <div class="container">
 <div class="row mt_po5 mb-50">
@@ -2124,11 +2212,9 @@ function ThumbnailSlider(a){"use strict";if(typeof String.prototype.trim!=="func
 
     <script type="text/javascript">
 // Immediately check if script is being loaded
-console.log('📄 Script tag encountered');
 
 // Function to initialize everything
 function initializeBidSystem() {
-    console.log('🔍 Attempting to initialize bid system...');
     
     // Check for jQuery
     if (typeof jQuery === 'undefined' || typeof $ === 'undefined') {
@@ -2137,7 +2223,6 @@ function initializeBidSystem() {
         return;
     }
     
-    console.log('✅ jQuery detected, proceeding with initialization');
 
     /**
      * REAL-TIME BID UPDATES
@@ -2148,13 +2233,11 @@ function initializeBidSystem() {
             this.pollInterval = null;
             this.lastBidCount = 0;
             this.isRunning = false;
-            console.log('🎯 RealtimeBidUpdates constructor called for car:', carId);
         }
 
         start() {
             if (this.isRunning) return;
             
-            console.log('🔥 Real-time bid updates activated for car:', this.carId);
             this.isRunning = true;
             
             this.loadBidData();
@@ -2169,14 +2252,12 @@ function initializeBidSystem() {
                 clearInterval(this.pollInterval);
                 this.pollInterval = null;
                 this.isRunning = false;
-                console.log('✅ Real-time updates stopped');
             }
         }
 
 loadBidData() {
     const baseUrl = '<?php echo base_url(); ?>';
     
-    console.log('⏱️ [' + new Date().toLocaleTimeString() + '] Polling server for car ID:', this.carId);
     
     $.ajax({
         url: baseUrl + 'auth/get_bid_updates',
@@ -2184,23 +2265,13 @@ loadBidData() {
         dataType: 'json',
         data: { car_id: this.carId },
         success: (response) => {
-            console.log('✅ [' + new Date().toLocaleTimeString() + '] Raw response received:', response);
-            console.log('📊 Response success status:', response.success);
             
             if (response.success) {
-                console.log('💰 Bid count:', response.data.bid_count);
-                console.log('💵 Highest bid:', response.data.highest_bid);
-                console.log('🎯 Recommended bid:', response.data.recommended_bid);
-                console.log('🏆 Reservation met:', response.data.reservation_met);
-                console.log('⏰ Timer timestamp:', response.data.timer_timestamp);
-                console.log('🔴 Auction active:', response.data.auction_active);
-                console.log('📋 Total bids:', response.data.bids ? response.data.bids.length : 0);
                 
                 this.updateUI(response.data);
                 
                 if (response.data.bid_count > this.lastBidCount && this.lastBidCount > 0) {
-                    console.log('🆕 NEW BID DETECTED! Old count:', this.lastBidCount, 'New count:', response.data.bid_count);
-                    this.showNewBidNotice();
+                    // this.showNewBidNotice();
                 }
                 this.lastBidCount = response.data.bid_count;
             } else {
@@ -2216,72 +2287,171 @@ loadBidData() {
     });
 }
 
-        updateUI(data) {
-            console.log('🔄 Updating UI with data:', data);
-            if (data.post_status !== undefined) {
-                const statusText = data.post_status === 'timer' ? data.time_remaining : data.post_status;
-                
-                // Update all countdown elements for this car
-                $('[id^="countdown_' + this.carId + '"]').each(function() {
-                    const $parent = $(this).parent();
-                    
-                    if (data.post_status === 'timer') {
-                        $parent.html('<span id="' + $(this).attr('id') + '" style="color:red;">' + statusText + '</span>');
-                    } else {
-                        $parent.html('<span>' + statusText + '</span>');
-                    }
-                });
+updateUI(data) {
+    
+    // Update countdown/status
+    if (data.post_status !== undefined) {
+        const statusText = data.post_status === 'timer' ? data.time_remaining : data.post_status;
+        
+        $('[id^="countdown_' + this.carId + '"]').each(function() {
+            const $parent = $(this).parent();
+            
+            if (data.post_status === 'timer') {
+                $parent.html('<span id="' + $(this).attr('id') + '" style="color:red;">' + statusText + '</span>');
+            } else {
+                $parent.html('<span>' + statusText + '</span>');
             }
-            if (data.bid_count !== undefined) {
-                $('#bidcount').html('<strong>' + data.bid_count + '</strong> bud');
-            }
+        });
+    }
+    
+    // Update bid count
+    if (data.bid_count !== undefined) {
+        $('#bidcount').html('<strong>' + data.bid_count + '</strong> bud');
+    }
 
-            if (data.highest_bid !== undefined) {
-                const bidText = data.highest_bid > 0 
-                    ? this.formatNumber(data.highest_bid) + ' SEK'
-                    : 'Inga bud har lagts ännu';
-                $('.leadingbox').html(bidText);
-            }
+    // Update highest bid
+    if (data.highest_bid !== undefined) {
+        const bidText = data.highest_bid > 0 
+            ? this.formatNumber(data.highest_bid) + ' SEK'
+            : 'Inga bud har lagts ännu';
+        $('.leadingbox').html(bidText);
+    }
 
-            if (data.recommended_bid !== undefined) {
-                $('#recommended_bid div:last-child').html(
-                    this.formatNumber(data.recommended_bid) + ' SEK'
-                );
-            }
+    // Update recommended bid
+    if (data.recommended_bid !== undefined) {
+        $('#recommended_bid div:last-child').html(
+            this.formatNumber(data.recommended_bid) + ' SEK'
+        );
+    }
 
-            if (data.reservation_met !== undefined) {
-                if (data.reservation_met) {
-                    $('.reservation_cls')
-                        .removeClass('reservation_cls')
-                        .addClass('reservation_met_cls')
-                        .text('Reservationspriset har uppnåtts');
-                } else {
-                    $('.reservation_met_cls')
-                        .removeClass('reservation_met_cls')
-                        .addClass('reservation_cls')
-                        .text('Reservationspriset har inte uppnåtts');
-                }
-            }
+    // Update reservation status
+    if (data.reservation_met !== undefined) {
+        if (data.reservation_met) {
+            $('.reservation_cls')
+                .removeClass('reservation_cls')
+                .addClass('reservation_met_cls')
+                .text('Reservationspriset har uppnåtts');
+        } else {
+            $('.reservation_met_cls')
+                .removeClass('reservation_met_cls')
+                .addClass('reservation_cls')
+                .text('Reservationspriset har inte uppnåtts');
+        }
+    }
 
+    // **NEW: Update bid list with type indicators**
+    if (data.bids !== undefined && data.bids.length > 0) {
+        this.updateBidList(data.bids);
+    }
 
-            if (data.timer_timestamp !== undefined) {
-                this.updateTimer(data.timer_timestamp);
-            }
+    // Update timer
+    if (data.timer_timestamp !== undefined) {
+        this.updateTimer(data.timer_timestamp);
+    }
 
-            if (data.auction_active !== undefined && data.auction_active) {
-                this.enableBidding();
-            } else if (data.auction_active === false) {
-                this.disableBidding();
+    // Update auction status
+    if (data.auction_active !== undefined && data.auction_active) {
+        this.enableBidding();
+    } else if (data.auction_active === false) {
+        this.disableBidding();
+    }
+}
+
+/**
+ * NEW FUNCTION: Update bid list with manual/auto indicators
+ */
+updateBidList(bids) {
+    
+    const container = $('#yourContainerId');
+    container.empty();
+    
+    // Track user's max auto-bid to detect when limit is reached
+    const userMaxBids = {};
+    
+    // Process bids in reverse order (oldest to newest) to detect max reached
+    const reversedBids = [...bids].reverse();
+    
+    reversedBids.forEach((bid, index) => {
+        const userId = bid.user_id || bid.bidder_name;
+        const isAuto = bid.is_auto_bid == 1;
+        const bidAmount = parseInt(bid.amount);
+        
+        // Check if this user has reached their max auto-bid
+        let maxReached = false;
+        if (userMaxBids[userId]) {
+            const prevBid = userMaxBids[userId];
+            // If previous bid was auto, current is auto, and amount didn't increase
+            // OR if previous was auto and current is manual (switched from auto to manual)
+            if (prevBid.wasAuto && (isAuto && prevBid.amount === bidAmount || !isAuto)) {
+                prevBid.maxReached = true;
             }
         }
+        
+        // Store this bid info
+        userMaxBids[userId] = {
+            amount: bidAmount,
+            wasAuto: isAuto,
+            maxReached: false,
+            index: reversedBids.length - 1 - index
+        };
+    });
+    
+    // Now display bids in correct order (newest first)
+    bids.forEach((bid, index) => {
+        const userId = bid.user_id || bid.bidder_name;
+        const isAuto = bid.is_auto_bid == 1;
+        const bidAmount = parseInt(bid.amount);
+        const timeAgo = bid.time_ago || 'Unknown';
+        const bidderName = bid.bidder_name || 'Anonymous';
+        
+        // Check if this bid shows max reached
+        const showMaxReached = userMaxBids[userId] && 
+                               userMaxBids[userId].maxReached && 
+                               userMaxBids[userId].index === index;
+        
+// Determine badge
+        let badgeHTML = '';
+        if (showMaxReached) {
+            badgeHTML = '<span class="bid-type-badge bid-type-max-reached">⚠️ Max Auto-Bid Uppnådd</span>';
+        } else if (isAuto) {
+            badgeHTML = '<span class="bid-type-badge bid-type-auto"><i class="fa fa-robot auto-bid-icon"></i> Auto Bud</span>';
+        } else {
+            badgeHTML = '<span class="bid-type-badge bid-type-manual">✓ Manuellt</span>';
+        }
+        
+        // Create bid item HTML
+        const bidItemHTML = `
+            <div class="col-md-12">
+                <div class="bid-history-item">
+                    <div class="bidder-info">
+                        <span class="bidder-name">${bidderName}</span>
+                        ${badgeHTML}
+                    </div>
+                    <div class="bid-amount-info">
+                        <div class="bid-amount">${this.formatNumber(bidAmount)} SEK</div>
+                        <span class="bid-time">${timeAgo}</span>
+                        ${showMaxReached ? '<span class="max-reached-notice">Användaren nådde sin maximala auto-bud gräns</span>' : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.append(bidItemHTML);
+    });
+    
+    // If no bids, show message
+    if (bids.length === 0) {
+        container.html('<div class="col-md-12"><p style="text-align:center; padding:20px; color:#999;">Inga bud har lagts ännu</p></div>');
+    }
+}
 
-        updateTimer(newTimestamp) {
-            console.log('⏰ Updating timer with timestamp:', newTimestamp);
+
+
+updateTimer(newTimestamp) {
             
             if (window.auctionTimers && window.auctionTimers.length > 0) {
                 window.auctionTimers.forEach(timer => {
                     if (timer.carId == this.carId) {
-                        console.log('✅ Timer component found, updating...');
                         timer.createdTimestamp = newTimestamp;
                         timer.render();
                     }
@@ -2300,7 +2470,6 @@ loadBidData() {
         }
 
         disableBidding() {
-            console.log('🛑 Auction ended, disabling bidding');
             $('#bidformbox').hide();
             $('.message').html('<p style="color:red;">Auktionstiden avslutad</p>');
         }
@@ -2310,40 +2479,12 @@ loadBidData() {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }
 
-        showNewBidNotice() {
-            $('.bid-notice').remove();
-            
-            const notice = document.createElement('div');
-            notice.className = 'bid-notice';
-            notice.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #3b82f6;
-                color: white;
-                padding: 16px 24px;
-                border-radius: 8px;
-                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-                z-index: 9999;
-                font-weight: bold;
-                font-size: 16px;
-            `;
-            notice.textContent = '💰 Nytt bud placerat!';
-            
-            document.body.appendChild(notice);
-            
-            setTimeout(() => {
-                notice.remove();
-            }, 3000);
-        }
     }
 
     // Initialize when DOM is ready
     $(document).ready(function() {
-        console.log('🚀 DOM ready, starting initialization...');
         
         const carId = $('#car_id').val();
-        console.log('🔍 Car ID found:', carId);
         
         if (carId) {
             window.bidUpdates = new RealtimeBidUpdates(carId);
@@ -2377,53 +2518,75 @@ loadBidData() {
                 $('#final_place_bid_btn').show();
             });
 
-            $('#bidform').on('submit', function(e) {
-                e.preventDefault();
+$('#bidform').on('submit', function(e) {
+    e.preventDefault();
+    
+    const bidAmount = $('#bidprice').val().replace(/\s/g, '');
+    const autoBidEnabled = $('#enable_auto_bid').is(':checked');
+    const maxAutoBid = $('#max_auto_bid').val().replace(/\s/g, '');
+    
+    // If auto-bid is enabled but no max value, show error
+    if (autoBidEnabled && !maxAutoBid) {
+        alert('Vänligen ange ett max auto-bud belopp');
+        return;
+    }
+    
+    // If max auto bid is less than current bid, show error
+    if (autoBidEnabled && parseInt(maxAutoBid) <= parseInt(bidAmount)) {
+        alert('Max auto-bud måste vara högre än ditt nuvarande bud');
+        return;
+    }
+    
+    const dataToSend = {
+        car_id: carId,
+        bidprice: bidAmount
+    };
+    
+    // Only send max_auto_bid if checkbox is checked AND value is provided
+    if (autoBidEnabled && maxAutoBid) {
+        dataToSend.max_auto_bid = maxAutoBid;
+    }
+    
+    
+    $.ajax({
+           url: '<?php echo base_url(); ?>auth/bid_added',
+        method: 'POST',
+        dataType: 'json',
+        data: dataToSend,
+        success: function(response) {
+            
+            if (response.status === 'success') {
+                $('.message').html('<p style="color:green;">' + response.message + '</p>');
                 
-                const bidAmount = $('#bidprice').val().replace(/\s/g, '');
-                const autoBidEnabled = $('#enable_auto_bid').is(':checked') ? 1 : 0;
-                const maxAutoBid = $('#max_auto_bid').val().replace(/\s/g, '');
-
-                $.ajax({
-                    url: window.location.origin + '/auth/bid_added',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {
-                        car_id: carId,
-                        bidprice: bidAmount,
-                        auto_bid_enabled: autoBidEnabled,
-                        max_auto_bid: maxAutoBid
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            $('.message').html('<p style="color:green;">' + response.message + '</p>');
-                            
-                            $('#bidprice').val('');
-                            $('#max_auto_bid').val('');
-                            $('#enable_auto_bid').prop('checked', false);
-                            $('#auto_bid_section').hide();
-                            
-                            $('#final_place_bid_btn, #verify_bid_btn').hide();
-                            $('#initial_bid_btn').show();
-                            
-                            window.bidUpdates.loadBidData();
-                        } else {
-                            $('.message').html('<p style="color:red;">' + response.message + '</p>');
-                            
-                            $('#final_place_bid_btn, #verify_bid_btn').hide();
-                            $('#initial_bid_btn').show();
-                        }
-                    },
-                    error: function() {
-                        $('.message').html('<p style="color:red;">Error placing bid. Please try again.</p>');
-                        $('#final_place_bid_btn, #verify_bid_btn').hide();
-                        $('#initial_bid_btn').show();
-                    }
-                });
-            });
-
+                // Clear form
+                $('#bidprice').val('');
+                $('#max_auto_bid').val('');
+                $('#enable_auto_bid').prop('checked', false);
+                $('#auto_bid_section').hide();
+                
+                // Reset buttons
+                $('#final_place_bid_btn, #verify_bid_btn').hide();
+                $('#initial_bid_btn').show();
+                
+                // Reload bid data
+                window.bidUpdates.loadBidData();
+            } else {
+                $('.message').html('<p style="color:red;">' + response.message + '</p>');
+                
+                $('#final_place_bid_btn, #verify_bid_btn').hide();
+                $('#initial_bid_btn').show();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+            console.error('Response:', xhr.responseText);
+            $('.message').html('<p style="color:red;">Error placing bid. Please try again.</p>');
+            $('#final_place_bid_btn, #verify_bid_btn').hide();
+            $('#initial_bid_btn').show();
+        }
+    });
+});
          
-            console.log('✅ All event handlers attached successfully');
         } else {
             console.warn('⚠️ No car ID found, real-time updates disabled');
         }
@@ -2445,7 +2608,6 @@ loadBidData() {
     `;
     document.head.appendChild(style);
     
-    console.log('✅ Real-time bidding script fully loaded and initialized');
 }
 
 // Start initialization

@@ -1329,66 +1329,73 @@ public function check_expiry() {
 public function bid_added()
 {
     $this->load->library('form_validation');
-
     $this->form_validation->set_rules('bidprice', 'Bid Price', 'required|numeric');
 
     if ($this->form_validation->run() == FALSE) {
-        // Validation failed
-        $this->load->view('your_form_view');
+        $response = array('status' => 'error', 'message' => 'Invalid bid price');
+        echo json_encode($response);
+        return;
+    }
+    
+    $bidprice = $this->input->post('bidprice');
+    $car_id = $this->input->post('car_id');
+    $max_auto_bid = $this->input->post('max_auto_bid');
+    
+    if (empty($max_auto_bid) || $max_auto_bid == 0) {
+        $max_auto_bid = NULL;
+    }
+    
+    $is_auto_bid = 0;
+
+    $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $this->session->userdata('user_id'));
+
+    if ($unique_id_data == 0) {
+        $unique_id_number = $this->User_model->get_unique_id_of_car($car_id);
+        $unique_id = $unique_id_number + 1;
     } else {
-        $bidprice = $this->input->post('bidprice');
-        $car_id = $this->input->post('car_id');
-        $max_auto_bid = $this->input->post('max_auto_bid'); // Optional max auto bid
-        $is_auto_bid = !empty($max_auto_bid) && $max_auto_bid > $bidprice ? 1 : 0;
+        $unique_id = $unique_id_data;
+    }
 
-        // Fetch the unique ID for the bid
-        $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $this->session->userdata('user_id'));
+    $highest_bid = $this->User_model->get_highest_bid($car_id);
+    $bid_increment = 500;
+    $minimum_bid = $highest_bid + $bid_increment;
 
-        if ($unique_id_data == 0) {
-            $unique_id_number = $this->User_model->get_unique_id_of_car($car_id);
-            $unique_id = $unique_id_number + 1;
-        } else {
-            $unique_id = $unique_id_data;
+    if ($bidprice >= $minimum_bid) {
+        // **Get the previous highest bidder BEFORE inserting new bid**
+        $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
+        
+        // Insert the new bid
+        $data = array(
+            'car_id' => $car_id,
+            'bidding_price' => $bidprice,
+            'max_auto_bid' => $max_auto_bid,
+            'is_auto_bid' => 0,
+            'unique_id' => $unique_id,
+            'user_id' => $this->session->userdata('user_id')
+        );
+        
+        $this->User_model->insert_bid($data);
+
+        // **Notify the previous highest bidder they've been outbid**
+        if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $this->session->userdata('user_id')) {
+            notify_outbid($previous_highest_bidder['user_id'], $car_id, $bidprice);
         }
 
-        // Fetch the highest bid for the specific car
-        $highest_bid = $this->User_model->get_highest_bid($car_id);
-        $bid_increment = 500; // SEK increment
+        $extension_result = extend_auction_time($car_id);
+        $this->process_auto_bidding($car_id, $bidprice, $this->session->userdata('user_id'), $bid_increment);
 
-        // Set the minimum required bid
-        $minimum_bid = $highest_bid + $bid_increment;
-
-        if ($bidprice >= $minimum_bid) {
-            // Insert the new bid
-            $data = array(
-                'car_id' => $car_id,
-                'bidding_price' => $bidprice,
-                'max_auto_bid' => $max_auto_bid,
-                'is_auto_bid' => $is_auto_bid,
-                'unique_id' => $unique_id,
-                'user_id' => $this->session->userdata('user_id')
-            );
-            $this->User_model->insert_bid($data);
-
-            // ✅ Check and extend auction time if bid placed in last 3 minutes
-            $extension_result = extend_auction_time($car_id);
-
-            // Process auto-bid logic: check if someone else has auto-bid enabled
-            $this->process_auto_bidding($car_id, $bidprice, $this->session->userdata('user_id'), $bid_increment);
-
-            $response = array(
-                'status' => 'success', 
-                'message' => 'Bid placed successfully.',
-                'extension' => $extension_result
-            );
-        } else {
-            // Error message
-            $response = array('status' => 'error', 'message' => 'Your minimum bid amount should be '.$minimum_bid.' SEK or more you can place.');
-        }
+        $response = array(
+            'status' => 'success', 
+            'message' => 'Bid placed successfully.',
+            'extension' => $extension_result
+        );
+    } else {
+        $response = array('status' => 'error', 'message' => 'Your minimum bid amount should be '.$minimum_bid.' SEK or more you can place.');
     }
 
     echo json_encode($response);
 }
+
 
 /**
  * Process auto-bidding when a new bid is placed
@@ -1396,23 +1403,22 @@ public function bid_added()
  */
 private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_id, $increment = 500)
 {
-    // Get all active auto-bids for this car (excluding the current bidder)
     $auto_bids = $this->User_model->get_active_auto_bids($car_id, $new_bidder_user_id);
     
     if (empty($auto_bids)) {
-        return; // No auto-bids to process
+        return;
     }
 
     foreach ($auto_bids as $auto_bid) {
         $max_auto_bid = $auto_bid['max_auto_bid'];
         $auto_bidder_user_id = $auto_bid['user_id'];
         
-        // Calculate the next bid price
         $next_bid_price = $new_bid_price + $increment;
         
-        // Check if the next bid is within the auto-bid limit
         if ($next_bid_price <= $max_auto_bid) {
-            // Get unique ID for the auto bidder
+            // **Get the current highest bidder BEFORE placing auto-bid**
+            $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
+            
             $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $auto_bidder_user_id);
             
             if ($unique_id_data == 0) {
@@ -1422,7 +1428,6 @@ private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_
                 $unique_id = $unique_id_data;
             }
             
-            // Place automatic counter-bid
             $auto_bid_data = array(
                 'car_id' => $car_id,
                 'bidding_price' => $next_bid_price,
@@ -1434,20 +1439,29 @@ private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_
             
             $this->User_model->insert_bid($auto_bid_data);
             
-            // ✅ Extend auction time for auto-bid too
+            // **Notify the previous highest bidder they've been auto-outbid**
+            if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $auto_bidder_user_id) {
+                notify_outbid($previous_highest_bidder['user_id'], $car_id, $next_bid_price);
+            }
+            
             extend_auction_time($car_id);
             
-            // Recursively check if other auto-bidders need to respond
-            // But only if we haven't reached the max limit
+            // **Check if we've reached max auto-bid**
+            if ($next_bid_price >= $max_auto_bid) {
+                notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
+            }
+            
             if ($next_bid_price < $max_auto_bid) {
                 $this->process_auto_bidding($car_id, $next_bid_price, $auto_bidder_user_id, $increment);
             }
             
-            break; // Only process one auto-bid at a time to avoid infinite loops
+            break;
+        } else {
+            // **Max reached - notify user**
+            notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
         }
     }
 }
-
 
 public function get_bid(){
     $car_id = $this->input->post('id');
@@ -1463,6 +1477,24 @@ public function get_bid_with_name(){
     $bids = $this->User_model->get_bid_with_name($car_id);
     echo json_encode($bids);
 
+}
+
+
+
+public function test_email() {
+    $this->load->library('email');
+    
+    $this->email->from('info@zogglo.se', 'Zogglo Test');
+    $this->email->to('muslimraoufi123@gmail.com'); // Use your personal email
+    $this->email->subject('Test Email from Zogglo');
+    $this->email->message('<h1>Hello!</h1><p>This is a test email.</p>');
+    
+    if ($this->email->send()) {
+        echo "✅ Email sent successfully!";
+    } else {
+        echo "❌ Email failed!<br><br>";
+        echo $this->email->print_debugger();
+    }
 }
 
 

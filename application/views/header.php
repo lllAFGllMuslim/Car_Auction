@@ -240,4 +240,278 @@ UTLOGGNING</a>
 </div>
 </div>
 </header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999; width: 350px;"></div>
+
+<style>
+.toast-notification {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: slideInRight 0.4s ease-out;
+    border-left: 4px solid #3b82f6;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.toast-notification:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.toast-notification.toast-outbid {
+    border-left-color: #f59e0b;
+    background: linear-gradient(to right, #fffbeb, white);
+}
+
+.toast-notification.toast-won {
+    border-left-color: #10b981;
+    background: linear-gradient(to right, #ecfdf5, white);
+}
+
+.toast-notification.toast-auto-bid-max-reached {
+    border-left-color: #ef4444;
+    background: linear-gradient(to right, #fef2f2, white);
+}
+
+.toast-notification.toast-new-bid {
+    border-left-color: #3b82f6;
+    background: linear-gradient(to right, #eff6ff, white);
+}
+
+.toast-icon {
+    font-size: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.toast-message {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.toast-time {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+.toast-close {
+    font-size: 20px;
+    color: #9ca3af;
+    cursor: pointer;
+    flex-shrink: 0;
+    line-height: 1;
+    padding: 0 5px;
+    transition: color 0.2s;
+}
+
+.toast-close:hover {
+    color: #ef4444;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.toast-notification.removing {
+    animation: slideOutRight 0.3s ease-out forwards;
+}
+
+/* Notification bell badge */
+.notification-badge {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    text-align: center;
+    line-height: 20px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Make it responsive */
+@media (max-width: 480px) {
+    #toastContainer {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+    }
+}
+</style>
+
 </div>
+<script type="text/javascript">
+// This will run AFTER jQuery is loaded in footer
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for jQuery
+    function initNotificationSystem() {
+        if (typeof jQuery === 'undefined') {
+            setTimeout(initNotificationSystem, 100);
+            return;
+        }
+        
+        var isLoggedIn = <?php echo $this->session->userdata('user_id') ? 'true' : 'false'; ?>;
+        
+        if (!isLoggedIn) {
+            console.log('❌ User not logged in');
+            return;
+        }
+        
+        console.log('🔔 Starting notification system...');
+        
+        var lastNotificationId = localStorage.getItem('lastNotificationId') || 0;
+        lastNotificationId = parseInt(lastNotificationId);
+        
+        console.log('📌 Last notification ID from storage:', lastNotificationId);
+        
+        // Load initially
+        checkForNewNotifications();
+        
+        // Poll every 3 seconds
+        setInterval(checkForNewNotifications, 3000);
+        
+        function checkForNewNotifications() {
+            $.ajax({
+                url: '<?php echo base_url(); ?>notifications/get_unread',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success' && response.notifications.length > 0) {
+                        var latestNotification = response.notifications[0];
+                        
+                        console.log('Latest notification ID:', latestNotification.id, 'Last seen:', lastNotificationId);
+                        
+                        if (latestNotification.id > lastNotificationId) {
+                            console.log('🆕 NEW NOTIFICATION!', latestNotification);
+                            showToast(latestNotification);
+                            lastNotificationId = latestNotification.id;
+                            localStorage.setItem('lastNotificationId', lastNotificationId);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ Notification check failed:', error);
+                }
+            });
+        }
+        
+        function showToast(notification) {
+            var icons = {
+                'outbid': '⚠️',
+                'won': '🏆',
+                'lost': '😔',
+                'new_bid': '💰',
+                'auto_bid_max_reached': '🔔'
+            };
+            
+            var icon = icons[notification.type] || '📢';
+            var toastClass = 'toast-' + notification.type.replace(/_/g, '-');
+            
+            var toastHtml = '<div class="toast-notification ' + toastClass + '" data-id="' + notification.id + '" data-car-id="' + (notification.car_id || '') + '">' +
+                '<div class="toast-icon">' + icon + '</div>' +
+                '<div class="toast-content">' +
+                    '<div class="toast-title">' + escapeHtml(notification.title) + '</div>' +
+                    '<div class="toast-message">' + escapeHtml(notification.message) + '</div>' +
+                    '<div class="toast-time">Just nu</div>' +
+                '</div>' +
+                '<div class="toast-close" onclick="window.closeToastNotification(this)">&times;</div>' +
+            '</div>';
+            
+            var $toast = $(toastHtml);
+            $('#toastContainer').prepend($toast);
+            
+            console.log('✅ Toast displayed!');
+            
+            // Click to go to car
+            $toast.on('click', function(e) {
+                if ($(e.target).hasClass('toast-close')) return;
+                
+                var carId = $(this).data('car-id');
+                if (carId) {
+                    window.location.href = '<?php echo base_url(); ?>car/' + carId;
+                }
+            });
+            
+            // Auto remove after 10 seconds
+            setTimeout(function() {
+                removeToast($toast);
+            }, 10000);
+        }
+        
+        function removeToast($toast) {
+            $toast.addClass('removing');
+            setTimeout(function() {
+                $toast.remove();
+            }, 300);
+        }
+        
+        window.closeToastNotification = function(btn) {
+            var $toast = $(btn).closest('.toast-notification');
+            removeToast($toast);
+        };
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    }
+    
+    initNotificationSystem();
+});
+</script>

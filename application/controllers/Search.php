@@ -11,43 +11,37 @@ class Search extends CI_Controller {
         $this->load->helper(array('url', 'form')); // Load the URL helper here
     }
 
-    public function index($page = 1) {
-        $data = array();
+public function index($page = 1) {
+    $data = array();
 
+    $limit = 20;
+    $offset = ($page - 1) * $limit;
 
+    $cars = $this->Search_model->search($limit, $offset);
+    $total_blogs = $this->Search_model->get_total_search_cars_count();
+    $total_pages = ceil($total_blogs / $limit);
 
+    $data = [
+        'cars' => $cars,
+        'total_pages' => $total_pages,
+        'current_page' => $page,
+        'loop' => 1,
+    ];
 
+    $data['body_category']       = $this->User_model->get_body_category();
+    $data['brand_category']      = $this->User_model->get_brand_category();
+    $data['buy_method_category'] = $this->User_model->get_buy_method_category();
+    $data['engine_category']     = $this->User_model->get_engine_category();
+    $data['equipment_category']  = $this->User_model->get_equipment_category();
+    $data['model_category']      = $this->User_model->get_model_category();
+    $data['model_year_category'] = $this->User_model->get_model_year_category();
+    $data['fuel_category']       = $this->User_model->get_fuel_category();
+    $data['available_cities']    = $this->Search_model->get_available_cities(); // ✅ ADD THIS
 
-        $limit =20; // Number of blogs per page
-        $offset = ($page - 1) * $limit;
-    
-        $cars = $this->Search_model->search($limit, $offset);
-        $total_blogs = $this->Search_model->get_total_search_cars_count();
-        $total_pages = ceil($total_blogs / $limit);
-    
-        $data = [
-            'cars' => $cars,
-            'total_pages' => $total_pages,
-            'current_page' => $page,
-            'loop' => 1,
-        ];
-
-        $data['body_category'] = $this->User_model->get_body_category();
-        $data['brand_category'] = $this->User_model->get_brand_category();
-        $data['buy_method_category'] = $this->User_model->get_buy_method_category();
-        $data['engine_category'] = $this->User_model->get_engine_category();
-        $data['equipment_category'] = $this->User_model->get_equipment_category();
-        $data['model_category'] = $this->User_model->get_model_category();
-        $data['model_year_category'] = $this->User_model->get_model_year_category();
-        $data['fuel_category'] = $this->User_model->get_fuel_category();
-    
-
-        // Load view with search results
-        // $this->load->view('search_results', $data);
-        $this->load->view('header');
-        $this->load->view('search_results',$data);
-        $this->load->view('footer',$data);
-    }
+    $this->load->view('header');
+    $this->load->view('search_results', $data);
+    $this->load->view('footer', $data);
+}
     
     
  public function get_auction_cars(){

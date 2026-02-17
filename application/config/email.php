@@ -14,3 +14,5 @@ $config['newline'] = "\r\n";
 $config['crlf'] = "\r\n";
 $config['wordwrap'] = TRUE;
 $config['validate'] = TRUE;
+$config['smtp_from'] = 'info@zogglo.se'; 
+$config['smtp_from_name'] = 'Zogglo Car Auction';

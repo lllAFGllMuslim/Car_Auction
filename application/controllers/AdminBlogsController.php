@@ -813,10 +813,6 @@ public function get_engine_categories()
        $id = $this->input->post('id');
        $category_name = $this->input->post('category_name');
        $category_slug = url_title($category_name, 'dash', TRUE); // Generate slug
-
-
-    
-
        $this->load->model('AdminBlogs');
        if ($this->AdminBlogs->is_unique_engine_category_name($category_name, $id)) {
            if ($this->AdminBlogs->is_unique_engine_slug($category_slug, $id)) {
@@ -1275,6 +1271,28 @@ function sellyourcar_profileupdate() {
 
         echo json_encode($response);
 
+}
+
+public function delete_sellyourcar() {
+    if (!$this->session->userdata('user_id') || $this->session->userdata('user_role') != 'admin') {
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        return;
+    }
+    
+    $id = $this->input->post('id');
+    
+    if (empty($id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid ID']);
+        return;
+    }
+    
+    $delete_status = $this->AdminBlogs->delete_sellyourcar($id);
+    
+    if ($delete_status) {
+        echo json_encode(['status' => 'success', 'message' => 'Deleted successfully']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to delete']);
+    }
 }
 
 function admin_dealer_list($page = 1){

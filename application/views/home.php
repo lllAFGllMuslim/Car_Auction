@@ -167,7 +167,6 @@ if(!empty($cars)){
     
 
 foreach ($cars as $car):
-
 $gallery_images = $car->car_photo_gallery_ids;
 if (is_string($gallery_images)) {
     $gallery_images = json_decode($gallery_images, true);
@@ -325,16 +324,7 @@ if(!empty($car->reduce_price)){
     <span><?php echo $car->mileage; ?> Mil</span> 
     <span><?php if(!empty($fuel)){ echo  $fuel["fuel_name"]; } ?></span>  
     <span><?php if(!empty($engine)){ echo  $engine["engine_name"]; } ?></span>
-    <?php if(!empty($car->city)): ?>
-<div class="city_wrap">
-    <i class="fa fa-map-marker"></i> 
-        <span style="text-transform: capitalize;">
-            <?php echo strtolower($car->city); ?>
-        </span>
-</div>
-<?php endif; ?>
-<!-- Add this after your car title -->
-<?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
+    <?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
 <div class="bidder-count-wrapper" style="display: inline-block; float: right; font-size: 12px;">
     <i class="fa fa-gavel" style="color: #007bff;"></i>
     <span class="bidder-count"><?php echo isset($car->total_bidders) ? $car->total_bidders : 0; ?></span>
@@ -345,6 +335,16 @@ if(!empty($car->reduce_price)){
        style="color: #6c757d; cursor: help; margin-left: 0px;"></i>
 </div>
 <?php endif; ?>
+
+    <?php if(!empty($car->city)): ?>
+<div class="city_wrap">
+    <i class="fa fa-map-marker"></i> 
+        <span style="text-transform: capitalize;">
+            <?php echo strtolower($car->city); ?>
+        </span>
+</div>
+<?php endif; ?>
+<!-- Add this after your car title -->
 
 </div>
 

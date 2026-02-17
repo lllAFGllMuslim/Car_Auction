@@ -39,17 +39,26 @@
     foreach ($cars as $car){
 
       $profile_data = get_profile($car->post_author_id);
-      $gallery_images = json_decode($car->car_photo_gallery_ids, true); 
+      if (empty($profile_data)) {
+          $profile_data = [
+              'first_name'       => 'Unknown',
+              'last_name'        => 'Dealer',
+              'profle_photo_id'  => null,
+          ];
+      }
 
-      $gallery_images  =    json_decode( $gallery_images);
-          
+      $gallery_images = json_decode($car->car_photo_gallery_ids, true);
+
+      // Handle double-encoded JSON just in case
+      if (is_string($gallery_images)) {
+          $gallery_images = json_decode($gallery_images, true);
+      }
+
+      $image = null; // default to avoid undefined variable warning
+
       if (is_array($gallery_images) && !empty($gallery_images)) {
-       
-
-        $image = $gallery_images[0];
-
-        }
-
+          $image = $gallery_images[0];
+      }
   ?>
   <tr>
     <td class="head15700 hj15"><img src="<?php if(!empty($profile_data['profle_photo_id'])){echo get_image_path_by_id($profile_data['profle_photo_id']);  }else{ ?><?= base_url(); ?>assets/img/us3.jpg<?php } ?>" width="50px" alt="" /></td>

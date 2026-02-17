@@ -38,6 +38,9 @@ if(!empty($cars)){
   foreach ($cars as $car){
 
     $profile_data = get_profile($car->post_author_id);
+    if (empty($profile_data)) {
+        $profile_data = ['first_name' => 'Unknown', 'last_name' => '', 'phone_number' => '', 'profle_photo_id' => ''];
+    }
     $gallery_images = json_decode($car->car_photo_gallery_ids, true); 
 
     $gallery_images  =    json_decode( $gallery_images);
@@ -53,10 +56,14 @@ if(!empty($cars)){
       // $user_data= get_profile($car->winner_id);
       // $cardata = get_bid_by_id($car->id);
 
-    $data=  get_bid_by_primary_id($car->winner_id);
-  
-    $user_data= get_profile($data->user_id);
-	
+      $data = get_bid_by_primary_id($car->winner_id);
+
+      if (!empty($data) && isset($data->user_id)) {
+          $user_data = get_profile($data->user_id);
+      }
+      if (empty($user_data)) {
+          $user_data = ['first_name' => 'No Winner', 'last_name' => '', 'phone_number' => ''];
+      }
 	 $dt=$car->created   ;
 	$edt=date('Y-m-d H:i:s', strtotime($dt. ' + 14 days'));
 	
@@ -118,9 +125,13 @@ if(!empty($cars)){
     $cardata = get_bid_by_id($car->id);
 
    
-   $data=  get_bid_by_primary_id($car->winner_id);
-  
-    $user_data= get_profile($data->user_id);
+    $data = get_bid_by_primary_id($car->winner_id);
+
+    if (!empty($data) && isset($data->user_id)) {
+        $user_data = get_profile($data->user_id);
+    } else {
+        $user_data = ['first_name' => '', 'last_name' => '', 'phone_number' => ''];
+    }
 ?>
 <div class="modal signUp-modal sell-with-us fade" id="view_wrap<?php echo $car->id; ?>" tabindex="-1" aria-labelledby="sellUsModal01Label" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered">

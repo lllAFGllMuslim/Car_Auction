@@ -1,18 +1,14 @@
-
 <?php
 $footer_data = get_header_footer_by_id(1);
 global $sd;
 $sd=1;
-// print_r($CarAPI_data);
 function update_input($value) {
-    // echo $value."<br />";
     if(isset($CarAPI_data[$value])) { 
         echo " value=\"".$CarAPI_data[$value]."\"";
     } else {
         echo " value=\"nothing\"";
     }
 }
-// echo $CarAPI_data['response'];
 ?>
  
 
@@ -24,7 +20,6 @@ function update_input($value) {
 <?php $this->load->view('sidebar'); ?>
 </div>
 <div class="col-xl-9">
-  <!--<form name="post_car_form" id="post_car_form" action="" method="" >-->
 
 <div class="row g-4 mb-40" >
 <div class="col-lg-12">
@@ -35,7 +30,6 @@ function update_input($value) {
         <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #24292e;">Search Car</label>
         
         <div style="display: flex; align-items: center; gap: 10px;">
-            <!-- License Plate Style Input -->
             <div style="
                 position: relative;
                 display: inline-block;
@@ -48,7 +42,6 @@ function update_input($value) {
                     inset 0 1px 0 rgba(255,255,255,0.8),
                     inset 0 -1px 0 rgba(0,0,0,0.2);
             ">
-                <!-- EU Strip (optional - remove if not needed) -->
                 <div style="
                     position: absolute;
                     left: 0;
@@ -71,7 +64,7 @@ function update_input($value) {
                     name="CAR_NO" 
                     id="CAR_NO" 
                     type="text" 
-                    placeholder="AB 12 CD 3456"
+                    placeholder="ABC 123"
                     style="
                         width: 220px;
                         padding: 8px 12px 8px 45px;
@@ -142,20 +135,16 @@ function update_input($value) {
 <?php
 if(!empty($buy_method_category)){
 foreach ($buy_method_category as $value4) { ?>
-
 <option value="<?php echo $value4->id; ?>"><?php echo $value4->buy_method_name; ?></option>
-<?php
- }
-}
-?>
+<?php } } ?>
 </select>
 </div>
 <div class="col-lg-4 add_sty1">
 <label><?php echo $footer_data["category_text"]; ?> <span>*</span></label>
 <select name="category" id="category">
 <option value="" >Select category</option>
-<option value="car" <?php  if(!empty($CarAPI_data['vehicle_type']) && $CarAPI_data['vehicle_type'] == "car") { echo "selected"; } ?>>Car</option>
-<option value="light_truck" <?php  if(!empty($CarAPI_data['vehicle_type']) && $CarAPI_data['vehicle_type'] == "light_truck") { echo "selected"; } ?> >Light truck</option>
+<option value="car" <?php if(!empty($CarAPI_data['vehicle_type']) && $CarAPI_data['vehicle_type'] == "car") { echo "selected"; } ?>>Car</option>
+<option value="light_truck" <?php if(!empty($CarAPI_data['vehicle_type']) && $CarAPI_data['vehicle_type'] == "light_truck") { echo "selected"; } ?> >Light truck</option>
 </select>
 </div>
 <div class="col-lg-4 add_sty1">
@@ -188,7 +177,7 @@ foreach ($buy_method_category as $value4) { ?>
 
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["horsepower_text"]; ?> <span>*</span></label>
-<input name="horsepower" id="horsepower" type="text" <? if(!empty($CarAPI_data['Motoreffekt'])) { echo " value=\"".$CarAPI_data['Motoreffekt']."\""; } ?> >
+<input name="horsepower" id="horsepower" type="text" <?php if(!empty($CarAPI_data['Motoreffekt'])) { echo " value=\"".$CarAPI_data['Motoreffekt']."\""; } ?> >
 </div>
 
 <div class="col-lg-3 add_sty1">
@@ -198,13 +187,8 @@ foreach ($buy_method_category as $value4) { ?>
 <?php
 if(!empty($brand_category)){
 foreach ($brand_category as $value) { ?>
-
 <option value=<?php echo "\"".$value->id."\" "; if(!empty($CarAPI_data['Fabrikat']) && strtolower($CarAPI_data['Fabrikat']) == strtolower($value->brand_name)) { echo "selected"; } ?>><?php echo $value->brand_name; ?></option>
-<?php
- }
-}
-?>
-
+<?php } } ?>
 </select>
 </div>
 <div class="col-lg-3 add_sty1 modelbox">
@@ -214,12 +198,8 @@ foreach ($brand_category as $value) { ?>
 <?php
 if(!empty($model_category)){
 foreach ($model_category as $value1) { ?>
-
 <option value=<?php echo "\"".$value1->id."\" "; if(!empty($CarAPI_data['Modell']) && strtolower($CarAPI_data['Modell']) == strtolower($value1->model_name)) { echo "selected"; } ?>><?php echo $value1->model_name; ?></option>
-<?php
- }
-}
-?>
+<?php } } ?>
 </select>
 </div>
 
@@ -230,12 +210,8 @@ foreach ($model_category as $value1) { ?>
 <?php
 if(!empty($fuel_category)){
 foreach ($fuel_category as $value2) { ?>
-
 <option value="<?php echo $value2->id."\" "; if(!empty($CarAPI_data['Drivmedel']) && strtolower($CarAPI_data['Drivmedel']) == strtolower($value2->fuel_name)) { echo "selected"; }  ?>><?php echo $value2->fuel_name; ?></option>
-<?php
- }
-}
-?>
+<?php } } ?>
 </select>
 </div>
 
@@ -246,16 +222,10 @@ foreach ($fuel_category as $value2) { ?>
 <?php
 if(!empty($model_year_category)){
 foreach ($model_year_category as $value3) { ?>
-
 <option value="<?php echo $value3->id."\" "; if(!empty($CarAPI_data['Fordonsår']) && strtolower($CarAPI_data['Fordonsår']) == strtolower($value3->year_name)) { echo "selected"; } ?>><?php echo $value3->year_name; ?></option>
-<?php
- }
-}
-?>
+<?php } } ?>
 </select>
 </div>
-
-
 
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["body_text"]; ?> <span>*</span></label>
@@ -265,10 +235,7 @@ foreach ($model_year_category as $value3) { ?>
 if(!empty($body_category)){
 foreach ($body_category as $value5) { ?>
 <option value="<?php echo $value5->id."\" "; if(!empty($CarAPI_data['Kaross']) && strtolower($CarAPI_data['Kaross']) == strtolower($value5->body_name)) { echo "selected"; } ?> ><?php echo $value5->body_name; ?></option>
-<?php
- }
-}
-?>
+<?php } } ?>
 </select>
 </div>
 
@@ -279,39 +246,26 @@ foreach ($body_category as $value5) { ?>
 <?php
 if(!empty($engine_category)){
 foreach ($engine_category as $value6) { ?>
-
 <option value="<?php echo $value6->id."\" "; if(!empty($CarAPI_data['Växellåda']) && strtolower($CarAPI_data['Växellåda']) == strtolower($value6->engine_name)) { echo "selected"; } ?>><?php echo $value6->engine_name; ?></option>
-
-<?php
- }
-}
-?>
+<?php } } ?>
 </select>
 </div>
-
-
 
 <div class="col-lg-12 add_sty3">
 <label id="eq_msg"><?php echo $footer_data["show_emi_price_text"]; ?> <span>*</span></label>
 <div class="eq">
 <label class="eq_label"> <input type="radio" name="emi_show"  value="yes"> Yes </label>
 <label class="eq_label"> <input type="radio" name="emi_show" checked value="no"> No </label>
-
 </div>
 </div>
 <div class="col-lg-12 add_sty3">
 <?php echo $footer_data["equipment_text"]; ?>  <span></span>&nbsp;&nbsp;<label><input type="checkbox" name="selectAll" id="selectAll" /> Select All</label>
 <div class="eq">
-
 <?php
 if(!empty($equipment_category)){
 foreach ($equipment_category as $value7) { ?>
-
 <label class="eq_label"><input class="eq_inpput" type="checkbox" name="cat_equipment[]" value="<?php echo $value7->id; ?>" /> <?php echo $value7->equipment_name; ?> </label>
-<?php
- }
-}
-?>
+<?php } } ?>
 </div>
 </div>
 <div id="cat_equipment_error"></div>
@@ -331,20 +285,14 @@ if(!empty($CarAPI_data['Antal ägare i Sverige'])) {
 ?> >
 </div>
 
-
-
-
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["Number_of_seats"]; ?> <span>*</span></label>
-<input name="number_of_seats" id="number_of_seats" type="text" <? if(!empty($CarAPI_data['Passagerare'])) { echo " value=\"".$CarAPI_data['Passagerare']."\""; } ?> >
+<input name="number_of_seats" id="number_of_seats" type="text" <?php if(!empty($CarAPI_data['Passagerare'])) { echo " value=\"".$CarAPI_data['Passagerare']."\""; } ?> >
 </div>
-
 
 <div class="col-lg-12 add_sty1" style="width:92% !important;">
 <label><?php echo $footer_data["number_of_keys"]; ?> <span>*</span></label>
 <input name="number_of_keys" id="number_of_keys" type="hidden" value="1">
- <!--<div id="tooltipValue_number_of_keys" class="tooltip-value1">1</div>-->
- <!--<input type="range" class="form-range" id="rangeSlider_number_of_keys" min="1" max="4" value="1" step="1">-->
    <input type="text" id="number_of_keys_slider" class="slider" />
 </div>
 
@@ -354,7 +302,6 @@ if(!empty($CarAPI_data['Antal ägare i Sverige'])) {
 </div>
 
 <div class="col-lg-3 add_sty1">
-<!-- <label><?php #echo $footer_data["manufacture_month"]; ?> <span>*</span></label> -->
 <label>Traffic Status<span>*</span></label>
 <input name="manufacture_month" id="manufacture_month" type="text" <?php if(!empty($CarAPI_data['Status'])) { echo " value=\"".$CarAPI_data['Status']."\""; } ?>>
 </div>
@@ -362,15 +309,12 @@ if(!empty($CarAPI_data['Antal ägare i Sverige'])) {
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["odometer_reading"]; ?> <span>*</span></label>
 <input type="hidden" name="odometer_reading" id="odometer_reading"  <?php if(!empty($CarAPI_data['StatusSenast besiktigad'])) { echo " value=\"".$CarAPI_data['Senast besiktigad']."\""; } ?>>
-
 </div>
 
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["color_text"]; ?> <span>*</span></label>
-<!--<input name="color" id="color" type="text">-->
 <select name="color" id="color">
     <option value="">Select Color</option>
-    
 <?php 
 foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul','Orange') as $color_elem) {
     if($CarAPI_data['Färg'] == $color_elem) {
@@ -380,9 +324,6 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
     }
 }
 ?>
-
-    
-    
 </select>
 </div>
 <div class="col-lg-3 add_sty1">
@@ -408,17 +349,11 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["textile_text"]; ?> <span>*</span></label>
-<!--<input name="textile" id="textile" type="text">-->
-
 <select name="textile" id="textile">
     <option value="">Select Textile </option>
-    
-    <option  value="Leather">Leather</option>
-    <option  value="Cotton">Cotton</option>
-    <option  value="Polyester ">Polyester </option>
-   
-    
-    
+    <option value="Leather">Leather</option>
+    <option value="Cotton">Cotton</option>
+    <option value="Polyester ">Polyester </option>
 </select>
 </div>
 <div class="col-lg-12 add_sty2">
@@ -426,7 +361,7 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["chassis_number_text"]; ?> <span>*</span></label>
-<input name="chassis_number_text" id="chassis_number_text" type="text" <?php if(!empty($CarAPI_data['Chassinr / VIN'])) { echo " value=\"".$CarAPI_data['Chassinr / VIN']."\""; } ?>>
+<input name="chassis_number" id="chassis_number" type="text" <?php if(!empty($CarAPI_data['Chassinr / VIN'])) { echo " value=\"".$CarAPI_data['Chassinr / VIN']."\""; } ?>>
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["next_inspection_the_latest_text"]; ?><span>*</span></label>
@@ -435,130 +370,131 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["engine_effect_text"]; ?> <span>*</span></label>
 <input name="engine_effect" id="engine_effect" type="text" <?php if(!empty($CarAPI_data['Motorvolym'])) { echo " value=\"".$CarAPI_data['Motorvolym']."\""; } ?>>
-
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["curb_weight_text"]; ?> <span>*</span></label>
 <input name="curb_weight" id="curb_weight" type="text" <?php if(!empty($CarAPI_data['Tjänstevikt'])) { echo " value=\"".$CarAPI_data['Tjänstevikt']."\""; } ?>>
-
-
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["max_payload_text"]; ?> <span>*</span></label>
 <input name="max_playload" id="max_playload" type="text" <?php if(!empty($CarAPI_data['Lastvikt'])) { echo " value=\"".$CarAPI_data['Lastvikt']."\""; } ?>>
-
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["tax_weight_text"]; ?> <span>*</span></label>
 <input name="tax_weight" id="tax_weight" type="text" <?php if(!empty($CarAPI_data['Senast besiktigad'])) { echo " value=\"".$CarAPI_data['Senast besiktigad']."\""; } ?>>
-
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["max_pull_weight_text"]; ?> <span>*</span></label>
 <input name="max_pull_weight" id="max_pull_weight" type="text" <?php if(!empty($CarAPI_data['Släp totalvikt (B)'])) { echo " value=\"".$CarAPI_data['Släp totalvikt (B)']."\""; } ?>>
-
 </div>
 <div class="col-lg-3 add_sty1">
 <label><?php echo $footer_data["vehicle_total_weight_text"]; ?> <span>*</span></label>
 <input name="vehicle_tital_weight" id="vehicle_tital_weight" type="text" <?php if(!empty($CarAPI_data['Totalvikt'])) { echo " value=\"".$CarAPI_data['Totalvikt']."\""; } ?>>
-
 </div>
 <div class="col-lg-12 mt-0">
 <div class="add_photo_net1">Remark images</div>
 <div class="add_imk_car"><input name="remark_image[]" id="remark_image" multiple type="file"></div>
 <div id="remark_image_preview" style="margin-top: 20px;;">
-
 </div>
 
 <div class="col-lg-12 add_sty2">
 <div class="add_photo_net1"><?php echo $footer_data["remark_text"]; ?></div>
 </div>
 </div>
+
+<!-- ==================== BROMSAR (Breaks) ==================== -->
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["breaks_text"]; ?> <span>*</span></label>
-<div class="brk_wrap"><span class=" bracks_count active" data-num="1"  >1</span>
- <span class="bracks_count" data-num="2" >2</span>
-  <span class="bracks_count" data-num="3" >3</span> 
-  <span class="bracks_count" data-num="4" >4</span> 
-  <span class="bracks_count" data-num="5" >5</span>
+<div class="brk_wrap">
+  <span class="bracks_count active" data-num="1">1</span>
+  <span class="bracks_count" data-num="2">2</span>
+  <span class="bracks_count" data-num="3">3</span>
+  <span class="bracks_count" data-num="4">4</span>
+  <span class="bracks_count" data-num="5">5</span>
 </div>
 <div class="add_sty1 mt-3 mb-0">
-<label>Description</label>
-<select name="Breaks_description" id="Breaks_description" class="form-control">
-  <option value="">Select Description</option>
-  <option value="Excellent - Like new condition">Excellent - Like new condition</option>
-  <option value="Good - Minor wear, fully functional">Good - Minor wear, fully functional</option>
-  <option value="Fair - Visible wear, needs attention">Fair - Visible wear, needs attention</option>
-  <option value="Poor - Requires immediate replacement">Poor - Requires immediate replacement</option>
-  <option value="Recently Replaced">Recently Replaced</option>
+<label>Beskrivning</label>
+<select name="Breaks_description" id="Breaks_description" class="form-control" onchange="syncRatingFromDropdown(this, 'bracks_count', 'bracks_count')">
+  <option value="">Välj beskrivning</option>
+  <option value="1">Betyg 1 – Mycket dåligt skick: Bromsarna är kraftigt slitna med dålig bromsverkan. Oljud, vibrationer eller ojämn bromsning förekommer. Åtgärd krävs omedelbart.</option>
+  <option value="2">Betyg 2 – Dåligt skick: Bromsarna fungerar bristfälligt och visar tecken på slitage. Förlängd bromssträcka och eventuellt missljud. Rekommenderas åtgärd snarast.</option>
+  <option value="3">Betyg 3 – Godkänt skick: Bromsarna fungerar tillfredsställande vid normal körning. Viss förslitning finns men inom godkända gränser.</option>
+  <option value="4">Betyg 4 – Bra skick: Bromsarna är i gott skick med jämn och effektiv bromsverkan. Inga onormala ljud eller vibrationer.</option>
+  <option value="5">Betyg 5 – Mycket bra skick: Bromsarna är i mycket bra eller nyskick med utmärkt bromsverkan och hög säkerhet. Inga anmärkningar.</option>
 </select>
 <input type="hidden" name="bracks_count" id="bracks_count" value="1" />
 </div>
 </div>
+
+<!-- ==================== EXTERIÖR (Exterior Body) ==================== -->
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["exterior_body_text"]; ?>  <span>*</span></label>
 <div class="brk_wrap">
-<span class="exterior_body active" data-num="1" >1</span> 
-<span class="exterior_body" data-num="2"  >2</span> 
-<span class="exterior_body" data-num="3"  >3</span> 
-<span class="exterior_body" data-num="4"  >4</span> 
-<span class="exterior_body" data-num="5"  >5</span>
+  <span class="exterior_body active" data-num="1">1</span>
+  <span class="exterior_body" data-num="2">2</span>
+  <span class="exterior_body" data-num="3">3</span>
+  <span class="exterior_body" data-num="4">4</span>
+  <span class="exterior_body" data-num="5">5</span>
 </div>
 <div class="add_sty1 mt-3 mb-0">
-<label>Description</label>
-<select name="exterior_body_description" id="exterior_body_description" class="form-control">
-  <option value="">Select Description</option>
-  <option value="Pristine - No scratches or dents">Pristine - No scratches or dents</option>
-  <option value="Excellent - Minor imperfections">Excellent - Minor imperfections</option>
-  <option value="Good - Few scratches and small dents">Good - Few scratches and small dents</option>
-  <option value="Fair - Noticeable damage, paint issues">Fair - Noticeable damage, paint issues</option>
-  <option value="Poor - Significant body damage">Poor - Significant body damage</option>
+<label>Beskrivning</label>
+<select name="exterior_body_description" id="exterior_body_description" class="form-control" onchange="syncRatingFromDropdown(this, 'exterior_body', 'exterior_body')">
+  <option value="">Välj beskrivning</option>
+  <option value="1">Betyg 1 – Mindre bra skick: Karossen visar tydliga tecken på användning med flera synliga märken.</option>
+  <option value="2">Betyg 2 – Acceptabelt skick: Mindre bucklor, repor eller bruksspår förekommer.</option>
+  <option value="3">Betyg 3 – Normalt skick: Karossen är i normalt skick för ålder och användning, med mindre skavanker.</option>
+  <option value="4">Betyg 4 – Bra skick: Karossen är i gott skick med få och mindre bruksspår.</option>
+  <option value="5">Betyg 5 – Mycket bra skick: Karossen är i mycket fint skick med ett välvårdat intryck.</option>
 </select>
 <input type="hidden" name="exterior_body" id="exterior_body" value="1" />
 </div>
 </div>
+
+<!-- ==================== DÄCK (Tires) ==================== -->
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["tires_text"]; ?> <span>*</span></label>
 <div class="brk_wrap">
-  <span class="tires active" data-num="1">1</span> 
+  <span class="tires active" data-num="1">1</span>
   <span class="tires" data-num="2">2</span>
-   <span class="tires" data-num="3" >3</span> 
-   <span class="tires" data-num="4" >4</span> 
-   <span class="tires" data-num="5" >5</span>
-  </div>
+  <span class="tires" data-num="3">3</span>
+  <span class="tires" data-num="4">4</span>
+  <span class="tires" data-num="5">5</span>
+</div>
 <div class="add_sty1 mt-3 mb-0">
-<label>Description</label>
-<select name="tires_description" id="tires_description" class="form-control">
-  <option value="">Select Description</option>
-  <option value="New - Full tread depth">New - Full tread depth</option>
-  <option value="Excellent - 80%+ tread remaining">Excellent - 80%+ tread remaining</option>
-  <option value="Good - 50-80% tread remaining">Good - 50-80% tread remaining</option>
-  <option value="Fair - 30-50% tread remaining">Fair - 30-50% tread remaining</option>
-  <option value="Worn - Less than 30%, replacement needed">Worn - Less than 30%, replacement needed</option>
+<label>Beskrivning</label>
+<select name="tires_description" id="tires_description" class="form-control" onchange="syncRatingFromDropdown(this, 'tires', 'tires')">
+  <option value="">Välj beskrivning</option>
+  <option value="1">Betyg 1 – Mycket dåligt skick: Däcken är kraftigt slitna med mönsterdjup under rekommenderad nivå. Sprickor och ojämnt slitage förekommer. Bör bytas omedelbart.</option>
+  <option value="2">Betyg 2 – Dåligt skick: Däcken är tydligt slitna och har begränsat grepp, särskilt på vått underlag. Kan användas kortvarigt men byte rekommenderas snarast.</option>
+  <option value="3">Betyg 3 – Godkänt skick: Däcken har acceptabelt mönsterdjup och jämnt slitage. Fungerar tillfredsställande under normala förhållanden men är på väg att behöva bytas.</option>
+  <option value="4">Betyg 4 – Bra skick: Däcken är i gott skick med bra mönsterdjup och goda köregenskaper. Inga synliga skador.</option>
+  <option value="5">Betyg 5 – Mycket bra skick: Däcken är nästan nya med utmärkt mönsterdjup och optimalt grepp. Inga anmärkningar.</option>
 </select>
 <input type="hidden" name="tires" id="tires" value="1" />
 </div>
 </div>
+
+<!-- ==================== INTERIÖR (Interior Body) ==================== -->
 <div class="col-lg-6 add_sty1">
 <label><?php echo $footer_data["interior_body_text"]; ?> <span>*</span></label>
 <div class="brk_wrap">
-  <span class="interior_body active" data-num="1" >1</span> 
-  <span class="interior_body" data-num="2" >2</span> 
-  <span class="interior_body" data-num="3" >3</span>
-   <span class="interior_body" data-num="4" >4</span> 
-   <span class="interior_body" data-num="5" >5</span>
-  </div>
+  <span class="interior_body active" data-num="1">1</span>
+  <span class="interior_body" data-num="2">2</span>
+  <span class="interior_body" data-num="3">3</span>
+  <span class="interior_body" data-num="4">4</span>
+  <span class="interior_body" data-num="5">5</span>
+</div>
 <div class="add_sty1 mt-3 mb-0">
-<label>Description</label>
-<select name="interior_body_description" id="interior_body_description" class="form-control">
-  <option value="">Select Description</option>
-  <option value="Immaculate - Spotless condition">Immaculate - Spotless condition</option>
-  <option value="Excellent - Clean, minimal wear">Excellent - Clean, minimal wear</option>
-  <option value="Good - Normal wear and tear">Good - Normal wear and tear</option>
-  <option value="Fair - Stains, tears, or odors present">Fair - Stains, tears, or odors present</option>
-  <option value="Poor - Heavy damage, needs refurbishing">Poor - Heavy damage, needs refurbishing</option>
+<label>Beskrivning</label>
+<select name="interior_body_description" id="interior_body_description" class="form-control" onchange="syncRatingFromDropdown(this, 'interior_body', 'interior_body')">
+  <option value="">Välj beskrivning</option>
+  <option value="1">Betyg 1 – Enklare skick: Interiören är använd och har tydliga bruksspår.</option>
+  <option value="2">Betyg 2 – Godtagbart skick: Viss synlig användning förekommer, exempelvis slitage på säten eller paneler.</option>
+  <option value="3">Betyg 3 – Normalt skick: Interiören är i normalt skick för ålder och användning, med mindre bruksspår.</option>
+  <option value="4">Betyg 4 – Välskött skick: Interiören är i bra skick och upplevs som väl omhändertagen.</option>
+  <option value="5">Betyg 5 – Mycket välskött skick: Interiören är i mycket fint skick med ett trivsamt helhetsintryck.</option>
 </select>
-<input type="hidden" id="interior_body"  name="interior_body" value="1" />
+<input type="hidden" id="interior_body" name="interior_body" value="1" />
 </div>
 </div>
 
@@ -566,7 +502,6 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 <button type="submit" class="primary-btn3">Submit Now</button>
 <input type="hidden" name="remark_image_ids" id="remark_image_ids" value="">
 <input type="hidden" name="car_photo_gallery_ids" id="car_photo_gallery_ids" value="">
-
 </div>
 </div>
 </form>
@@ -578,68 +513,83 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 </div>
 
 
-  		   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/rSlider.min.css">
-		<script src="<?php echo base_url(); ?>assets/js/rSlider.min.js"></script>
-    <script>
-        (function () {
-            'use strict';
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/rSlider.min.css">
+<script src="<?php echo base_url(); ?>assets/js/rSlider.min.js"></script>
+<script>
+    /**
+     * syncRatingFromDropdown
+     * Called when a description dropdown changes.
+     * 
+     * @param {HTMLSelectElement} selectEl   - The dropdown that changed
+     * @param {string}            spanClass  - CSS class of the rating spans (e.g. 'bracks_count')
+     * @param {string}            hiddenId   - ID of the hidden input to update (e.g. 'bracks_count')
+     */
+    function syncRatingFromDropdown(selectEl, spanClass, hiddenId) {
+        var rating = parseInt(selectEl.value);
+        if (!rating) return; // nothing selected
 
-            var init = function () {                
+        // Update hidden input
+        document.getElementById(hiddenId).value = rating;
 
-                var previous_owners_slider = new rSlider({
-                    target: '#previous_owners_slider',
-                    values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-                    range: false,
-                    set: [0],
-                    tooltip: false,
-                    onChange: function (vals) {
-                        console.log(vals);
-                        $("#previous_owners").val(vals);
-                    }
-                });
-                
-        
-                
-                  var gearbox_slider = new rSlider({
-                    target: '#gearbox_slider',
-                    values: [1, 2, 3, 4, 5, 6, 7],
-                    range: false,
-                    set: [0],
-                    tooltip: false,
-                    onChange: function (vals) {
-                        console.log(vals);
-                        $("#gearbox").val(vals);
-                    }
-                });
-                
-                 var number_of_seats_slider = new rSlider({
-                    target: '#number_of_seats_slider',
-                    values: [1, 2, 3, 4, 5, 6, 7],
-                    range: false,
-                    set: [0],
-                    tooltip: false,
-                    onChange: function (vals) {
-                        console.log(vals);
-                        $("#number_of_seats").val(vals);
-                    }
-                });
-                
-                 var number_of_keys_slider = new rSlider({
-                    target: '#number_of_keys_slider',
-                    values: [1, 2, 3, 4, 5, 6, 7],
-                    range: false,
-                    set: [0],
-                    tooltip: false,
-                    onChange: function (vals) {
-                        console.log(vals);
-                        $("#number_of_keys").val(vals);
-                    }
-                });
+        // Update active span
+        var spans = document.querySelectorAll('.' + spanClass);
+        spans.forEach(function(span) {
+            span.classList.remove('active');
+            if (parseInt(span.getAttribute('data-num')) === rating) {
+                span.classList.add('active');
+            }
+        });
+    }
 
-              
-            };
-            window.onload = init;
-        })();
-		
-		
-    </script>
+    (function () {
+        'use strict';
+
+        var init = function () {
+
+            var previous_owners_slider = new rSlider({
+                target: '#previous_owners_slider',
+                values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                range: false,
+                set: [0],
+                tooltip: false,
+                onChange: function (vals) {
+                    $("#previous_owners").val(vals);
+                }
+            });
+
+            var gearbox_slider = new rSlider({
+                target: '#gearbox_slider',
+                values: [1, 2, 3, 4, 5, 6, 7],
+                range: false,
+                set: [0],
+                tooltip: false,
+                onChange: function (vals) {
+                    $("#gearbox").val(vals);
+                }
+            });
+
+            var number_of_seats_slider = new rSlider({
+                target: '#number_of_seats_slider',
+                values: [1, 2, 3, 4, 5, 6, 7],
+                range: false,
+                set: [0],
+                tooltip: false,
+                onChange: function (vals) {
+                    $("#number_of_seats").val(vals);
+                }
+            });
+
+            var number_of_keys_slider = new rSlider({
+                target: '#number_of_keys_slider',
+                values: [1, 2, 3, 4, 5, 6, 7],
+                range: false,
+                set: [0],
+                tooltip: false,
+                onChange: function (vals) {
+                    $("#number_of_keys").val(vals);
+                }
+            });
+        };
+        window.onload = init;
+    })();
+</script>

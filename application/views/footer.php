@@ -151,8 +151,8 @@ $footer_data = get_header_footer_by_id(1);
 
 
 <div class="modal signUp-modal fade" id="signUpModal01" tabindex="-1" aria-labelledby="signUpModal01Label" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 <div class="modal-header">
 <h4 class="modal-title" id="signUpModal01Label">Registrera dig</h4>
 <p>Har redan ett konto? <button type="button" data-bs-toggle="modal" data-bs-target="#logInModal01">Logga in</button></p>
@@ -185,6 +185,14 @@ $footer_data = get_header_footer_by_id(1);
 <input type="text" name="phone_number" id="phone_number" >
 </div>
 </div>
+<!-- Social Security Number for ALL users -->
+<div class="col-md-12">
+<div class="form-inner">
+<label>Personnummer (12 siffror)*</label>
+<input type="text" name="social_security_number" id="social_security_number" maxlength="12" placeholder="YYYYMMDDXXXX">
+</div>
+</div>
+
 <div class="col-md-6">
 <div class="form-inner">
 <label>Lösenord*</label>
@@ -218,6 +226,31 @@ $footer_data = get_header_footer_by_id(1);
 <input type="text" name="registration_number" id="registration_number">
 </div>
 </div>
+<!-- Dealer Location Fields -->
+<div class="col-md-6 mt-2 dealerbox" style="display: none;">
+<div class="form-inner">
+<label>Stad*</label>
+<input type="text" name="city" id="dealer_city">
+</div>
+</div>
+<div class="col-md-6 mt-2 dealerbox" style="display: none;">
+<div class="form-inner">
+<label>Delstat*</label>
+<input type="text" name="state" id="dealer_state">
+</div>
+</div>
+<div class="col-md-6 mt-2 dealerbox" style="display: none;">
+<div class="form-inner">
+<label>Adress*</label>
+<input type="text" name="address" id="dealer_address">
+</div>
+</div>
+<div class="col-md-6 mt-2 dealerbox" style="display: none;">
+<div class="form-inner">
+<label>Postnummer*</label>
+<input type="text" name="pincode" id="dealer_pincode" maxlength="5">
+</div>
+</div>
 
 <div class="col-md-12 mt-4">
 <div class="form-inner">
@@ -226,7 +259,13 @@ $footer_data = get_header_footer_by_id(1);
 </div>
 </div>
 <div class="terms-conditon">
-<p>Genom att registrera dig godkänner <a href="<?= base_url('terms-and-conditions') ?>">Du Villkoren</a></p>
+  <label class="d-flex align-items-center gap-2">
+    <input type="checkbox" name="accept_terms" id="accept_terms" required>
+    <span>
+      Genom att registrera dig godkänner
+      <a href="<?= base_url('terms-and-conditions') ?>">Du Villkoren</a>
+    </span>
+  </label>
 </div>
 </form>
 
@@ -237,8 +276,8 @@ $footer_data = get_header_footer_by_id(1);
 </div>
 
 <div class="modal signUp-modal fade" id="logInModal01" tabindex="-1" aria-labelledby="logInModal01Label" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 <div class="modal-header">
 <h4 class="modal-title" id="logInModal01Label">Logga in</h4>
 <p>Har inget konto? <button type="button" data-bs-toggle="modal" data-bs-target="#signUpModal01">Registrera dig</button></p>
@@ -285,8 +324,8 @@ $footer_data = get_header_footer_by_id(1);
 
 
 <div class="modal signUp-modal sell-with-us fade" id="sellUsModal01" tabindex="-1" aria-labelledby="sellUsModal01Label" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 <div class="modal-header">
 <h4 class="modal-title" id="sellUsModal01Label">Sälj Din Bil</h4>
 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x"></i></button>
@@ -394,8 +433,8 @@ $footer_data = get_header_footer_by_id(1);
 </div>
 
 <div class="modal signUp-modal fade" id="pass101" tabindex="-1" aria-labelledby="logInModal01Label" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 <div class="modal-header">
 <h4 class="modal-title" id="logInModal01Label">Glömt lösenord</h4>
 <p>Ange din registrerade e-postadress för att återställa ditt lösenord.</p>
@@ -425,8 +464,8 @@ $footer_data = get_header_footer_by_id(1);
 </div>
 
 <div class="modal signUp-modal sell-with-us fade" id="sellUsModal01" tabindex="-1" aria-labelledby="sellUsModal01Label" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 <div class="modal-header">
 <h4 class="modal-title" id="sellUsModal01Label">Sälj Din Bil</h4>
 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x"></i></button>
@@ -521,8 +560,8 @@ $footer_data = get_header_footer_by_id(1);
 </div>
 
 <div class="modal signUp-modal sell-with-us fade" id="dele_wrap" tabindex="-1" aria-labelledby="sellUsModal01Label" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 <div class="modal-header">
 <h4 class="modal-title" id="sellUsModal01Label">Sälj Din Bil</h4>
 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x"></i></button>
@@ -1150,32 +1189,30 @@ if (selectedValue) {
 
 
         
-        $('#registrationform').validate({
-        rules: {
-            email_address: {
+$('#registrationform').validate({
+    rules: {
+        email_address: {
             required: true,
-            email: true // Add the email validation rule
+            email: true
         },
         first_name: {
-                required: true
+            required: true
         },
         last_name: {
-                required: true
+            required: true
         },
-        company_name: {
-                required: true
+        phone_number: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 10
         },
-         phone_number: {
-                  required: true,
-            digits: true, // Ensures only numbers are entered
-            minlength: 10, // Ensures the minimum length is 10 digits
-            maxlength: 10 // Ensures the maximum length is 10 digits
-        },
-        registration_number: {
-                required: true,
-                 digits: true, 
-                minlength: 10,
-                maxlength: 10
+        // ✅ ADD THIS - Social Security Number validation
+        social_security_number: {
+            required: true,
+            digits: true,
+            minlength: 12,
+            maxlength: 12
         },
         password: {
             required: true,
@@ -1184,13 +1221,50 @@ if (selectedValue) {
         confirm_password: {
             required: true,
             minlength: 6,
-            equalTo: "#password" // Matches confirm_password with password
+            equalTo: "#password"
+        },
+        // ✅ ADD THESE - Dealer fields (conditionally required)
+        company_name: {
+            required: function() {
+                return $('#dealer').is(':checked');
+            }
+        },
+        registration_number: {
+            required: function() {
+                return $('#dealer').is(':checked');
+            },
+            digits: true,
+            minlength: 10,
+            maxlength: 10
+        },
+        city: {
+            required: function() {
+                return $('#dealer').is(':checked');
+            }
+        },
+        state: {
+            required: function() {
+                return $('#dealer').is(':checked');
+            }
+        },
+        address: {
+            required: function() {
+                return $('#dealer').is(':checked');
+            }
+        },
+        pincode: {
+            required: function() {
+                return $('#dealer').is(':checked');
+            },
+            digits: true,
+            minlength: 5,
+            maxlength: 5
         }
     },
     messages: {
         email_address: {
             required: "Please enter your email address",
-            email: "Please enter a valid email address" // Custom message for invalid email
+            email: "Please enter a valid email address"
         },
         first_name: {
             required: "Please enter Förnamn"
@@ -1198,11 +1272,42 @@ if (selectedValue) {
         last_name: {
             required: "Please enter Efternamn"
         },
+        phone_number: {
+            required: "Please enter phone number",
+            digits: "Only numbers allowed",
+            minlength: "Phone must be 10 digits",
+            maxlength: "Phone must be 10 digits"
+        },
+        // ✅ ADD THIS
+        social_security_number: {
+            required: "Please enter personnummer",
+            digits: "Only numbers allowed",
+            minlength: "Personnummer must be 12 digits",
+            maxlength: "Personnummer must be 12 digits"
+        },
         company_name: {
             required: "Please enter company name"
         },
         registration_number: {
-            required: "Please enter registration number"
+            required: "Please enter org-nummer",
+            digits: "Only numbers allowed",
+            minlength: "Org-nummer must be 10 digits",
+            maxlength: "Org-nummer must be 10 digits"
+        },
+        city: {
+            required: "Please enter city"
+        },
+        state: {
+            required: "Please enter state"
+        },
+        address: {
+            required: "Please enter address"
+        },
+        pincode: {
+            required: "Please enter pincode",
+            digits: "Only numbers allowed",
+            minlength: "Pincode must be 5 digits",
+            maxlength: "Pincode must be 5 digits"
         },
         password: {
             required:"",
@@ -1214,7 +1319,7 @@ if (selectedValue) {
             minlength: "Confirm password must be at least 6 characters long"
         }
     },
-        submitHandler: function(form) {
+    submitHandler: function(form) {
             // Handle form submission via AJAX
             $.ajax({
                 url: '<?= base_url('signup') ?>',

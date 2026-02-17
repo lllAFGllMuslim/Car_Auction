@@ -29,10 +29,9 @@
 
 <table width="100%" cellspacing="0" cellpadding="0">
   <tr>
-    <!--<td class="head15699 stuj5">&nbsp;</td>-->
     <td class="head15699">Customer Name</td>
     <td class="head15699 stuj6 text-center">Email address</td>
-	<td class="head15699 text-center">Phone</td>
+    <td class="head15699 text-center">Phone</td>
     <td class="head15699 text-center">Registration <br/>number</td>
     <td class="head15699 text-center">Brand</td>
     <td class="head15699 text-center">Model</td>
@@ -40,40 +39,37 @@
     <td class="head15699 text-center">Reg. Year</td>
     <td class="head15699 text-center">Mileage</td>
     <td class="head15699 text-center">Date/Time</td>
-    <!--<td class="head15699 text-center"></td>-->
-    <td class="head15699">&nbsp;</td>
+    <td class="head15699 text-center">Action</td> <!-- NEW COLUMN -->
   </tr>
 
   <?php 
-//  print_r($users);
-if(!empty($users)){
-
-  foreach ($users as $user) {
-  
-
+  if(!empty($users)){
+    foreach ($users as $user) {
   ?>
-  <tr class="sert54">
-    <td class="head15700 stuj8"><a href="<?= base_url('admin/car/sellyourcarlist_profile?id=').$user->id ?>"><?php echo ucwords(strtolower($user->firstname.' '.$user->lastname)); ?></a> </td>
-	<td class="head15700 stuj8"><?php echo $user->emailaddress; ?></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->phone)){ echo $user->phone; }else{ echo"-"; } ?></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->registrationnumber)){ echo strtoupper($user->registrationnumber); }else{ echo"-"; } ?></a></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->brandname)){ echo ucwords(strtolower($user->brandname)); }else{ echo"-"; } ?></a></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->model)){ echo ucwords(strtolower($user->model)); }else{ echo"-"; } ?></a></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->location)){ echo ucwords(strtolower($user->location)); }else{ echo"-"; } ?></a></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->reg_year)){ echo $user->reg_year; }else{ echo"-"; } ?></a></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->mileage)){ echo number_format($user->mileage); }else{ echo"0"; } ?></a></td>
-    <td class="head15700 stuj8 text-center"><?php if(!empty($user->DT)){ echo $user->DT; }else{ echo"-"; } ?></a></td>
+  <tr class="sert54" id="row-<?php echo $user->id; ?>">
+    <td class="head15700 stuj8"><a href="<?= base_url('admin/car/sellyourcarlist_profile?id=').$user->id ?>"><?php echo ucwords(strtolower($user->firstname.' '.$user->lastname)); ?></a></td>
+    <td class="head15700 stuj8"><?php echo $user->emailaddress; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->phone) ? $user->phone : "-"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->registrationnumber) ? strtoupper($user->registrationnumber) : "-"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->brandname) ? ucwords(strtolower($user->brandname)) : "-"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->model) ? ucwords(strtolower($user->model)) : "-"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->location) ? ucwords(strtolower($user->location)) : "-"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->reg_year) ? $user->reg_year : "-"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->mileage) ? number_format($user->mileage) : "0"; ?></td>
+    <td class="head15700 stuj8 text-center"><?php echo !empty($user->DT) ? $user->DT : "-"; ?></td>
+    <td class="head15700 stuj8 text-center">
+      <!-- DELETE BUTTON -->
+      <button class="btn btn-danger btn-sm delete-sellyourcar" data-id="<?php echo $user->id; ?>" title="Delete">
+        <i class="fa fa-trash"></i>
+      </button>
+    </td>
   </tr>
-
-  <?php } }else{
-?>
- <tr>
- <td colspan="7" class="drio55">No User Found.</td>
- </tr>
-<?php 
-
-  } ?>
-  
+  <?php } 
+  } else { ?>
+  <tr>
+    <td colspan="11" class="drio55">No User Found.</td> <!-- Updated colspan -->
+  </tr>
+  <?php } ?>
 </table>
 </div>
 </div>
@@ -89,3 +85,33 @@ if(!empty($users)){
 </div>
 </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.delete-sellyourcar').on('click', function() {
+        var sellYourCarId = $(this).data('id');
+        
+        if (confirm('Are you sure you want to delete this sell-your-car submission?')) {
+            $.ajax({
+                url: '<?= base_url('admin/car/delete_sellyourcar') ?>',
+                type: 'POST',
+                data: { id: sellYourCarId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#row-' + sellYourCarId).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        alert('Submission deleted successfully!');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Failed to delete submission. Please try again.');
+                }
+            });
+        }
+    });
+});
+</script>

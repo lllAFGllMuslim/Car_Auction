@@ -72,6 +72,7 @@ $route['admin/home/update'] = 'PageController/update_home';
 
 $route['admin/contact/edit'] = 'PageController/contact_edit';
 $route['admin/contact/update'] = 'PageController/update_contact';
+$route['contact/send'] = 'PageController/send_contact_email';
 
 $route['admin/faq/edit'] = 'PageController/faq_edit';
 $route['admin/faq/update'] = 'PageController/update_faq';
@@ -142,7 +143,7 @@ $route['admin/car/sellyourcarlist_sold'] = 'AdminBlogsController/sellyourcar_lis
 $route['admin/car/sellyourcarlist_vendor'] = 'AdminBlogsController/sellyourcar_list_vendor';
 $route['admin/car/sellyourcarlist_profile'] = 'AdminBlogsController/sellyourcar_list_profile';
 $route['admin/car/sellyourcar_profileupdate'] = 'AdminBlogsController/sellyourcar_profileupdate';
-
+$route['admin/car/delete_sellyourcar'] = 'AdminBlogsController/delete_sellyourcar'; // ADD THIS LINE
 
 $route['admin/car/fuel_add'] = 'AdminBlogsController/fuel_add';
 $route['admin/car/get_fuel_categories'] = 'AdminBlogsController/get_fuel_categories';

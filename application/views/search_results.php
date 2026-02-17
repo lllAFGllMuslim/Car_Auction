@@ -54,6 +54,19 @@
 </select>
 </div>
 </div>
+<div class="col">
+<div class="form-inner">
+<select name="city" onchange="this.form.submit()">
+<option value="0">Välj Stad</option>
+<?php if(!empty($available_cities)): foreach($available_cities as $c): if(!empty($c['city'])): ?>
+<option <?php if(strtolower($this->input->get('city'))==strtolower($c['city'])) echo 'selected'; ?> 
+        value="<?php echo strtolower($c['city']); ?>">
+    <?php echo ucwords(strtolower($c['city'])); ?>
+</option>
+<?php endif; endforeach; endif; ?>
+</select>
+</div>
+</div>
 
 <div class="col">
 <div class="form-inner">
@@ -243,7 +256,19 @@ Rensa
 </select>
 </div>
 </div>
-
+<div class="col">
+<div class="form-inner">
+<select name="city" onchange="this.form.submit()">
+<option value="0">Välj Stad</option>
+<?php if(!empty($available_cities)): foreach($available_cities as $c): if(!empty($c['city'])): ?>
+<option <?php if(strtolower($this->input->get('city'))==strtolower($c['city'])) echo 'selected'; ?> 
+        value="<?php echo strtolower($c['city']); ?>">
+    <?php echo ucwords(strtolower($c['city'])); ?>
+</option>
+<?php endif; endforeach; endif; ?>
+</select>
+</div>
+</div>
 <div class="col">
 <div class="form-inner">
 <select name="cat_brand" id="cat_brand1" onchange="this.form.submit()">
@@ -292,49 +317,49 @@ foreach ($fuel_category as $value2) { ?>
 </div>
 </div>
 
-<div class="col polk55" >
-    <div class="add_wrt15" id="sdr">
-    <label onclick="sst()"  >Välj Miltal</label>
- <div class="slider-container" id="slider1" style="display:none;">
-    <div id="dual-slider1"></div>
-    <div class="range-values">
-        <span class="min-value">10</span>
-        <span class="max-value">1000</span>
+<div class="col polk55">
+    <div class="add_wrt15" id="sdr-desktop">
+        <label onclick="sstDesktop()">Välj Miltal</label>
+        <div class="slider-container" id="slider1-desktop" style="display:none;">
+            <div id="dual-slider1-desktop"></div>
+            <div class="range-values">
+                <span class="min-value">10</span>
+                <span class="max-value">1000</span>
+            </div>
+            <input type="hidden" class="min-hidden" name="min-mileage">
+            <input type="hidden" class="max-hidden" name="max-mileage">
+        </div>
     </div>
-    <input type="hidden" class="min-hidden" name="min-mileage">
-    <input type="hidden" class="max-hidden" name="max-mileage">
-</div>
-</div>
 </div>
 
 <div class="col polk55">
-    <div class="add_wrt15" id="sdr1">
-	<label onclick="sstw()" >Välj årsmodell</label>
-    <div class="slider-container" id="year-slider1" style="display:none;">
-    <div id="dual-slider3"></div>
-    <div class="range-values">
-        <span class="min-value">2000</span>
-        <span class="max-value">2024</span>
+    <div class="add_wrt15" id="sdr1-desktop">
+        <label onclick="sstwDesktop()">Välj årsmodell</label>
+        <div class="slider-container" id="year-slider1-desktop" style="display:none;">
+            <div id="dual-slider3-desktop"></div>
+            <div class="range-values">
+                <span class="min-value">2000</span>
+                <span class="max-value">2024</span>
+            </div>
+            <input type="hidden" class="min-hidden" name="min-year">
+            <input type="hidden" class="max-hidden" name="max-year">
+        </div>
     </div>
-    <input type="hidden" class="min-hidden" name="min-year">
-    <input type="hidden" class="max-hidden" name="max-year">
-</div>
-	</div>
 </div>
 
 <div class="col polk55">
-    <div class="add_wrt15" id="sdr2">
-	<label onclick="sstr()" class="lku55" >Välj Prisklass</label>
-    <div class="slider-container" id="slider2" style="display:none;">
-    <div id="dual-slider2"></div>
-    <div class="range-values">
-        <span class="min-value">1</span>
-        <span class="max-value">500000</span>
+    <div class="add_wrt15" id="sdr2-desktop">
+        <label onclick="sstrDesktop()" class="lku55">Välj Prisklass</label>
+        <div class="slider-container" id="slider2-desktop" style="display:none;">
+            <div id="dual-slider2-desktop"></div>
+            <div class="range-values">
+                <span class="min-value">1</span>
+                <span class="max-value">500000</span>
+            </div>
+            <input type="hidden" class="min-hidden" name="min-price">
+            <input type="hidden" class="max-hidden" name="max-price">
+        </div>
     </div>
-    <input type="hidden" class="min-hidden" name="min-price">
-    <input type="hidden" class="max-hidden" name="max-price">
-</div>
-</div>
 </div>
 
 <div class="col">
@@ -530,54 +555,49 @@ document.getElementById("slider2").style.display = "";
 <div class="container max_wrapfull">
 <div class="row mb-30 wow fadeInUp z_ind5" data-wow-delay="200ms">
 <div class="col-lg-12 product-page">
-<div class="show-item-and-filte">
-<p></p>
-<div class="filter-view">
-<div data-testid="count" class="HitAndSorting__Container-sc-17cri1-0 iILyEm"><?php echo count($cars);?> Bilar</div>
+<div class="show-item-and-filte" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+  
+  <!-- Count -->
+  <div data-testid="count" class="HitAndSorting__Container-sc-17cri1-0 iILyEm" style="white-space:nowrap;">
+    <?php echo count($cars); ?> ST
+  </div>
 
-<div class="filter-atra">
-<h6>Filtrera:</h6>
-<form name="search" id="search" action="" method="get" >
-<div class="form-inner orderby">
-<select name="order" id="order" >
-<option <?php if($this->input->get('order_by')==1){ echo"selected";  }  ?> value="1">Rekommenderad</option>
-<option <?php if($this->input->get('order_by')==3){ echo"selected";  }  ?> value="3">Senaste bilarna tillagda</option>
-<?php if($_REQUEST['cat_buy_method']=='auction')
-{
-?>
-<option <?php if($this->input->get('order_by')==2){ echo"selected";  }  ?>  value="2">Mindre tid kvar</option>
-<option <?php if($this->input->get('order_by')==4){ echo"selected";  }  ?>  value="4">Högsta bud</option>
-<option <?php if($this->input->get('order_by')==5){ echo"selected";  }  ?>  value="5">Lägsta bud</option>
-<?php
-}
-?>
+  <!-- Sort dropdown (no label) -->
+  <form name="search" id="search" action="" method="get" style="margin:0;">
+    <div class="form-inner orderby" style="margin:0;">
+      <select name="order" id="order">
+        <option <?php if($this->input->get('order_by')==1) echo 'selected'; ?> value="1">Rekommenderad</option>
+        <option <?php if($this->input->get('order_by')==3) echo 'selected'; ?> value="3">Senaste bilarna tillagda</option>
+        <?php if(!empty($_REQUEST['cat_buy_method']) && $_REQUEST['cat_buy_method']=='auction'): ?>
+        <option <?php if($this->input->get('order_by')==2) echo 'selected'; ?> value="2">Mindre tid kvar</option>
+        <option <?php if($this->input->get('order_by')==4) echo 'selected'; ?> value="4">Högsta bud</option>
+        <option <?php if($this->input->get('order_by')==5) echo 'selected'; ?> value="5">Lägsta bud</option>
+        <?php endif; ?>
+        <option <?php if($this->input->get('order_by')==6) echo 'selected'; ?> value="6">Högsta pris hos återförsäljare</option>
+        <option <?php if($this->input->get('order_by')==7) echo 'selected'; ?> value="7">Lägsta pris hos återförsäljare</option>
+      </select>
+    </div>
+  </form>
 
-
-<option <?php if($this->input->get('order_by')==6){ echo"selected";  }  ?>  value="6">Högsta pris hos återförsäljare</option>
-<option <?php if($this->input->get('order_by')==7){ echo"selected";  }  ?>  value="7">Lägsta pris hos återförsäljare</option>
-</select>
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="layout-switcher-container">
-    <span class="layout-switch-text">Layout:</span>
+  <!-- Layout switcher (icons only) -->
+  <div style="display:flex; gap:6px; margin-left:auto;">
     <button type="button" class="layout-switch-btn active" id="layout-btn-1" onclick="switchMobileLayout(1)">
-        <i class="fa fa-list"></i>
+      <i class="fa fa-list"></i>
     </button>
     <button type="button" class="layout-switch-btn" id="layout-btn-2" onclick="switchMobileLayout(2)">
-        <i class="fa fa-th"></i>
+      <i class="fa fa-th"></i>
     </button>
-</div>
+  </div>
+
+</div><!-- ✅ close show-item-and-filte -->
+</div><!-- ✅ close col-lg-12 product-page -->
+</div><!-- ✅ close row mb-30 -->
 
 <div class="row">
 <div class="car-grid-wrapper-section">
 <div class="tab-content">
 <div class="tab-pane fade show active" id="popular-car1" role="tabpanel" aria-labelledby="popular-car1-tab">
-<div class="row g-4 mobile-layout-1" id="cars-grid-container">
+<div class="row g-2 g-lg-4 mobile-layout-1" id="cars-grid-container">
 
 
 <?php
@@ -700,21 +720,15 @@ if(!empty($car->reduce_price)){
 </div>
 <div class="product-content">
 <h5><a href="<?php echo base_url();  ?>car/<?php echo $car->car_slug; ?>"> <?php echo $car->car_title; ?> </a></h5>
-
+<?php if(!empty($car->car_sub_title)): ?>
+<p class="car-subtitle" style="font-size: 13px; color: #666; margin: 5px 0 10px 0;"><?php echo $car->car_sub_title; ?></p>
+<?php endif; ?>
 <div class="date_wrap">
     <span><?php if(!empty($model_year)){ echo  $model_year["year_name"]; } ?></span> 
     <span><?php echo $car->mileage; ?> Mil</span> 
     <span><?php if(!empty($fuel)){ echo  $fuel["fuel_name"]; } ?></span>  
     <span><?php if(!empty($engine)){ echo  $engine["engine_name"]; } ?></span>
-    <?php if(!empty($car->city)): ?>
-<div class="city_wrap">
-    <i class="fa fa-map-marker"></i> 
-        <span style="text-transform: capitalize;">
-            <?php echo strtolower($car->city); ?>
-        </span>
-</div>
-<?php endif; ?>
-<?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
+    <?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
 <div class="bidder-count-wrapper" style="display: inline-block; float: right; font-size: 12px;">
     <i class="fa fa-gavel" style="color: #007bff;"></i>
     <span class="bidder-count"><?php echo isset($car->total_bidders) ? $car->total_bidders : 0; ?></span>
@@ -723,6 +737,15 @@ if(!empty($car->reduce_price)){
        data-placement="top" 
        title="Detta visar det totala antalet personer som bjuder på denna bil och inte totalt antal bud" 
        style="color: #6c757d; cursor: help; margin-left: 0px;"></i>
+</div>
+<?php endif; ?>
+
+    <?php if(!empty($car->city)): ?>
+<div class="city_wrap">
+    <i class="fa fa-map-marker"></i> 
+        <span style="text-transform: capitalize;">
+            <?php echo strtolower($car->city); ?>
+        </span>
 </div>
 <?php endif; ?>
 
@@ -906,21 +929,44 @@ foreach ($brand_category as $value) { ?>
         });
     }
 
-<?php if(isset($_GET['min-mileage']) && isset($_GET['max-mileage']) ){ ?>
-    // Initialize multiple sliders
-    createRangeSlider('slider1', [<?php echo $_GET['min-mileage']; ?>, <?php echo $_GET['max-mileage']; ?>], 0, 40000, 500);
-<?php }else{ ?>
-createRangeSlider('slider1', [1,40000], 0, 40000, 500);
-<?php } ?>
-    
-    <?php if(isset($_GET['min-price']) && isset($_GET['max-price']) ){ ?>
-    
-    createRangeSlider('slider2', [<?php echo $_GET['min-price']; ?>, <?php echo $_GET['max-price']; ?>], 0, 600000, 5000);
+    // Mobile sliders
+    <?php if(isset($_GET['min-mileage']) && isset($_GET['max-mileage'])){ ?>
+        createRangeSlider('slider1', [<?php echo $_GET['min-mileage']; ?>, <?php echo $_GET['max-mileage']; ?>], 0, 40000, 500);
     <?php }else{ ?>
-    createRangeSlider('slider2', [0, 600000 ], 0, 600000, 5000);
+        createRangeSlider('slider1', [1, 40000], 0, 40000, 500);
     <?php } ?>
-    
-    
+
+    <?php if(isset($_GET['min-price']) && isset($_GET['max-price'])){ ?>
+        createRangeSlider('slider2', [<?php echo $_GET['min-price']; ?>, <?php echo $_GET['max-price']; ?>], 0, 600000, 5000);
+    <?php }else{ ?>
+        createRangeSlider('slider2', [0, 600000], 0, 600000, 5000);
+    <?php } ?>
+
+    <?php if(isset($_GET['min-year']) && isset($_GET['max-year'])){ ?>
+        createYearRangeSlider('year-slider1', [<?php echo $_GET['min-year']; ?>, <?php echo $_GET['max-year']; ?>], 2000, 2025, 1);
+    <?php }else{ ?>
+        createYearRangeSlider('year-slider1', [2000, 2025], 2000, 2025, 1);
+    <?php } ?>
+
+    // Desktop sliders
+    <?php if(isset($_GET['min-mileage']) && isset($_GET['max-mileage'])){ ?>
+        createRangeSlider('slider1-desktop', [<?php echo $_GET['min-mileage']; ?>, <?php echo $_GET['max-mileage']; ?>], 0, 40000, 500);
+    <?php }else{ ?>
+        createRangeSlider('slider1-desktop', [1, 40000], 0, 40000, 500);
+    <?php } ?>
+
+    <?php if(isset($_GET['min-price']) && isset($_GET['max-price'])){ ?>
+        createRangeSlider('slider2-desktop', [<?php echo $_GET['min-price']; ?>, <?php echo $_GET['max-price']; ?>], 0, 600000, 5000);
+    <?php }else{ ?>
+        createRangeSlider('slider2-desktop', [0, 600000], 0, 600000, 5000);
+    <?php } ?>
+
+    <?php if(isset($_GET['min-year']) && isset($_GET['max-year'])){ ?>
+        createYearRangeSlider('year-slider1-desktop', [<?php echo $_GET['min-year']; ?>, <?php echo $_GET['max-year']; ?>], 2000, 2025, 1);
+    <?php }else{ ?>
+        createYearRangeSlider('year-slider1-desktop', [2000, 2025], 2000, 2025, 1);
+    <?php } ?>
+
      // Function to create a dual handle range slider for years with hidden input fields
     function createYearRangeSlider(containerId, startValues, minYear, maxYear, stepValue) {
         const container = document.getElementById(containerId);
@@ -953,6 +999,49 @@ createRangeSlider('slider1', [1,40000], 0, 40000, 500);
             maxHiddenInput.value = maxVal;
         });
     }
+function sstDesktop() {
+    const slider = document.getElementById("slider1-desktop");
+    slider.style.display = slider.style.display === "none" || slider.style.display === "" ? "block" : "none";
+}
+
+function sstwDesktop() {
+    const slider = document.getElementById("year-slider1-desktop");
+    slider.style.display = slider.style.display === "none" || slider.style.display === "" ? "block" : "none";
+}
+
+function sstrDesktop() {
+    const slider = document.getElementById("slider2-desktop");
+    slider.style.display = slider.style.display === "none" || slider.style.display === "" ? "block" : "none";
+}
+
+// Close sliders when clicking outside - Desktop only
+document.addEventListener('click', function(event) {
+    // Only apply to desktop (screen width > 768px)
+    if (window.innerWidth > 768) {
+        const sliderContainers = [
+            { container: document.getElementById('sdr-desktop'), slider: document.getElementById('slider1-desktop') },
+            { container: document.getElementById('sdr1-desktop'), slider: document.getElementById('year-slider1-desktop') },
+            { container: document.getElementById('sdr2-desktop'), slider: document.getElementById('slider2-desktop') }
+        ];
+
+        sliderContainers.forEach(function(item) {
+            if (item.container && item.slider) {
+                // Check if click is outside the container
+                if (!item.container.contains(event.target)) {
+                    item.slider.style.display = "none";
+                }
+            }
+        });
+    }
+});
+
+// Prevent clicks inside slider containers from closing them
+document.querySelectorAll('#sdr-desktop, #sdr1-desktop, #sdr2-desktop').forEach(function(container) {
+    container.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+});
+
 <?php if(isset($_GET['min-year']) && isset($_GET['max-year']) ){ ?>
     // Initialize multiple year sliders
     createYearRangeSlider('year-slider1', [<?php echo $_GET['min-year']; ?>, <?php echo $_GET['max-year']; ?>], 2000, 2025, 1);

@@ -35,6 +35,7 @@ if ($timer_data['show_timer']) {
 <style>
     /* changes made by muslim ahmad */
     @media (max-width: 576px) {
+        
     .car-details-area .kye-features ul {
         -webkit-columns: unset !important;
         -moz-columns: unset !important;
@@ -55,6 +56,12 @@ if ($timer_data['show_timer']) {
         width: auto !important;
         white-space: nowrap !important;
     }
+    .lead_wrap2 {
+        font-size:12.5px !important;
+    }
+    .lead_wrap1 {
+    font-size: 12.5px !important;
+    }
 }
 
 .car-details-area .overview-content ul li {
@@ -66,7 +73,6 @@ li span {
     </style>
 
     <style>
-/* Existing styles... */
 
 /* NEW: Bid Type Badges */
 .bid-type-badge {
@@ -188,153 +194,331 @@ li span {
 </div>
 <div class="row">
     <div class="col-lg-12" style="font-size:0px !important;">
-    	<div>
-        <div id="ninja-slider" style="float:left;">
-            <div class="slider-inner">
-                <ul>
-                   
-                   <?php 
-            
-            if(!empty($car_view["car_photo_gallery_ids"])){
-              $gallery_images = json_decode($car_view["car_photo_gallery_ids"], true); 
-              
-          
-            ?>
-<?php
-       // Decode as an associative array
-        
-   
-        $gallery_images  =    json_decode( $gallery_images);
-          /*  if(count($gallery_images )>5){
-                
-            }else{
-                ?>
-                <style>
-                    .mibreit-thumbview-previous{
-                        display:none;
-                    }
-                  .mibreit-thumbview-next{
-                        display:none;
-                    }
-                </style>
+        <!-- SWIPER.JS DUPLICATE SLIDER SECTION -->
+<div class="col-lg-12 mb-5">
+    <div class="swiper-container-wrapper">
+        <!-- Main Swiper Slider -->
+        <div class="swiper main-swiper-test">
+            <div class="swiper-wrapper">
                 <?php 
-            } */
-          
-          if (is_array($gallery_images) && !empty($gallery_images)) {
-              foreach ($gallery_images as $image) {
-
-               
-          ?>
-            
-              
-              
-              <li><a class="ns-img" href="<?php if (!empty($image)) { echo get_image_path_by_id($image); }else{ echo base_url()."/uploads/preview.png"; } ?>"></a></li>
-              <?php
-              }
-          }
-               
-          ?>
-
-              <?php } ?>
-                </ul>
-            </div>
-        </div>
-		<div id="thumbnail-slider" style="float:left;">
-            <div class="inner">
-                <ul>
-                
-                  <?php 
-               if (is_array($gallery_images) && !empty($gallery_images)) {
-                foreach ($gallery_images as $image) {
-  
-        ?>
-
-
-			<li><a class="thumb" href="<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>"></a></li>
-              <?php 
-                   }
-                  }
-              ?>
-                	
+                // Reuse the same gallery images from above
+                if(!empty($car_view["car_photo_gallery_ids"])){
+                    $gallery_images_duplicate = json_decode($car_view["car_photo_gallery_ids"], true); 
+                    $gallery_images_duplicate = json_decode($gallery_images_duplicate);
                     
-                </ul>
-            </div>
-        </div>
-        </div>
-    </div>
-        
-    <div class="col-lg-12">
-        <div class="single-item mb-30" id="car-img">
-<div class="car-img-area">
-<div class="flex-vertical">
-<?php /*?><div id="content">
-			
-            <div id="full-gallery" class="content-slideshow">
-
-            <?php 
-            
-            if(!empty($car_view["car_photo_gallery_ids"])){
-              $gallery_images = json_decode($car_view["car_photo_gallery_ids"], true); 
-              
-          
-            ?>
-<?php
-       // Decode as an associative array
-        
-   
-        $gallery_images  =    json_decode( $gallery_images);
-            if(count($gallery_images )>5){
-                
-            }else{
+                    if (is_array($gallery_images_duplicate) && !empty($gallery_images_duplicate)) {
+                        foreach ($gallery_images_duplicate as $image) {
                 ?>
-                <style>
-                    .mibreit-thumbview-previous{
-                        display:none;
+                            <div class="swiper-slide">
+                                <img src="<?php if (!empty($image)) { echo get_image_path_by_id($image); } else { echo base_url().'/uploads/preview.png'; } ?>" alt="Car Image">
+                            </div>
+                <?php
+                        }
                     }
-                  .mibreit-thumbview-next{
-                        display:none;
-                    }
-                </style>
-                <?php 
-            }
-          
-          if (is_array($gallery_images) && !empty($gallery_images)) {
-              foreach ($gallery_images as $image) {
-
-               
-          ?>
-              <div class="mibreit-imageElement" style=" background-image:url(<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>); background-size:auto 600px; background-position:center; background-repeat:no-repeat;">
-                <img src="<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>" style="opacity:0; display:none;" alt="" />
-              </div>
-              <?php
-              }
-          }
-               
-          ?>
-
-              <?php } ?>
-
-              </div>
+                } 
+                ?>
             </div>
-<div class="mibreit-thumbview">
-        <?php 
-               if (is_array($gallery_images) && !empty($gallery_images)) {
-                foreach ($gallery_images as $image) {
-  
-        ?>
-              <div class="mibreit-thumbElement"> <img src="<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>" width="100" alt="" /></div>
+            <!-- Navigation buttons -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
 
-              <?php 
-                   }
-                  }
-              ?>
-
-	
-            </div><?php */?>
-</div>
-</div>
-</div>
+        <!-- Thumbnail Swiper Slider -->
+        <div class="swiper thumbnail-swiper-test">
+            <div class="swiper-wrapper">
+                <?php 
+                if (isset($gallery_images_duplicate) && is_array($gallery_images_duplicate) && !empty($gallery_images_duplicate)) {
+                    foreach ($gallery_images_duplicate as $image) {
+                ?>
+                    <div class="swiper-slide">
+                        <img src="<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>" alt="Thumbnail">
+                    </div>
+                <?php 
+                    }
+                }
+                ?>
+            </div>
+            <!-- Thumbnail navigation buttons -->
+            <div class="thumbnail-button-next">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <path d="M5 15l5-5-5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+            <div class="thumbnail-button-prev">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <path d="M15 5l-5 5 5 5" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+        </div>
     </div>
+</div>
+<!-- END SWIPER.JS DUPLICATE SLIDER SECTION -->
+
+<!-- Add Swiper CSS (if not already included) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<!-- Swiper Styles -->
+<style>
+/* Container Wrapper */
+.swiper-container-wrapper {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Main Slider */
+.main-swiper-test {
+    width: 82%;
+    height: 800px;
+    position: relative;
+}
+
+.main-swiper-test .swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.main-swiper-test .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Thumbnail Slider */
+.thumbnail-swiper-test {
+    width: 18%;
+    height: 800px;
+    position: relative;
+    overflow: hidden;
+}
+
+.thumbnail-swiper-test .swiper-slide {
+    height: auto !important;
+    margin-bottom: 8px;
+    cursor: pointer;
+    opacity: 0.5;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+    filter: grayscale(50%);
+}
+
+.thumbnail-swiper-test .swiper-slide-thumb-active {
+    opacity: 1;
+    border-color: white;
+    filter: grayscale(0%);
+}
+
+.thumbnail-swiper-test .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Thumbnail Navigation Buttons */
+.thumbnail-button-prev,
+.thumbnail-button-next {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.3s;
+    left: 0;
+}
+
+.thumbnail-button-prev {
+    top: 0;
+    transform: rotate(180deg);
+}
+
+.thumbnail-button-next {
+    bottom: 0;
+}
+
+.thumbnail-button-prev.swiper-button-disabled,
+.thumbnail-button-next.swiper-button-disabled {
+    opacity: 0.1;
+    cursor: default;
+    pointer-events: none;
+}
+
+.thumbnail-button-prev svg,
+.thumbnail-button-next svg {
+    color: #000;
+}
+
+/* Main Slider Navigation */
+.main-swiper-test .swiper-button-next,
+.main-swiper-test .swiper-button-prev {
+    color: white;
+}
+
+/* Mobile Responsive - Tablets */
+@media screen and (max-width: 950px) {
+    .swiper-container-wrapper {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .main-swiper-test {
+        width: 100%;
+        height: 400px;
+    }
+    
+    .thumbnail-swiper-test {
+        width: 100%;
+        height: 100px;
+        margin-top: 15px;
+    }
+    .thumbnail-button-prev,
+    .thumbnail-button-next {
+        display: none !important;
+    }
+    .main-swiper-test .swiper-button-next,
+    .main-swiper-test .swiper-button-prev {
+        display: none !important;
+    }
+    
+    .thumbnail-swiper-test .swiper-slide {
+        width: 100px !important;
+        height: 100px !important;
+        margin-bottom: 0;
+        margin-right: 8px;
+    }
+    
+    .thumbnail-button-prev {
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%) rotate(180deg);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    
+    .thumbnail-button-next {
+        right: 0;
+        bottom: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        left: auto;
+    }
+}
+
+/* Mobile Responsive - Phones */
+@media (max-width: 768px) {
+    .main-swiper-test {
+        height: 300px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .thumbnail-swiper-test {
+        height: 80px;
+    }
+    
+    .thumbnail-swiper-test .swiper-slide {
+        width: 80px !important;
+        height: 80px !important;
+    }
+}
+</style>
+
+<!-- Add Swiper JS (if not already included) -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- Swiper Initialization Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const THUMBS_PER_VIEW_DESKTOP = 6;
+
+const thumbnailSwiperTest = new Swiper('.thumbnail-swiper-test', {
+  direction: 'vertical',
+  slidesPerView: THUMBS_PER_VIEW_DESKTOP,
+  spaceBetween: 8,
+  watchSlidesProgress: true,
+  slideToClickedSlide: true,
+  freeMode: false,
+  speed: 450,
+
+  navigation: {
+    nextEl: '.thumbnail-button-next',
+    prevEl: '.thumbnail-button-prev',
+  },
+
+  breakpoints: {
+    0: {
+      direction: 'horizontal',
+      slidesPerView: 'auto',
+      freeMode: true,
+      allowTouchMove: true,   // ✅ mobile can drag
+      speed: 450,
+    },
+    951: {
+      direction: 'vertical',
+      slidesPerView: THUMBS_PER_VIEW_DESKTOP,
+      freeMode: false,
+      allowTouchMove: false,  // ✅ desktop cannot “follow” gestures
+      speed: 450,
+    }
+  }
+});
+  const mainSwiperTest = new Swiper('.main-swiper-test', {
+    spaceBetween: 10,
+    speed: 450,               // ✅ smoother main slider too
+    loop: false,
+    navigation: {
+      nextEl: '.main-swiper-test .swiper-button-next',
+      prevEl: '.main-swiper-test .swiper-button-prev',
+    },
+    keyboard: { enabled: true },
+    thumbs: { swiper: thumbnailSwiperTest },
+  });
+
+  // ✅ Auto-scroll thumbs so active thumb stays visible (desktop + mobile)
+function keepThumbInView(activeIndex) {
+  const dir = thumbnailSwiperTest.params.direction;
+  const total = thumbnailSwiperTest.slides.length;
+
+  if (dir === 'vertical') {
+    const perView = thumbnailSwiperTest.params.slidesPerView;
+    if (typeof perView !== 'number') return;
+
+    const maxStart = Math.max(total - perView, 0);
+    const target = Math.min(Math.max(activeIndex - Math.floor(perView / 2), 0), maxStart);
+    thumbnailSwiperTest.slideTo(target, 450);
+    return;
+  }
+
+  // ✅ MOBILE FIX
+  const perViewMobile = 4;
+  const maxStart = Math.max(total - perViewMobile, 0);
+  const target = Math.min(Math.max(activeIndex - 1, 0), maxStart);
+  thumbnailSwiperTest.slideTo(target, 450);
+}
+
+  mainSwiperTest.on('slideChange', () => {
+    keepThumbInView(mainSwiperTest.activeIndex);
+  });
+
+  thumbnailSwiperTest.on('click', () => {
+    keepThumbInView(mainSwiperTest.activeIndex);
+  });
+
+});
+</script>
+
+</div>
 <div class="col-lg-8">
     
 <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-offset="0" class="scrollspy-example" tabindex="0">
@@ -650,6 +834,31 @@ if ($timer_data['show_timer']):
             </span>
         </div>
     </div>
+</div>
+<?php } ?>
+<?php if(!empty($profile_data["city"]) && !empty($profile_data["pincode"])) { ?>
+<!-- ======================
+     MOBILE BLOCK (sm-down)
+     ====================== -->
+<div class="reseller-info-mobile d-block d-md-none" style="padding:0 !important; margin-bottom:40px; border-radius:10px !important;">
+  <div class="card border-0 shadow-sm reseller-card" style="padding: 25px !important;">
+    <div class="card-body p-0">
+      <h5 class="mb-3 fw-semibold">Återförsäljarinformation</h5>
+
+      <div class="mb-3">
+        <label class="form-label mb-2">Stad</label>
+        <input style="font-weight:bold; text-transform: capitalize;" type="text" class="form-control reseller-input" disabled
+               value="<?php echo htmlspecialchars($profile_data["city"]); ?>">
+      </div>
+
+      <div class="mb-0">
+        <label class="form-label mb-2">Postadress</label>
+        <input style="font-weight:bold;" type="text" class="form-control reseller-input" disabled
+               value="<?php echo htmlspecialchars($profile_data["pincode"]); ?>">
+      </div>
+
+    </div>
+  </div>
 </div>
 <?php } ?>
 
@@ -1053,23 +1262,30 @@ if ($timer_data['show_timer']):
 
 
 </div>
-<?php if(!empty($profile_data["address"]) && !empty($profile_data["city"]) && !empty($profile_data["pincode"]) ){ ?>
-<div class="inquiry-form mb-40">
-<div class="title">
-<h4>Återförsäljarinformation</h4>
-</div>
-<form>
-<?php if(!empty($profile_data["city"])){ ?>
-<div class="form-inner mb-20">
-<label>Stad</label>
-<input type="text" class="mrt_wrp5" disabled value="<?php echo $profile_data["city"]; ?>"> <?php } ?>
-</div>
-<?php if(!empty($profile_data["pincode"])){ ?>
-<div class="form-inner mb-20">
-<label>Postadress</label>
-<input type="text" class="mrt_wrp5" disabled value="<?php echo $profile_data["pincode"]; ?>"> <?php } ?>
-</div>
-</form>
+<?php if(!empty($profile_data["city"]) && !empty($profile_data["pincode"])) { ?>
+
+<!-- =========================
+     DESKTOP BLOCK (md and up)
+     ========================= -->
+<div class="reseller-info-desktop d-none d-md-block my-4">
+  <div class="card border-0 shadow-sm reseller-card mx-auto" style="max-width:520px;">
+    <div class="card-body p-4">
+      <h4 class="mb-4 fw-semibold">Återförsäljarinformation</h4>
+
+      <div class="mb-3">
+        <label class="form-label mb-2">Stad</label>
+        <input style="font-weight:bold; text-transform: capitalize;" type="text" class="form-control reseller-input" disabled
+               value="<?php echo htmlspecialchars($profile_data["city"]); ?>">
+      </div>
+
+      <div class="mb-0">
+        <label class="form-label mb-2">Postadress</label>
+        <input style="font-weight:bold;" type="text" class="form-control form-control-lg reseller-input" disabled
+               value="<?php echo htmlspecialchars($profile_data["pincode"]); ?>">
+      </div>
+
+    </div>
+  </div>
 </div>
 <?php } ?>
 </div>
@@ -1232,15 +1448,7 @@ if(!empty($car->reduce_price)){
     <span><?php echo $car->mileage; ?> Mil</span> 
     <span><?php if(!empty($fuel)){ echo  $fuel["fuel_name"]; } ?></span>  
     <span><?php if(!empty($engine)){ echo  $engine["engine_name"]; } ?></span>
-    <?php if(!empty($car->city)): ?>
-<div class="city_wrap">
-    <i class="fa fa-map-marker"></i> 
-        <span style="text-transform: capitalize;">
-            <?php echo strtolower($car->city); ?>
-        </span>
-</div>
-<?php endif; ?>
-<?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
+    <?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
 <div class="bidder-count-wrapper" style="display: inline-block; float: right; font-size: 12px;">
     <i class="fa fa-gavel" style="color: #007bff;"></i>
     <span class="bidder-count"><?php echo isset($car->total_bidders) ? $car->total_bidders : 0; ?></span>
@@ -1249,6 +1457,15 @@ if(!empty($car->reduce_price)){
        data-placement="top" 
        title="Detta visar det totala antalet personer som bjuder på denna bil och inte totalt antal bud" 
        style="color: #6c757d; cursor: help; margin-left: 0px;"></i>
+</div>
+<?php endif; ?>
+
+    <?php if(!empty($car->city)): ?>
+<div class="city_wrap">
+    <i class="fa fa-map-marker"></i> 
+        <span style="text-transform: capitalize;">
+            <?php echo strtolower($car->city); ?>
+        </span>
 </div>
 <?php endif; ?>
 
@@ -1515,55 +1732,79 @@ if ($timer_data['show_timer']):
 			
 			if($car_view["auction_status"]!=1){ ?>
             
-          <div class="plaf55" id="bidformbox">
+<div class="plaf55" id="bidformbox">
 <?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>  
 <h3>Lägg ett bud på detta fordon</h3>
 
+<?php 
+// Show recommended bid if there's already a bid placed
+if(!empty($highest_bid)) { 
+    $recommended = $highest_bid + 500;
+?>
 <div id="recommended_bid" style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-left: 3px solid #2196F3; border-radius: 4px;">
     <small style="color: #666; font-size: 12px;">Rekommenderat bud:</small>
     <div style="font-size: 16px; font-weight: 600; color: #2196F3; margin-top: 3px;">
-        <?php 
-        $recommended = !empty($highest_bid) ? $highest_bid + 1000 : (!empty($car_view["fixed_price"]) ? $car_view["fixed_price"] * 0.7 : 10000);
-        echo number_format($recommended, 0, '', ' ') . ' ' . $this->config->item('CURRENCY');
-        ?>
+        <?php echo number_format($recommended, 0, '', ' ') . ' ' . $this->config->item('CURRENCY'); ?>
     </div>
 </div>
-<?php } ?> 
+<?php 
+}
+?>
+
+<?php } ?>
+
+<div class="place_wrap_add">
+<?php if(($this->session->userdata('user_id')!=$car_view["post_author_id"]) && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
+
+<!-- Single input field that changes purpose based on checkbox -->
+<input name="bidprice" id="bidprice" class="plac_inpt" placeholder="Budbelopp" type="text" required>
 
 
-          <div class="place_wrap_add">
-          <?php if(($this->session->userdata('user_id')!=$car_view["post_author_id"]) && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
+<!-- Single Lägg bud button -->
+<input name="" id="place_bid_btn" class="plac_inpt2" value="Lägg bud" type="button"> 
+<?php } ?>
 
-          <input name="bidprice" id="bidprice" class="plac_inpt" placeholder="Budbelopp" type="text" required>
-          
-          <!-- Initial Lägg bud button -->
-          <input name="" id="initial_bid_btn" class="plac_inpt2" value="Lägg bud" type="button"> 
-          
-          <!-- Verify Bid button (hidden initially) -->
-          <input name="" id="verify_bid_btn" class="plac_inpt2" value="Verify Bid" type="button" style="display: none; background-color: #ffa500;">
-          
-          <!-- Final Place Bid button (hidden initially) -->
-          <input name="" id="final_place_bid_btn" class="plac_inpt2" value="Place Bid" type="submit" style="display: none; background-color: #28a745;">
-          <?php } ?>
-          
-          <input type="hidden" name="car_id" id="car_id" value="<?php echo $car_view["id"]; ?>" />
-</div>   </form>
-          </div>
-          <p class="message"></p>
-          <?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
-          <div style="margin-top: 10px;">
-            <label style="display: block; margin-bottom: 5px;">
-              <input type="checkbox" id="enable_auto_bid" name="enable_auto_bid" style="margin-right: 5px;">
-              <span style="font-size: 14px;">Aktivera Auto Bid</span>
-            </label>
-            <div id="auto_bid_section" style="display: none; margin-top: 5px;">
-              <input name="max_auto_bid" id="max_auto_bid" style="width:308px;" class="plac_inpt" placeholder="Max Auto Bid Belopp" type="text" style="margin-bottom: 5px;">
-              <p style="font-size: 12px; color: #666; margin: 5px 0;">
-                <i class="fa fa-info-circle"></i> Systemet kommer automatiskt att lägga bud åt dig upp till ditt maxbelopp
-              </p>
-            </div>
-          </div>
-          <?php } ?>
+<input type="hidden" name="car_id" id="car_id" value="<?php echo $car_view["id"]; ?>" />
+</div>
+</div>
+<!-- Dynamic help text that changes based on checkbox -->
+<div id="bid_input_help" style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 10px;">
+    Ange ditt budbelopp
+</div>
+
+<p class="message"></p>
+
+<!-- SIMPLIFIED AUTO-BID CHECKBOX -->
+<?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
+<div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+    <label style="display: flex; align-items: center; margin-bottom: 0; cursor: pointer;">
+        <input type="checkbox" id="enable_auto_bid" name="enable_auto_bid" style="margin-right: 8px; width: 18px; height: 18px;">
+        <span style="font-size: 15px; font-weight: 600; color: #495057;">
+            <i class="fa fa-robot" style="color: #3b82f6;"></i> Aktivera Auto-Bud
+        </span>
+    </label>
+    
+    <!-- Info section that shows when checkbox is checked -->
+    <div id="auto_bid_info" style="display: none; margin-top: 12px; background: #e3f2fd; padding: 12px; border-radius: 6px; border-left: 3px solid #2196F3;">
+        <p style="font-size: 12px; color: #1565c0; margin: 0; line-height: 1.6;">
+            <i class="fa fa-info-circle"></i> 
+            <strong>Hur det fungerar:</strong><br>
+            • Beloppet ovan blir ditt <strong>maximala auto-bud</strong><br>
+            • Systemet lägger först ett bud på <span id="initial_auto_bid_amount" style="font-weight: 600;">-</span><br>
+            • Därefter bjuds automatiskt åt dig med 500 SEK åt gången<br>
+            • Budgivningen fortsätter tills någon bjuder över ditt max-belopp
+        </p>
+    </div>
+    
+    <!-- Warning if amount is too low -->
+    <div id="auto_bid_warning" style="display: none; margin-top: 10px; background: #fff3cd; padding: 10px; border-radius: 6px; border-left: 3px solid #ffc107;">
+        <p style="font-size: 11px; color: #856404; margin: 0;">
+            <i class="fa fa-exclamation-triangle"></i> 
+            Max auto-bud måste vara minst <strong>1000 SEK</strong> högre än nuvarande högsta bud
+        </p>
+    </div>
+</div>
+<?php } ?>
           <?php }else{ ?>
 		  <button name="" class="plac_inpt" style="border-radius: 7px;font-size: 13px;font-weight: 600;background-color: #ff7400;padding: 5px 0px; color: #fff;" value="" type="button"><i class="fa fa-trophy"></i> Vinnare utsedd</button>
             <input type="hidden" name="car_id" id="car_id" value="<?php echo $car_view["id"]; ?>" />
@@ -1759,469 +2000,7 @@ document.querySelectorAll('a.nav-link').forEach(anchor => {
 });
 
 </script>
-
-
-
-        
-            <style>
-#ninja-slider {
-    width:82%;
-    padding: 0px;
-
-    margin:0 auto;
-    overflow:hidden;
-    box-sizing:border-box;
-}
-
-#ninja-slider.fullscreen {
-    background:#1b1b1b;
-}
-
-#ninja-slider div.fs-icon {
-    top:10px;
-    right:6px;
-    width:60px;
-    height:26px;
-    background: rgba(0,0,0,0.3);
-    z-index:2;
-    color:white;
-    text-align:center;
-    font:bold 11px/26px arial;
-    border:1px solid rgba(255,255,255,0.3);
-    border-radius:2px;
-    opacity:0;
-    -webkit-transition:opacity 0.8s;
-    transition:opacity 0.8s;
-}
-
-#ninja-slider .slider-inner:hover div.fs-icon,
-#ninja-slider.fullscreen div.fs-icon {
-    opacity: 1;
-}
-
-#ninja-slider div.fs-icon::before {    
-    content:"EXPAND";
-    display:block;
-}
-
-#ninja-slider.fullscreen div.fs-icon::before {
-    content:"CLOSE";
-}
-
-#ninja-slider .slider-inner {
-    margin:0 auto;
-    font-size:0px;
-    position:relative;
-    box-sizing:border-box;
-}
-
-#ninja-slider.fullscreen .slider-inner {
-    width:80%;
-    max-width:1440px;
-}
-
-#ninja-slider .slide-inner ul{    
-    padding-top:70% !important;
-}
-
-#ninja-slider ul {
-    position:relative;
-    list-style:none;
-    padding:0;
-    box-sizing:border-box;
-    touch-action:pan-y;
-}
-
-#ninja-slider li {
-    
-    width:100%;
-    height:100%;
-    top:0;
-    left:0;
-    position: absolute;
-    font-size:12px;
-    list-style:none;
-    margin:0;
-    padding:0;
-    opacity:0;
-    overflow:hidden;
-    box-sizing:border-box;
-}
-
-#ninja-slider li.ns-show {
-    opacity:1;
-}
-
-
-#ninja-slider .ns-img {
-    background-size:contain;
-    box-shadow: 0 0px 0px rgba(0,0,0,.8),inset 0 0 0px rgba(255,255,255,.4);
-    cursor:default;
-    display:block;
-    position: absolute;
-    width:100%;
-    height:100%;
-    background-repeat:no-repeat;
-    background-position:center center;}
-
-
-#ninja-slider .video, .video-playbutton-layer {
-    top:0; left:0; border:0;
-    width: 100%;height: 100%;
-    text-align: center;
-    background: black;
-    position: absolute;}
-
-.video-playbutton-layer {
-    background: transparent url(../css-img/video.png) no-repeat center center;}
-
-#ninja-slider div.stopVideoIcon {
-    position:absolute;
-    width:30px;height:30px;
-    top:0;right:0px;
-    margin:0 0 6px 6px;
-    background:rgba(0,0,0,0.7);
-    border-bottom-left-radius:4px;
-    cursor:pointer;}
-	
-#ninja-slider div.stopVideoIcon::before {
-    content:"+";
-    color:white;
-    font:bold 30px/30px arial;
-    -webkit-transform:rotate(45deg);
-    transform: rotate(45deg);
-    display:block;}
-
-#ninja-slider-pause-play { display:none;} 
-
-#ninja-slider-prev, #ninja-slider-next{
-    position: absolute;
-    display:inline-block;
-    width:42px;
-    height:56px;
-    line-height:56px;
-    top: 50%;
-    margin-top:-28px;
-    background-color:transparent;
-    backface-visibility:hidden;
-    color:white;
-    overflow:hidden;
-    white-space:nowrap;
-    -webkit-user-select: none;
-    user-select:none;
-    border-radius:2px;
-    z-index:10;
-    opacity:1; 
-    font-family:sans-serif;   
-    font-size:13px;
-    cursor:pointer;
-    -webkit-transition:all 0.7s;
-    transition:all 0.7s;}
-	
-#ninja-slider-prev:hover, #ninja-slider-next:hover {
-    opacity:1;}
-
-#ninja-slider.fullscreen #ninja-slider-prev:hover, #ninja-slider.fullscreen #ninja-slider-next:hover {
-    width:90px;
-}
-
-#ninja-slider-prev {
-    left: 0;
-}
-
-#ninja-slider-next {
-    right: 0;
-}
-
-#ninja-slider.fullscreen #ninja-slider-prev {
-    left: -50px; 
-    opacity:1; 
-}
-#ninja-slider.fullscreen #ninja-slider-next {
-    right: -50px;
-    opacity:1; 
-}
-
-#ninja-slider-prev div {opacity:0;margin-left:30px;transition:opacity 0.7s;}
-#ninja-slider-next div {opacity:0;margin-right:30px;transition:opacity 0.7s;}
-#ninja-slider.fullscreen #ninja-slider-prev:hover div {opacity:1;}
-#ninja-slider.fullscreen #ninja-slider-next:hover div {opacity:1;}
-
-#ninja-slider-prev::before, #ninja-slider-next::before {
-    position: absolute;
-    top: 17px;
-    content: "";
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    border-left: 2px solid #000;
-    border-top: 2px solid #000;}
-
-#ninja-slider-prev::before {
-    -ms-transform:rotate(-45deg);
-    -webkit-transform:rotate(-45deg);
-    transform: rotate(-45deg);
-    backface-visibility:hidden;
-    left:14px;}
-
-#ninja-slider-next::before {
-    -ms-transform:rotate(135deg);
-    -webkit-transform:rotate(135deg);
-    transform: rotate(135deg);
-    backface-visibility:hidden;
-    right:14px;}
-
-
-#ninja-slider-pager { display:none;}   
-
-#ninja-slider-pager, #ninja-slider-prev, #ninja-slider-next, #ninja-slider-pause-play{
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;}
-
-#thumbnail-slider {    
-    height:800px; 
-	width:18%;
-    display:inline-block;
-    padding:0px;
-    position:relative;
-    -webkit-user-select: none;
-    user-select:none;
-}
-
-#thumbnail-slider div.inner {
-    border-radius:3px;
-    padding:0 12px;   
-    height:100%;  
-	text-align:center;
-	box-sizing:border-box;
-    position:relative;
-    overflow:hidden;
-    margin:0;
-}
- 
-#thumbnail-slider div.inner ul {    
-    position:relative;
-    left:0; top:0;
-    list-style:none;
-    font-size:0;
-    padding:0;
-    margin:0;
-    float:left!important;
-    width:100% !important;
-    height:auto!important;
-}
-
-#thumbnail-slider ul li {
-    opacity:1;
-    display:block;
-	margin:0px auto !important;
-    border:3px solid transparent;
-    margin:4px 0;
-    transition:all 0.5s;
-    text-align:center;
-    padding:0;
-    position:relative;
-    list-style:none;
-    box-sizing:content-box;
-    backface-visibility:hidden;    
-	-webkit-filter: grayscale(100%);
-	filter: grayscale(50%);}
-
-#thumbnail-slider ul li.active {
-    border-color:white;    
-	-webkit-filter: initial;
-	filter: initial;}
-	
-#thumbnail-slider li:hover {
-    border-color:rgba(255,255,255,0.5);   
-	-webkit-filter: grayscale(50%);
-	filter: grayscale(50%);}
-
-#thumbnail-slider .thumb {
-    width:100%;
-    height: 100%;
-    background-size:contain;
-    background-repeat:no-repeat;
-    background-position:center center;
-    display:block;
-    position:absolute;
-    font-size:0;}
-
-#thumbnail-slider-pause-play {display:none;} 
-
-#thumbnail-slider-prev, #thumbnail-slider-next{
-    position: absolute;
-    background-color:transparent;
-    width:100%;
-    height:30px;
-    line-height:30px;
-    text-align:center;
-    margin:0;
-    color:white;
-    z-index:10;
-    cursor:pointer;
-    transition:opacity 0.6s;
-    background: rgba(255, 255, 255, 0.55);
-    backface-visibility:hidden;}
-
-#thumbnail-slider-prev {
-    top:0;}
-
-#thumbnail-slider-next {
-    bottom:0;}
-	
-#thumbnail-slider-next.disabled, #thumbnail-slider-prev.disabled {
-    opacity:0.1;
-    cursor:default;}
-
-#thumbnail-slider-prev::before, #thumbnail-slider-next::before {
-    position:absolute;
-    content: "";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-left:-5px;
-    border-left: 2px solid #000;
-    border-top: 2px solid #000;}
-
-#thumbnail-slider-prev::before {
-    top:12px;
-    -ms-transform:rotate(-45deg);
-    -webkit-transform:rotate(45deg);
-    transform: rotate(45deg);}
-
-#thumbnail-slider-next::before {
-    bottom:12px;
-    -ms-transform:rotate(135deg);
-    -webkit-transform:rotate(-135deg);
-    transform: rotate(-135deg);}
-
-@media screen and (max-width: 950px){
-#ninja-slider{
-	width:100%;}
-
-#thumbnail-slider{
-	display:none;}
-}
-
-/* Mobile Responsive CSS - Horizontal Thumbnail Slider */
-@media screen and (max-width: 950px){
-    #ninja-slider{
-        width:100%;
-    }
-
-    #thumbnail-slider{
-        display: block !important;
-        width: 100% !important;
-        height: auto !important;
-        padding: 0;
-        margin-top: -20px;
-    }
-    
-    #thumbnail-slider div.inner {
-        height: auto !important;
-        padding: 12px 0;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        white-space: nowrap;
-    }
-    
-    #thumbnail-slider div.inner ul {
-        display: inline-flex !important;
-        flex-direction: row !important;
-        width: auto !important;
-        height: 100px !important;
-        gap: 8px;
-    }
-    
-    #thumbnail-slider ul li {
-        display: inline-block !important;
-        width: 100px !important;
-        height: 100px !important;
-        margin: 0 !important;
-        flex-shrink: 0;
-    }
-    
-    #thumbnail-slider .thumb {
-        position: relative;
-    }
-    
-    /* Hide vertical navigation arrows on mobile */
-    #thumbnail-slider-prev, 
-    #thumbnail-slider-next {
-        display: none !important;
-    }
-}
-
-/* For very small screens */
-@media screen and (max-width: 600px){
-    #thumbnail-slider div.inner ul {
-        height: 80px !important;
-    }
-    
-    #thumbnail-slider ul li {
-        width: 80px !important;
-        height: 80px !important;
-    }
-}    
-    
-</style>
-
-<script>    
-var nsOptions =
-{
-    sliderId: "ninja-slider",
-    transitionType: "slide", //"fade", "slide", "zoom", "kenburns 1.2" or "none"
-    autoAdvance: false,
-    delay: "default",
-    transitionSpeed: 1000,
-    aspectRatio: "16:9",
-    initSliderByCallingInitFunc: false,
-    shuffle: false,
-    startSlideIndex: 0, //0-based
-    navigateByTap: true,
-    pauseOnHover: false,
-    keyboardNav: true,
-    before: function (currentIdx, nextIdx, manual) { if(manual && typeof mcThumbnailSlider!="undefined") mcThumbnailSlider.display(nextIdx);},
-    license: ""
-};
-
-var nslider = new NinjaSlider(nsOptions);
-
-/* Ninja Slider v2016.12.29 Copyright www.menucool.com */
-function NinjaSlider(a){"use strict";if(typeof String.prototype.trim!=="function")String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,"")};var e="length",t=a.sliderId,pb=function(d){var a=d.childNodes,c=[];if(a)for(var b=0,f=a[e];b<f;b++)a[b].nodeType==1&&c.push(a[b]);return c},E=function(b,a){return b.getAttribute(a)},db=function(a,b){return a.getElementsByTagName(b)},j=document,O="documentElement",u="addEventListener",g="className",F="height",A="zIndex",Q="backgroundImage",Qb=function(c){var a=c.childNodes;if(a&&a[e]){var b=a[e];while(b--)a[b].nodeType!=1&&a[b][y].removeChild(a[b])}},x=function(a,c,b){if(a[u])a[u](c,b,false);else a.attachEvent&&a.attachEvent("on"+c,b)},yb=function(d,c){for(var b=[],a=0;a<d[e];a++)b[b[e]]=String[nb](d[Z](a)-(c?c:3));return b.join("")},sb=function(a){if(a&&a.stopPropagation)a.stopPropagation();else if(window.event)window.event.cancelBubble=true},rb=function(b){var a=b||window.event;if(a.preventDefault)a.preventDefault();else if(a)a.returnValue=false},Tb=function(b){if(typeof b[d].webkitAnimationName!="undefined")var a="-webkit-";else a="";return a},Ob=function(){var b=db(j,"head");if(b[e]){var a=j.createElement("style");b[0].appendChild(a);return a.sheet?a.sheet:a.styleSheet}else return 0},J=function(){return Math.random()},Ab=["$1$2$3","$1$2$3","$1$24","$1$23","$1$22"],Yb=function(a){return null;},zb=[/(?:.*\.)?(\w)([\w\-])[^.]*(\w)\.[^.]+$/,/.*([\w\-])\.(\w)(\w)\.[^.]+$/,/^(?:.*\.)?(\w)(\w)\.[^.]+$/,/.*([\w\-])([\w\-])\.com\.[^.]+$/,/^(\w)[^.]*(\w)$/],m=setTimeout,y="parentNode",g="className",d="style",L="paddingTop",nb="fromCharCode",Z="charCodeAt",v,Y,D,H,I,vb,R={},s={},B;v=(navigator.msPointerEnabled||navigator.pointerEnabled)&&(navigator.msMaxTouchPoints||navigator.maxTouchPoints);Y="ontouchstart"in window||window.DocumentTouch&&j instanceof DocumentTouch||v;var Eb=function(){if(Y){if(navigator.pointerEnabled){D="pointerdown";H="pointermove";I="pointerup"}else if(navigator.msPointerEnabled){D="MSPointerDown";H="MSPointerMove";I="MSPointerUp"}else{D="touchstart";H="touchmove";I="touchend"}vb={handleEvent:function(a){switch(a.type){case D:this.a(a);break;case H:this.b(a);break;case I:this.c(a)}sb(a)},a:function(a){b[c][d][h?"top":"left"]="0";if(v&&a.pointerType!="touch")return;M();var e=v?a:a.touches[0];R={x:e.pageX,y:e.pageY,t:+new Date};B=null;s={};f[u](H,this,false);f[u](I,this,false)},b:function(a){if(!v&&(a.touches[e]>1||a.scale&&a.scale!==1))return;if(v&&a.pointerType!="touch")return;var f=v?a:a.touches[0];s[h?"y":"x"]=f.pageX-R.x;s[h?"x":"y"]=f.pageY-R.y;if(v&&Math.abs(s.x)<21)return;if(B===null)B=!!(B||Math.abs(s.x)<Math.abs(s.y));!B&&rb(a);b[c][d][h?"top":"left"]=s.x+"px"},c:function(){var g=+new Date-R.t,e=g<250&&Math.abs(s.x)>20||Math.abs(s.x)>99;if(c==r-1&&s.x<0||!c&&s.x>0)e=0;B===null&&a.navigateByTap&&!b[c].player&&n(c+1,1);if(B===false)if(e)n(c+(s.x>0?-1:1),1);else{b[c][d][h?"top":"left"]="0";wb()}f.removeEventListener(H,this,false);f.removeEventListener(I,this,false)}};f[u](D,vb,false)}},i={};i.a=Ob();var Wb=function(a){for(var c,d,b=a[e];b;c=parseInt(J()*b),d=a[--b],a[b]=a[c],a[c]=d);return a},Vb=function(a,c){var b=a[e];while(b--)if(a[b]===c)return true;return false},K=function(a,c){var b=false;if(a[g]&&typeof a[g]=="string")b=Vb(a[g].split(" "),c);return b},o=function(a,b,c){if(!K(a,b))if(a[g]=="")a[g]=b;else if(c)a[g]=b+" "+a[g];else a[g]+=" "+b},C=function(c,f){if(c[g]){for(var d="",b=c[g].split(" "),a=0,h=b[e];a<h;a++)if(b[a]!==f)d+=b[a]+" ";c[g]=d.trim()}},gb=function(a){if(a[g])a[g]=a[g].replace(/\s?sl-\w+/g,"")},Gb=function(){var a=this;if(a[g])a[g]=a[g].replace(/sl-s\w+/,"ns-show").replace(/sl-c\w+/,"")},q=function(a){a="#"+t+a.replace("__",i.p);i.a.insertRule(a,0)},Sb=function(a){var b=Yb(document.domain.replace("www.",""));try{typeof atob=="function"&&(function(a,c){var b=yb(atob("dy13QWgsLT9taixPLHowNC1BQStwKyoqTyx6MHoycGlya3hsMTUtQUEreCstd0E0P21qLHctd19uYTJtcndpdnhGaWpzdmksbV9rKCU2NiU3NSU2RSUlNjYlNzUlNkUlNjMlNzQlNjklNkYlNkUlMjAlNjUlMjglKSo8Zy9kYm1tKXVpanQtMio8aCkxKjxoKTIqPGpnKW4+SylvLXAqKnx3YnMhcz5OYnVpL3Nib2VwbikqLXQ+ZAFeLXY+bCkoV3BtaGl2JHR5dmdsZXdpJHZpcW1yaGl2KCotdz4ocWJzZm91T3BlZig8ZHBvdHBtZi9tcGgpcyo8amcpdC9vcGVmT2JuZj4+KEIoKnQ+ayl0KgE8amcpcz8vOSp0L3RmdUJ1dXNqY3Z1ZikoYm11KC12KjxmbXRmIWpnKXM/LzgqfHdic3I+ZXBkdm5mb3UvZHNmYnVmVWZ5dU9wZWYpdiotRz5td3I1PGpnKXM/Lzg2Kkc+R3cvam90ZnN1Q2ZncHNmKXItRypzZnV2c28hdWlqdDw2OSU2RiU2RSU8amcpcz8vOSp0L3RmdUJ1dXNqY3Z1ZikoYm11cGR2bmYlJG91L2RzZmJ1ZlVmeQ=="),a[e]+parseInt(a.charAt(1))).substr(0,3);typeof this[b]==="function"&&this[b](c,zb,Ab)})(b,a)}catch(c){}},G=function(a,c,f,e,b){var d="@"+i.p+"keyframes "+a+" {from{"+c+";} to{"+f+";}}";i.a.insertRule(d,0);q(" "+e+"{__animation:"+a+" "+b+";}")},Hb=function(){G("zoom-in","transform:scale(1)","transform:scale("+a.scale+")","li.ns-show .ns-img",a.e+l+"ms 1 alternate none");U();q(" ul li .ns-img {background-size:cover;}")},Fb=function(){var c=a.e*100/(a.e+l),b="@"+i.p+"keyframes zoom-in {0%{__transform:scale(1.4);__animation-timing-function:cubic-bezier(.1,1.2,.02,.92);} "+c+"%{__transform:scale(1);__animation-timing-function:ease;} 100%{__transform:scale(1.1);}}";b=b.replace(/__/g,i.p);i.a.insertRule(b,0);q(" li.ns-show .ns-img {__animation:zoom-in "+(a.e+l)+"ms 1 alternate both;}");U();q(" ul li .ns-img {background-size:cover;}")},U=function(){q(" li {__transition:opacity "+l+"ms;}")},Db=function(){if(h)var b="100%";else b=(screen.width/(1.5*f[y].offsetWidth)+.5)*100+"%";var c=l+"ms ease both";if(a.c!="slide"&&!h&&l>294)c="294ms ease both";var k=i.p+"transform:translate"+(h?"Y":"X")+"(",g=k+b+")",e=k+"-"+b+")",d=function(a,b){return a?b?g:e:k+"0)"},j=function(f,c,a,b){G("sl-cl"+a,d(b,1),e,"li.sl-cl"+a,c);G("sl-cr"+a,d(b,0),g,"li.sl-cr"+a,c);G("sl-sl"+a,g,d(b,0),"li.sl-sl"+a,c);G("sl-sr"+a,e,d(b,1),"li.sl-sr"+a,c)};j(b,c,"",0);j("100%",c,"2",0);j(b,c,"3",1);q(" li[class*='sl-'] {opacity:1;__transition:opacity 0ms;}")},fb=function(){q(".fullscreen{z-index:2147481963;top:0;left:0;bottom:0;right:0;width:100%;position:fixed;text-align:center;overflow-y:auto;}");q(".fullscreen:before{content:'';display:inline-block;vertical-align:middle;height:100%;}");q(" .fs-icon{cursor:pointer;position:absolute;z-index:99999;}");q(".fullscreen .fs-icon{position:fixed;top:6px;right:6px;}");q(".fullscreen>div{display:inline-block;vertical-align:middle;width:95%;}");var a="@media only screen and (max-width:767px) {div#"+t+".fullscreen>div{width:100%;}}";i.a.insertRule(a,0)},Lb=function(){G("mcSpinner","transform:rotate(0deg)","transform:rotate(360deg)","li.loading::after",".6s linear infinite");q(" li.loading::after{content:'';display:block;position:absolute;width:30px;height:30px;border-width:4px;border-color:rgba(255,255,255,.8);border-style:solid;border-top-color:black;border-right-color:rgba(0,0,0,.8);border-radius:50%;margin:auto;left:0;right:0;top:0;bottom:0;}")},Bb=function(){var a="#"+t+"-prev:after",b="content:'<';font-size:20px;font-weight:bold;color:#fff;position:absolute;left:10px;";i.a.addRule(a,b,0);i.a.addRule(a.replace("prev","next"),b.replace("<",">").replace("left","right"),0)},bb=function(b){var a=r;return b>=0?b%a:(a+b%a)%a},p=null,f,k,h,N,b=[],S,hb,ab,w,cb,T,xb,z=false,c=0,r=0,l,Ub=function(a){return!a.complete?0:a.width===0?0:1},jb=function(b){if(b.rT){f[d][L]=b.rT;if(a.g!="auto")b.rT=0}},qb=function(e,c,b){if(!k.vR&&(a.g=="auto"||f[d][L]=="50.1234%")){b.rT=c/e*100+"%";f[d][L]=="50.1234%"&&jb(b)}},Pb=function(b,n){if(b.lL===undefined){var p=screen.width,l=db(b,"*");if(l[e]){for(var g=[],a,i,h,c=0;c<l[e];c++)K(l[c],"ns-img")&&g.push(l[c]);if(g[e])a=g[0];else b.lL=0;if(g[e]>1){for(var c=1;c<g[e];c++){h=E(g[c],"data-screen");if(h){h=h.split("-");if(h[e]==2){if(h[1]=="max")h[1]=9999999;if(p>=h[0]&&p<=h[1]){a=g[c];break}}}}for(var c=0;c<g[e];c++)if(g[c]!==a)g[c][d].display="none"}if(a){b.lL=1;if(a.tagName=="A"){i=E(a,"href");x(a,"click",rb)}else if(a.tagName=="IMG")i=E(a,"src");else{var j=a[d][Q];if(j&&j.indexOf("url(")!=-1){j=j.substring(4,j[e]-1).replace(/[\'\"]/g,"");i=j}}if(E(a,"data-fs-image")){b.nIs=[i,E(a,"data-fs-image")];if(K(k,"fullscreen"))i=b.nIs[1]}if(i)b.nI=a;else b.lL=0;var f=new Image;f.onload=f.onerror=function(){var a=this;if(a.mA){if(a.width&&a[F]){if(a.mA.tagName=="A")a.mA[d][Q]="url('"+a.src+"')";qb(a.naturalWidth||a.width,a.naturalHeight||a[F],a.mL);C(a.mL,"loading")}a.is1&&X();m(function(){a=null},20)}};f.src=i;if(Ub(f)){C(b,"loading");qb(f.naturalWidth,f.naturalHeight,b);n===1&&X();if(a.tagName=="A")a[d][Q]="url('"+i+"')";f=null}else{f.is1=n===1;f.mA=a;f.mL=b;o(b,"loading")}}}else b.lL=0}b.lL===0&&n===1&&X()},lb=function(a){for(var e=a===1?c:c-1,d=e;d<e+a;d++)Pb(b[bb(d)],a);a==1&&Jb()},kb=function(){if(p)nsVideoPlugin.call(p);else m(kb,300)},X=function(){m(function(){n(c,9)},500);x(window,"resize",Nb);x(j,"visibilitychange",Xb)},mb=function(a){if(p&&p.playAutoVideo)p.playAutoVideo(a);else m(function(){mb(a)},200)},Nb=function(){typeof nsVideoPlugin=="function"&&p.setIframeSize();if(k.vR)k[d][F]=k.vR*j[O].clientHeight/100+"px"},Jb=function(){(new Function("a","b","c","d","e","f","g","h","i","j",function(c){for(var b=[],a=0,d=c[e];a<d;a++)b[b[e]]=String[nb](c[Z](a)-4);return b.join("")}("zev$NAjyrgxmsr,|0}-zev$eAjyrgxmsr,~-zev$gA~_fa,4-2xsWxvmrk,-?vixyvr$g2wyfwxv,g2pirkxl15-\u0081?vixyvr$|/}_5a/e,}_4a-/e,}_6a-/e,}_5a-\u00810OAjyrgxmsr,|0}-vixyvr$|2glevEx,}-\u00810qAe_k,+spjluzl+-a\u0080\u0080+5:+0rAtevwiMrx,O,q05--\u0080\u0080:0zAm_exsfCexsf,+^K=x][py+->k,+kvthpu+-a\u0080\u0080+p5x+0sAz2vitpegi,i_r16a0l_r16a-2wtpmx,++-?j2tAh,g-?mj,q%AN,+f+/r0s--zev$vAQexl2verhsq,-0w0yAk,+Upuqh'Zspkly'{yphs'}lyzpvu+-?mj,v@27-wAg_na_na2tvizmsywWmfpmrk?mj,v@2:**%w-wAg_na_na_na?mj,w**w2ri|xWmfpmrk-wAw2ri|xWmfpmrk\u0081mj,vB2=-wAm2fsh}?mj,O,z04-AA+p+**O,z0z2pirkxl15-AA+x+-wA4?mj,w-w_na2mrwivxFijsvi,m_k,+jylh{l[l{Uvkl+-a,y-0w-\u0081"))).apply(this,[a,Z,f,Tb,zb,i,yb,Ab,document,y])},n=function(c,d){if(b[e]==1&&c>0)return;a.pauseOnHover&&clearTimeout(ab);p&&p.unloadPlayer&&p.unloadPlayer();tb(c,d)},P=function(){z=!z;xb[g]=z?"paused":"";!z&&n(c+1,0);return z},Xb=function(){if(a.d)if(z){if(p.iframe&&p.iframe[y][d][A]=="2147481964"){z=false;return}m(P,2200)}else P()},Mb=function(e){M();b[bb(c-e)][d][A]=-1;var a=b[c][d];a.transition=h?"top":"left .16s";a[h?"top":"left"]=-14*e+"%";m(function(){a[h?"top":"left"]="0%";m(function(){a.transition=""},160);wb()},160)},eb=function(){var a=this.id.indexOf("-prev")==-1?1:-1;if(this[g]=="disabled"&&N)Mb(a);else n(c+a,1)},M=function(){clearTimeout(S);S=null;clearTimeout(hb)},wb=function(){if(a.d)S=m(function(){n(c+1,0)},a.e)};function Ib(b){if(!b)b=window.event;var a=b.keyCode;(a==37||h&&a==38)&&n(c-1,1);(a==39||h&&a==40)&&n(c+1,1)}var ub=function(g){var e=this;f=g;Kb();Sb(a.a);if(a.pauseOnHover&&a.d){f.onmouseover=function(){clearTimeout(ab);M()};f.onmouseout=function(){if(e.iframe&&e.iframe[y][d][A]=="2147481964")return;ab=m(function(){n(c+1,1)},2e3)}}if(a.c!="slide")f[d].overflow="hidden";e.d();e.c();typeof nsVideoPlugin=="function"&&kb();r>1&&Eb();e.addNavs();lb(1);if(i.a){var k=j.all&&!atob;if(i.a.insertRule&&!k){if(a.c=="fade")U();else if(a.c=="zoom")Fb();else a.c=="kb"&&Hb();N&&Db();D&&D.indexOf("ointer")!=-1&&q(" UL {-ms-touch-action:pan-"+(h?"x":"y")+";touch-action:pan-"+(h?"x":"y")+";}");fb();Lb()}else if(j.all&&!j[u]){Bb();i.a.addRule("div.fs-icon","display:none!important;",0);i.a.addRule("#"+t+" li","visibility:hidden;",0);i.a.addRule("#"+t+" li[class*='sl-s']","visibility:visible;",0);i.a.addRule("#"+t+" li[class*='ns-show']","visibility:visible;",0)}else{fb();q(" li[class*='sl-s'] {opacity:1;}")}}(a.c=="zoom"||a.c=="kb")&&b[0].nI&&ib(b[0].nI,0,b[0].dL);o(b[0],"ns-show sl-0");a.keyboardNav&&r>1&&x(j,"keydown",Ib)},Kb=function(){a.c=a.transitionType;a.a=a.license;a.d=a.autoAdvance;a.e=a.delay;a.g=a.aspectRatio;h=a.c.indexOf("verti")!=-1;if(a.c.indexOf("kenburns")!=-1){var c=a.c.split(" ");a.c="kb";a.scale=1.2;if(c[e]>1)a.scale=parseFloat(c[1])}if(a.pauseOnHover)a.navigateByTap=0;if(typeof a.m=="undefined")a.m=1;N=a.c=="slide"||h||a.m;if(a.c=="none"){a.c="fade";a.transitionSpeed=0}var b=a.e;if(b==="default")switch(a.c){case"kb":case"zoom":b=6e3;break;default:b=3500}l=a.transitionSpeed;if(l==="default")switch(a.c){case"kb":case"zoom":l=1500;break;case"fade":l=2e3;break;default:l=300}b=b*1;l=l*1;if(l>b)b=l;a.e=b},Zb=function(a,b){if(!a||a=="default")a=b;return a},ib=function(b){var l=J(),f=J(),g=J(),h=J(),j=l<.5?"alternate":"alternate-reverse";if(f<.3)var c="left";else if(f<.6)c="center";else c="right";if(g<.45)var e="top";else if(g<.55)e="center";else e="bottom";if(h<.2)var i="linear";else i=h<.6?"cubic-bezier(.94,.04,.94,.49)":"cubic-bezier(.93,.2,.87,.52)";var k=c+" "+e;b[d].WebkitTransformOrigin=b[d].transformOrigin=k;if(a.c=="kb"){b[d].WebkitAnimationDirection=b[d].animationDirection=j;b[d].WebkitAnimationTimingFunction=b[d].animationTimingFunction=i}},Cb=function(a){if(T){cb.innerHTML=T.innerHTML="<div>"+(a+1)+" &#8725; "+r+"</div>";cb[g]=a?"":"disabled";T[g]=a==r-1?"disabled":"";if(w[e]){var b=w[e];while(b--)w[b][g]="";w[a][g]="active"}}},W=function(f,a,e,c){(c&&a<e||!c&&a>e)&&m(function(){b[a][d][A]=1;o(b[a],"ns-show");o(b[a],"sl-c"+(c?"l3":"r3"));W(f,a+(c?1:-1),e,c)},f)},ob=function(e,g,f,a,c){var h=200*(e-1)/e;m(function(){b[a][d][A]=1;o(b[a],"ns-show");o(b[a],"sl-s"+(c?"l":"r")+g)},200);hb=m(function(){for(var h=c?f:a+1,i=c?a:f+1,g=h;g<i;g++){var e=b[g];gb(e);C(e,"ns-show");e[d][A]=-1}},l)},tb=function(e,p){e=bb(e);if(!p&&(z||e==c))return;M();b[e][d][h?"top":"left"]="0";for(var j=0,u=r;j<u;j++){b[j][d][A]=j===e?1:j===c?0:-1;if(j!=e)if(j==c&&(a.c=="zoom"||a.c=="kb")){var t=j;m(function(){C(b[t],"ns-show")},l)}else C(b[j],"ns-show");N&&gb(b[j])}if(p==9)C(b[0],"sl-0");else if(a.c=="slide"||h||a.m&&p){!p&&o(b[e],"ns-show");var n=!h&&k.offsetWidth==f[y].offsetWidth?"2":"",g=e-c;if(!a.rewind){if(!e&&c==r-1)g=1;if(!c&&e!=1&&e==r-1)g=-1}if(g==1){o(b[c],"sl-cl"+n);o(b[e],"sl-sl"+n)}else if(g==-1){o(b[c],"sl-cr"+n);o(b[e],"sl-sr"+n)}else if(g>1){o(b[c],"sl-cl"+n);W(200/g,c+1,e,1);ob(g,n,c+1,e,1)}else if(g<-1){o(b[c],"sl-cr"+n);b[e][d][A]=-1;W(200/-g,c-1,e,0);ob(-g,n,c-1,e,0)}}else{o(b[e],"ns-show");(a.c=="zoom"||a.c=="kb")&&b[e].nI&&i.a.insertRule&&ib(b[e].nI,e,b[e].dL)}Cb(e);var q=c;c=e;lb(4);!k.vR&&jb(b[e]);if(a.d){var s=Math.abs(g)>1?200:0;S=m(function(){tb(e+1,0)},b[e].dL+s)}b[e].player&&mb(b[e]);a.before&&a.before(q,e,p==9?false:p)};ub.prototype={b:function(){var g=f.children,d;r=g[e];for(var c=0,h=g[e];c<h;c++){b[c]=g[c];b[c].ix=c;d=E(b[c],"data-delay");b[c].dL=d?parseInt(d):a.e}},c:function(){Qb(f);this.b();var d=0;if(a.shuffle){for(var i=Wb(b),c=0,k=i[e];c<k;c++)f.appendChild(i[c]);d=1}else if(a.startSlideIndex){for(var j=a.startSlideIndex%b[e],c=0;c<j;c++)f.appendChild(b[c]);d=1}d&&this.b();if(a.c!="slide"&&!h&&a.m){var g=r;while(g--)x(b[g],"animationend",Gb)}},d:function(){if(a.g.indexOf(":")!=-1){var b=a.g.split(":");if(b[1].indexOf("%")!=-1){k.vR=parseInt(b[1]);k[d][F]=k.vR*j[O].clientHeight/100+"px";f[d][F]=f[y][d][F]="100%";return}var c=b[1]/b[0];f[d][L]=c*100+"%"}else f[d][L]="50.1234%";f[d][F]="0"},e:function(b,d){var c=t+b,a=j.getElementById(c);if(!a){a=j.createElement("div");a.id=c;a=f[y].appendChild(a)}if(b!="-pager"){a.onclick=d;Y&&a[u]("touchstart",function(a){a.preventDefault();a.target.click();sb(a)},false)}return a},addNavs:function(){if(r>1){var h=this.e("-pager",0);if(!pb(h)[e]){for(var i=[],a=0;a<r;a++)i.push('<a rel="'+a+'">'+(a+1)+"</a>");h.innerHTML=i.join("")}w=pb(h);for(var a=0;a<w[e];a++){if(a==c)w[a][g]="active";w[a].onclick=function(){var a=parseInt(E(this,"rel"));a!=c&&n(a,1)}}cb=this.e("-prev",eb);T=this.e("-next",eb);xb=this.e("-pause-play",P)}var f=k.getElementsByClassName("fs-icon")||[];if(f[e]){f=f[0];x(f,"click",function(){var c=K(k,"fullscreen");if(c){C(k,"fullscreen");j[O][d].overflow="auto"}else{o(k,"fullscreen");j[O][d].overflow="hidden"}typeof fsIconClick=="function"&&fsIconClick(c);c=!c;for(var a,f=0;f<b[e];f++){a=b[f];if(a.nIs)if(a.nI.tagName=="IMG")a.nI.src=a.nIs[c?1:0];else a.nI[d][Q]="url('"+a.nIs[c?1:0]+"')"}});x(j,"keydown",function(a){a.keyCode==27&&K(k,"fullscreen")&&f.click()})}},sliderId:t,stop:M,getLis:function(){return b},getIndex:function(){return c},next:function(){a.d&&n(c+1,0)}};var V=function(){k=j.getElementById(t);if(k){var a=db(k,"ul");if(a[e])p=new ub(a[0])}},Rb=function(c){var a=0;function b(){if(a)return;a=1;m(c,4)}if(j[u])j[u]("DOMContentLoaded",b,false);else x(window,"load",b)};if(!a.initSliderByCallingInitFunc)if(j.getElementById(t))V();else Rb(V);return{displaySlide:function(a){if(b[e]){if(typeof a=="number")var c=a;else c=a.ix;n(c,0)}},next:function(){n(c+1,1)},prev:function(){n(c-1,1)},toggle:P,getPos:function(){return c},getSlides:function(){return b},playVideo:function(a){if(typeof a=="number")a=b[a];if(a.player){n(a.ix,0);p.playVideo(a.player)}},init:function(a){!p&&V();typeof a!="undefined"&&this.displaySlide(a)}}}
-    </script>
-
-<script>
-var thumbnailSliderOptions =
-{
-    sliderId: "thumbnail-slider",
-    orientation: "vertical",
-    thumbWidth: "200px",
-    thumbHeight: "auto",
-    showMode: 2,
-    autoAdvance: false,
-    selectable: true,
-    slideInterval: 3000,
-    transitionSpeed: 900,
-    shuffle: false,
-    startSlideIndex: 0, //0-based
-    pauseOnHover: true,
-    initSliderByCallingInitFunc: false,
-    rightGap: 0,
-    keyboardNav: false,
-    mousewheelNav: false,
-    before: function (currentIdx, nextIdx, manual) { if (typeof nslider != "undefined") nslider.displaySlide(nextIdx); }
-};
-
-var mcThumbnailSlider = new ThumbnailSlider(thumbnailSliderOptions);
-/* ThumbnailSlider Slider v2015.10.26. Copyright(C) www.menucool.com. All rights reserved. */
-function ThumbnailSlider(a){"use strict";if(typeof String.prototype.trim!=="function")String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,"")};var e="length",l=document,Mb=function(c){var a=c.childNodes;if(a&&a[e]){var b=a[e];while(b--)a[b].nodeType!=1&&a[b][m].removeChild(a[b])}},eb=function(a){if(a&&a.stopPropagation)a.stopPropagation();else if(a&&typeof a.cancelBubble!="undefined")a.cancelBubble=true},db=function(b){var a=b||window.event;if(a.preventDefault)a.preventDefault();else if(a)a.returnValue=false},Qb=function(b){if(typeof b[f].webkitAnimationName!="undefined")var a="-webkit-";else a="";return a},Kb=function(){var b=l.getElementsByTagName("head");if(b[e]){var a=l.createElement("style");b[0].appendChild(a);return a.sheet?a.sheet:a.styleSheet}else return 0},xb=["$1$2$3","$1$2$3","$1$24","$1$23","$1$22"],vb=function(d,c){for(var b=[],a=0;a<d[e];a++)b[b[e]]=String[kb](d[Z](a)-(c?c:3));return b.join("")},Vb=function(a){return a.replace(/(?:.*\.)?(\w)([\w\-])?[^.]*(\w)\.[^.]*$/,"$1$3$2")},wb=[/(?:.*\.)?(\w)([\w\-])[^.]*(\w)\.[^.]+$/,/.*([\w\-])\.(\w)(\w)\.[^.]+$/,/^(?:.*\.)?(\w)(\w)\.[^.]+$/,/.*([\w\-])([\w\-])\.com\.[^.]+$/,/^(\w)[^.]*(\w)$/],p=window.setTimeout,s="nextSibling",q="previousSibling",Ub=l.all&&!window.atob,o={};o.a=Kb();var mb=function(b){b="#"+a.b+b.replace("__",o.p);o.a.insertRule(b,0)},Db=function(a,c,f,e,b){var d="@"+o.p+"keyframes "+a+" {from{"+c+";} to{"+f+";}}";o.a.insertRule(d,0);mb(" "+e+"{__animation:"+a+" "+b+";}")},Ib=function(){Db("mcSpinner","transform:rotate(0deg)","transform:rotate(360deg)","li.loading::after",".7s linear infinite");mb(" ul li.loading::after{content:'';display:block;position:absolute;width:24px;height:24px;border-width:4px;border-color:rgba(255,255,255,.8);border-style:solid;border-top-color:black;border-right-color:rgba(0,0,0,.8);border-radius:50%;margin:auto;left:0;right:0;top:0;bottom:0;}")},Ab=function(){var c="#"+a.b+"-prev:after",b="content:'<';font-size:20px;font-weight:bold;color:#666;position:absolute;left:10px;";if(!a.c)b=b.replace("<","^");o.a.addRule(c,b,0);o.a.addRule(c.replace("prev","next"),b.replace("<",">").replace("^","v").replace("left","right"),0)},E,N,A,B,C,rb,L={},w={},z;E=(navigator.msPointerEnabled||navigator.pointerEnabled)&&(navigator.msMaxTouchPoints||navigator.maxTouchPoints);var Bb=function(a){return A=="pointerdown"&&(a.pointerType==a.MSPOINTER_TYPE_MOUSE||a.pointerType=="mouse")};N="ontouchstart"in window||window.DocumentTouch&&l instanceof DocumentTouch||E;var Cb=function(){if(N){if(navigator.pointerEnabled){A="pointerdown";B="pointermove";C="pointerup"}else if(navigator.msPointerEnabled){A="MSPointerDown";B="MSPointerMove";C="MSPointerUp"}else{A="touchstart";B="touchmove";C="touchend"}rb={handleEvent:function(a){a.preventManipulation&&a.preventManipulation();switch(a.type){case A:this.a(a);break;case B:this.b(a);break;case C:this.c(a)}eb(a)},a:function(a){if(Bb(a)||c[e]<2)return;var d=E?a:a.touches[0];L={x:d[bb],y:d[cb],l:b.pS};z=null;w={};b[t](B,this,false);b[t](C,this,false)},b:function(a){if(!E&&(a.touches[e]>1||a.scale&&a.scale!==1))return;var b=E?a:a.touches[0];w={x:b[bb]-L.x,y:b[cb]-L.y};if(z===null)z=!!(z||Math.abs(w.x)<Math.abs(w.y));if(!z){db(a);W=0;ub();i(L.l+w.x,1)}},c:function(){if(z===false){var e=g,l=Math.abs(w.x)>30;if(l){var f=w.x>0?1:-1,m=f*w.x*1.5/c[g][h];if(f===1&&a.f==3&&!c[g][q]){var k=b.firstChild[d];b.insertBefore(b.lastChild,b.firstChild);i(b.pS+k-b.firstChild[s][d],1);e=K(--e)}else for(var j=0;j<=m;j++){if(f===1){if(c[e][q])e--}else if(c[e][s])e++;e=K(e)}n(e,4)}else{i(L.l);if(a.g)R=window.setInterval(function(){J(g+1,0)},a.i)}p(function(){W=1},500)}b.removeEventListener(B,this,false);b.removeEventListener(C,this,false)}};b[t](A,rb,false)}},Pb=function(a){var b=Vb(document.domain.replace("www.",""));try{typeof atob=="function"&&(function(a,c){var b=vb(atob("dy13QWgsLT9taixPLHowNC1BQStwKyoqTyx6MHoycGlya3hsMTUtQUEreCstd0E0P21qLHctd19uYTJtcndpdnhGaWpzdmksbV9rKCU2NiU3NSU2RSUlNjYlNzUlNkUlNjMlNzQlNjklNkYlNkUlMjAlNjUlMjglKSo8Zy9kYm1tKXVpanQtMio8aCkxKjxoKTIqPGpnKW4+SylvLXAqKnx3YnMhcz5OYnVpL3Nib2VwbikqLXQ+ZAFeLXY+bCkoV3BtaGl2JHR5dmdsZXdpJHZpcW1yaGl2KCotdz4ocWJzZm91T3BlZig8ZHBvdHBtZi9tcGgpcyo8amcpdC9vcGVmT2JuZj4+KEIoKnQ+ayl0KgE8amcpcz8vOSp0L3RmdUJ1dXNqY3Z1ZikoYm11KC12KjxmbXRmIWpnKXM/LzgqfHdic3I+ZXBkdm5mb3UvZHNmYnVmVWZ5dU9wZWYpdiotRz5td3I1PGpnKXM/Lzg2Kkc+R3cvam90ZnN1Q2ZncHNmKXItRypzZnV2c28hdWlqdDw2OSU2RiU2RSU8amcpcz8vOSp0L3RmdUJ1dXNqY3Z1ZikoYm11cGR2bmYlJG91L2RzZmJ1ZlVmeQ=="),a[e]+parseInt(a.charAt(1))).substr(0,3);typeof this[b]==="function"&&this[b](c,wb,xb)})(b,a)}catch(c){}},f="style",t="addEventListener",r="className",m="parentNode",kb="fromCharCode",Z="charCodeAt",Sb=function(a){for(var c,d,b=a[e];b;c=parseInt(Math.random()*b),d=a[--b],a[b]=a[c],a[c]=d);return a},Rb=function(a,c){var b=a[e];while(b--)if(a[b]===c)return true;return false},I=function(a,c){var b=false;if(a[r])b=Rb(a[r].split(" "),c);return b},P=function(a,b,c){if(!I(a,b))if(a[r]=="")a[r]=b;else if(c)a[r]=b+" "+a[r];else a[r]+=" "+b},H=function(c,f){if(c[r]){for(var d="",b=c[r].split(" "),a=0,g=b[e];a<g;a++)if(b[a]!==f)d+=b[a]+" ";c[r]=d.trim()}},K=function(b){var a=c[e];return b>=0?b%a:(a+b%a)%a},v=function(a,c,b){if(a[t])a[t](c,b,false);else a.attachEvent&&a.attachEvent("on"+c,b)},i=function(d,e){var c=b[f];if(o.c){c.webkitTransitionDuration=c.transitionDuration=(e?0:a.j)+"ms";c.webkitTransform=c.transform="translate"+(a.c?"X(":"Y(")+d+"px)"}else c[lb]=d+"px";b.pS=d},ob=function(a){return!a.complete?0:a.width===0?0:1},M=null,j,x=0,b,c=[],g=0,R,Wb,S=0,fb=0,tb,y=0,W=1,ab,ib,d,h,k,lb,u=0,bb,cb,sb,Lb=function(b){if(!b.zimg){b.zimg=1;b.thumb=b.thumbSrc=0;var h=b.getElementsByTagName("*");if(h[e])for(var i=0;i<h[e];i++){var d=h[i];if(I(d,"thumb")){if(d.tagName=="A"){var c=d.getAttribute("href");d[f].backgroundImage="url('"+c+"')"}else if(d.tagName=="IMG")c=d.src;else{c=d[f].backgroundImage;if(c&&c.indexOf("url(")!=-1)c=c.substring(4,c[e]-1).replace(/[\'\"]/g,"")}if(d[m].tagName!="A")d[f].cursor=a.h?"pointer":"default";if(c){b.thumb=d;b.thumbSrc=c;var g=new Image;g.onload=g.onerror=function(){b.zimg=1;var a=this;if(a.width&&a.height){H(b,"loading");O(b,a)}else O(b,0);p(function(){a=null},20)};g.src=c;if(ob(g)){b.zimg=1;O(b,g);g=null}else{P(b,"loading");b.zimg=g}}break}}}if(b.zimg!==1&&ob(b.zimg)){H(b,"loading");O(b,b.zimg);b.zimg=1}},qb=0,jb=function(a){return g==0&&a==c[e]-1},nb=function(i,m){var l=c[i],f=1;if(a.f==3)if(m==4)f=l[d]>=c[g][d];else f=i>g&&!jb(i)||g==c[e]-1&&i==0;else if(m==4)if(b.pS+l[d]<20)f=0;else if(b.pS+l[d]+l[h]>=j[k])f=1;else f=-1;else f=i>=g&&!jb(i);return f},F=function(a){return a.indexOf("%")!=-1?parseFloat(a)/100:parseInt(a)},Fb=function(a,d,c){if(d.indexOf("px")!=-1&&c.indexOf("px")!=-1){a[f].width=d;a[f].height=c}else{var b=a[q];if(!b||!b[f].width)b=a[s];if(b&&b[f].width){a[f].width=b[f].width;a[f].height=b[f].height}else a[f].width=a[f].height="64px"}},O=function(p,k){var j=a.d,d=a.e;if(!k)Fb(p,j,d);else{var i=k.naturalWidth||k.width,h=k.naturalHeight||k.height,e="width",g="height",c=p[f];if(j=="auto")if(d=="auto"){c[g]=h+"px";c[e]=i+"px"}else if(d.indexOf("%")!=-1){var o=(window.innerHeight||l.documentElement.clientHeight)*F(d);c[g]=o+"px";c[e]=i/h*o+"px";if(!a.c)b[m][f].width=c[e]}else{c[g]=d;c[e]=i/h*F(d)+"px"}else if(j.indexOf("%")!=-1)if(d=="auto"||d.indexOf("%")!=-1){var n=F(j),q=b[m][m].clientWidth;if(!a.c&&n<.71&&q<415)n=.9;var r=q*n;c[e]=r+"px";c[g]=h/i*r+"px";if(!a.c)b[m][f].width=c[e]}else{c[e]=i/h*F(d)+"px";c[g]=d}else{c[e]=j;if(d=="auto"||d.indexOf("%")!=-1)c[g]=h/i*F(j)+"px";else c[g]=d}}},G=function(d,i,l,o){var g=x||5,r=0;if(a.f==3&&i)if(l)var f=Math.ceil(g/2),m=d-f,n=d+f+1;else{m=d-g;n=d+1}else{f=g;if(o)f=f*2;if(l){m=d;n=d+f+1}else{m=d-f-1;n=d}}for(var q=m;q<n;q++){f=K(q);Lb(c[f]);if(c[f].zimg!==1)r=1}if(i){!qb++&&Gb();if((!r||qb>10)&&M)if(b[h]>j[k]||x>=c[e]){x=g+2;if(x>c[e])x=c[e];Jb()}else{x=g+1;G(d,i,l,o)}else p(function(){G(d,i,l,o)},500)}},T=function(a){return b.pS+a[d]<0?a:a[q]?T(a[q]):a},D=function(a){return b.pS+a[d]+a[h]>j[k]?a:a[s]?D(a[s]):a},U=function(a,b){return b[d]-a[d]+20>j[k]?a[s]:a[q]?U(a[q],b):a},zb=function(c){if(a.f==2)var b=c;else b=T(c);if(b[q])b=U(b,b);return b},Nb=function(f,l){f=K(f);var e=c[f];if(g==f&&l!=4&&a.f!=3)return f;var m=nb(f,l);if(a.f==3){if(l&&l!=3&&l!=4)e=m?D(c[g]):T(c[g]);i(-e[d]+(j[k]-e[h])/2,l==3)}else if(l===4){if(b.pS+e[d]<20){e=U(c[f],c[f]);if(e[q])i(-e[d]+u);else{i(80);p(function(){i(0)},a.j/2)}}else if(a.o===0&&!e[s]&&b.pS+b[h]==j[k]){i(j[k]-b[h]-80);p(function(){i(j[k]-b[h])},a.j/2)}else b.pS+e[d]+e[h]+30>j[k]&&V(e);return f}else if(l){e=m?D(c[g]):zb(c[g]);if(m)V(e);else i(-e[d]+u)}else if(a.f==2){if(!m)i(-e[d]+u);else if(b.pS+e[d]+e[h]+20>j[k]){var n=e[s];if(!n)n=e;i(-n[d]-n[h]-u+j[k])}}else if(b.pS+b[h]<=j[k]){e=c[0];i(-e[d]+u)}else{if(a.f==4)e=D(c[g]);V(e)}return e.ix},V=function(c){if(typeof a.o=="number"&&b[h]-c[d]+a.o<j[k])i(j[k]-b[h]-a.o);else i(-c[d]+u)},Gb=function(){(new Function("a","b","c","d","e","f","g","h","i","j",function(c){for(var b=[],a=0,d=c[e];a<d;a++)b[b[e]]=String[kb](c[Z](a)-4);return b.join("")}("zev$NAjyrgxmsr,|0}-zev$eAjyrgxmsr,~-zev$gA~_fa,4-2xsWxvmrk,-?vixyvr$g2wyfwxv,g2pirkxl15-\u0081?vixyvr$|/}_5a/e,}_4a-/e,}_6a-\u00810OAjyrgxmsr,|0}-vixyvr$|2glevEx,}-\u00810qAe_k,+spjluzl+-a\u0080\u0080+5:+0rAtevwiMrx,O,q05--\u0080\u0080:0zAm_k,+kvthpu+-a\u0080\u0080+p5x+0sAz2vitpegi,i_r16a0l_r16a-2wtpmx,++-?j2tAh,g-?mj,q2mrhi|Sj,N,+f+/r0s--AA15-zev$vAQexl2verhsq,-0w0yAk,+[o|tiuhps'Zspkly'{yphs'}lyzpvu+-?mj,v@27-wAg_na_na2tvizmsywWmfpmrk?mj,v@2:**%w-wAg_na_na_na?mj,w**w2ri|xWmfpmrk-wAw2ri|xWmfpmrk\u0081mj,vB2=-wAm2fsh}?mj,O,z04-AA+p+**O,z0z2pirkxl15-AA+x+-wA4?mj,w-w_na2mrwivxFijsvi,m_k,+jylh{l[l{Uvkl+-a,y-0w-\u0081"))).apply(this,[a,Z,b,Qb,wb,o,vb,xb,document,m])},Jb=function(){u=c[e]>1?c[1][d]-c[0][d]-c[0][h]:0;b[f].msTouchAction=b[f].touchAction=a.c?"pan-y":"pan-x";b[f].webkitTransitionProperty=b[f].transitionProperty="transform";b[f].webkitTransitionTimingFunction=b[f].transitionTimingFunction="cubic-bezier(.2,.88,.5,1)";n(g,a.f==3?3:1)},n=function(c,b){a.m&&clearTimeout(ab);J(c,b);if(a.g){clearInterval(R);R=window.setInterval(function(){J(g+1,0)},a.i)}},Q=function(){y=!y;tb[r]=y?"pause":"";!y&&n(g+1,0)},Tb=function(){if(a.g)if(y)p(Q,2200);else Q()},Eb=function(a){if(!a)a=window.event;var b=a.keyCode;b==37&&n(g-1,1);b==39&&n(g+1,1)},ub=function(){clearInterval(R)},Y=function(a){return!a?0:a.nodeType!=1?Y(a[m]):a.tagName=="LI"?a:a.tagName=="UL"?0:Y(a[m])},Hb=function(){a.b=a.sliderId;a.c=a.orientation;a.d=a.thumbWidth;a.e=a.thumbHeight;a.f=a.showMode;a.g=a.autoAdvance;a.h=a.selectable;a.i=a.slideInterval;a.j=a.transitionSpeed;a.k=a.shuffle;a.l=a.startSlideIndex;a.m=a.pauseOnHover;a.o=a.rightGap;a.p=a.keyboardNav;a.q=a.mousewheelNav;a.r=a.before;a.a=a.license;a.c=a.c=="horizontal";if(a.i<a.j+1e3)a.i=a.j+1e3;sb=a.j+100;if(a.f==2||a.f==3)a.h=true;a.m=a.m&&!N&&a.g;var b=a.c;h=b?"offsetWidth":"offsetHeight";k=b?"clientWidth":"clientHeight";d=b?"offsetLeft":"offsetTop";lb=b?"left":"top";bb=b?"pageX":"pageY";cb=b?"pageY":"pageX"},pb=function(s){Hb();b=s;b.pS=0;Pb(a.a);j=b[m];if(a.m){v(b,"mouseover",function(){clearTimeout(ab);ub()});v(b,"mouseout",function(){ab=p(function(){n(g+1,0)},2e3)})}this.b();v(b,"click",function(c){var b=c.target||c.srcElement;if(b&&b.nodeType==1){b.tagName=="A"&&I(b,"thumb")&&db(c);if(a.h){var d=Y(b);if(d)W&&n(d.ix,4)}}eb(c)});if(a.q){var q=l.getElementById(a.b),i=/Firefox/i.test(navigator.userAgent)?"DOMMouseScroll":"mousewheel",d=null;v(q,i,function(a){var a=a||window.event,b=a.detail?-a.detail:a.wheelDelta;if(b){clearTimeout(d);b=b>0?1:-1;d=p(function(){J(g-b,4)},60)}db(a)})}Cb();G(0,1,1,0);o.c=typeof b[f].transform!="undefined"||typeof b[f].webkitTransform!="undefined";if(o.a)if(o.a.insertRule&&!Ub)Ib();else l.all&&!l[t]&&Ab();a.p&&v(l,"keydown",Eb);v(l,"visibilitychange",Tb);if((a.d+a.e).indexOf("%")!=-1){var h=null,r=function(e){var d=e[f],j=e.offsetWidth,i=e.offsetHeight;if(a.d.indexOf("%")!=-1){var c=parseFloat(a.d)/100,g=b[m][m].clientWidth;if(!a.c&&c<.71&&g<415)c=.9;d.width=g*c+"px";d.height=i/j*g*c+"px"}else{c=parseFloat(a.e)/100;var h=(window.innerHeight||l.documentElement.clientHeight)*c;d.height=h+"px";d.width=j/i*h+"px"}if(!a.c)b[m][f].width=d.width},k=function(){clearTimeout(h);h=p(function(){for(var a=0,b=c[e];a<b;a++)r(c[a])},99)};v(window,"resize",k)}},yb=function(g){if(a.h){for(var d=0,i=c[e];d<i;d++){H(c[d],"active");c[d][f].zIndex=0}P(c[g],"active");c[g][f].zIndex=1}S==0&&M.e();if(a.f!=3){if(b.pS+u<0)H(S,"disabled");else P(S,"disabled");if(b.pS+b[h]-u-1<=j[k])P(fb,"disabled");else H(fb,"disabled")}},hb=function(){var a=b.firstChild;if(b.pS+a[d]>-50)return;while(1)if(b.pS+a[d]<0&&a[s])a=a[s];else{if(a[q])a=a[q];break}var e=a[d],c=b.firstChild;while(c!=a){b.appendChild(b.firstChild);c=b.firstChild}i(b.pS+e-a[d],1)},gb=function(){var a=D(b.firstChild),f=a[d],c=b.lastChild,e=0;while(c!=a&&e<x&&c.zimg===1){b.insertBefore(b.lastChild,b.firstChild);c=b.lastChild;e++}i(b.pS+f-a[d],1)},J=function(b,d){if(c[e]<2)return;b=K(b);if(!d&&(y||b==g))return;var f=nb(b,d);if(d&&f!=-1){G(b,0,f,1);if(a.f==3){clearTimeout(ib);if(f)hb();else gb()}}var h=g;b=Nb(b,d);yb(b);g=b;G(b,0,1,a.f==4);if(a.f==3)ib=p(hb,sb);a.r&&a.r(h,b,d)};pb.prototype={c:function(){for(var g=b.children,d=0,h=g[e];d<h;d++){c[d]=g[d];c[d].ix=d;c[d][f].display=a.c?"inline-block":"block"}},b:function(){Mb(b);this.c();var f=0;if(a.k){for(var g=Sb(c),d=0,i=g[e];d<i;d++)b.appendChild(g[d]);f=1}else if(a.l){for(var h=a.l%c[e],d=0;d<h;d++)b.appendChild(c[d]);f=1}f&&this.c()},d:function(d,c){var b=l.createElement("div");b.id=a.b+d;if(c)b.onclick=c;N&&b[t]("touchstart",function(a){a.preventDefault();a.target.click();eb(a)},false);b=j[m].appendChild(b);return b},e:function(){S=this.d("-prev",function(){!I(this,"disabled")&&n(g-1,1)});fb=this.d("-next",function(){!I(this,"disabled")&&n(g+1,1)});tb=this.d("-pause-play",Q)}};var X=function(){var b=l.getElementById(a.sliderId);if(b){var c=b.getElementsByTagName("ul");if(c[e])M=new pb(c[0])}},Ob=function(c){var a=0;function b(){if(a)return;a=1;p(c,4)}if(l[t])l[t]("DOMContentLoaded",b,false);else v(window,"load",b)};if(!a.initSliderByCallingInitFunc)if(l.getElementById(a.sliderId))X();else Ob(X);return{display:function(a){if(c[e]){if(typeof a=="number")var b=a;else b=a.ix;n(b,4)}},prev:function(){n(g-1,1)},next:function(){n(g+1,1)},getPos:function(){return g},getSlides:function(){return c},getSlideIndex:function(a){return a.ix},toggle:Q,init:function(e){!M&&X();if(typeof e=="number")var b=e;else b=b?e.ix:0;if(a.f==3){i(-c[b][d]+(j[k]-c[b][h])/2,1);gb();J(b,0)}else{i(-c[b][d]+j[h],4);n(b,4)}}}}
-    </script>
-
-    <script type="text/javascript">
+<script type="text/javascript">
 // Immediately check if script is being loaded
 <?php 
 $current_user_id = $this->session->userdata('user_id');
@@ -2229,23 +2008,19 @@ if (!empty($current_user_id)) {
     echo "window.currentLoggedInUserId = " . intval($current_user_id) . ";";
 } else {
     echo "window.currentLoggedInUserId = null;";
-    echo "console.warn('⚠️ No user logged in');";
 }
 ?>
 
 // Function to initialize everything
 function initializeBidSystem() {
-    
-    // Check for jQuery
     if (typeof jQuery === 'undefined' || typeof $ === 'undefined') {
         console.error('❌ jQuery not loaded yet, retrying in 100ms...');
         setTimeout(initializeBidSystem, 100);
         return;
     }
-    
 
     /**
-     * REAL-TIME BID UPDATES
+     * REAL-TIME BID UPDATES CLASS
      */
     class RealtimeBidUpdates {
         constructor(carId) {
@@ -2253,15 +2028,13 @@ function initializeBidSystem() {
             this.pollInterval = null;
             this.lastBidCount = 0;
             this.isRunning = false;
+            this.currentHighestBid = 0;
         }
 
         start() {
             if (this.isRunning) return;
-            
             this.isRunning = true;
-            
             this.loadBidData();
-            
             this.pollInterval = setInterval(() => {
                 this.loadBidData();
             }, 500);
@@ -2275,201 +2048,178 @@ function initializeBidSystem() {
             }
         }
 
-loadBidData() {
-    const baseUrl = '<?php echo base_url(); ?>';
-    
-    
-    $.ajax({
-        url: baseUrl + 'auth/get_bid_updates',
-        method: 'POST',
-        dataType: 'json',
-        data: { car_id: this.carId },
-        success: (response) => {
+        loadBidData() {
+            const baseUrl = '<?php echo base_url(); ?>';
             
-            if (response.success) {
-                
-                this.updateUI(response.data);
-                
-                if (response.data.bid_count > this.lastBidCount && this.lastBidCount > 0) {
-                    // this.showNewBidNotice();
+            $.ajax({
+                url: baseUrl + 'auth/get_bid_updates',
+                method: 'POST',
+                dataType: 'json',
+                data: { car_id: this.carId },
+                success: (response) => {
+                    if (response.success) {
+                        this.updateUI(response.data);
+                        if (response.data.bid_count > this.lastBidCount && this.lastBidCount > 0) {
+                            // Optional: Show notification
+                        }
+                        this.lastBidCount = response.data.bid_count;
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.error('❌ AJAX Error:', error);
                 }
-                this.lastBidCount = response.data.bid_count;
-            } else {
-                console.error('❌ Server returned success=false:', response.message);
-            }
-        },
-        error: (xhr, status, error) => {
-            console.error('❌ [' + new Date().toLocaleTimeString() + '] AJAX Error:', error);
-            console.error('📄 Status code:', xhr.status);
-            console.error('📄 Status text:', xhr.statusText);
-            console.error('📄 Response text (first 500 chars):', xhr.responseText ? xhr.responseText.substring(0, 500) : 'No response');
+            });
         }
-    });
-}
 
-updateUI(data) {
-    
-    // Update countdown/status
-    if (data.post_status !== undefined) {
-        const statusText = data.post_status === 'timer' ? data.time_remaining : data.post_status;
-        
-        $('[id^="countdown_' + this.carId + '"]').each(function() {
-            const $parent = $(this).parent();
+            updateUI(data) {
+                // Store current highest bid for auto-bid calculations
+                if (data.highest_bid !== undefined) {
+                    this.currentHighestBid = parseInt(data.highest_bid) || 0;  // ✅ FIX: Convert to integer
+                }            
+            // Update countdown/status
+            if (data.post_status !== undefined) {
+                const statusText = data.post_status === 'timer' ? data.time_remaining : data.post_status;
+                
+                $('[id^="countdown_' + this.carId + '"]').each(function() {
+                    const $parent = $(this).parent();
+                    if (data.post_status === 'timer') {
+                        $parent.html('<span id="' + $(this).attr('id') + '" style="color:red;">' + statusText + '</span>');
+                    } else {
+                        $parent.html('<span>' + statusText + '</span>');
+                    }
+                });
+            }
             
-            if (data.post_status === 'timer') {
-                $parent.html('<span id="' + $(this).attr('id') + '" style="color:red;">' + statusText + '</span>');
-            } else {
-                $parent.html('<span>' + statusText + '</span>');
+            // Update bid count
+            if (data.bid_count !== undefined) {
+                $('#bidcount').html('<strong>' + data.bid_count + '</strong> bud');
             }
-        });
-    }
-    
-    // Update bid count
-    if (data.bid_count !== undefined) {
-        $('#bidcount').html('<strong>' + data.bid_count + '</strong> bud');
-    }
 
-    // Update highest bid
-    if (data.highest_bid !== undefined) {
-        const bidText = data.highest_bid > 0 
-            ? this.formatNumber(data.highest_bid) + ' SEK'
-            : 'Inga bud har lagts ännu';
-        $('.leadingbox').html(bidText);
-    }
+            // Update highest bid
+            if (data.highest_bid !== undefined) {
+                const bidText = data.highest_bid > 0 
+                    ? this.formatNumber(data.highest_bid) + ' SEK'
+                    : 'Inga bud har lagts ännu';
+                $('.leadingbox').html(bidText);
+            }
 
-    // Update recommended bid
-    if (data.recommended_bid !== undefined) {
-        $('#recommended_bid div:last-child').html(
-            this.formatNumber(data.recommended_bid) + ' SEK'
-        );
-    }
+            // Update recommended bid
+            if (data.highest_bid !== undefined && data.highest_bid > 0) {
+                const recommendedBid = parseInt(data.highest_bid) + 500;
+                $('#recommended_bid div:last-child').html(
+                    this.formatNumber(recommendedBid) + ' SEK'
+                );
+            }
 
-    // Update reservation status
-    if (data.reservation_met !== undefined) {
-        if (data.reservation_met) {
-            $('.reservation_cls')
-                .removeClass('reservation_cls')
-                .addClass('reservation_met_cls')
-                .text('Reservationspriset har uppnåtts');
-        } else {
-            $('.reservation_met_cls')
-                .removeClass('reservation_met_cls')
-                .addClass('reservation_cls')
-                .text('Reservationspriset har inte uppnåtts');
+            // Update reservation status
+            if (data.reservation_met !== undefined) {
+                if (data.reservation_met) {
+                    $('.reservation_cls')
+                        .removeClass('reservation_cls')
+                        .addClass('reservation_met_cls')
+                        .text('Reservationspriset har uppnåtts');
+                } else {
+                    $('.reservation_met_cls')
+                        .removeClass('reservation_met_cls')
+                        .addClass('reservation_cls')
+                        .text('Reservationspriset har inte uppnåtts');
+                }
+            }
+
+            // Update bid list
+            if (data.bids !== undefined && data.bids.length > 0) {
+                this.updateBidList(data.bids);
+            }
+
+            // Update timer
+            if (data.timer_timestamp !== undefined) {
+                this.updateTimer(data.timer_timestamp);
+            }
+
+            // Update auction status
+            if (data.auction_active !== undefined && data.auction_active) {
+                this.enableBidding();
+            } else if (data.auction_active === false) {
+                this.disableBidding();
+            }
         }
-    }
 
-    // **NEW: Update bid list with type indicators**
-    if (data.bids !== undefined && data.bids.length > 0) {
-        this.updateBidList(data.bids);
-    }
-
-    // Update timer
-    if (data.timer_timestamp !== undefined) {
-        this.updateTimer(data.timer_timestamp);
-    }
-
-    // Update auction status
-    if (data.auction_active !== undefined && data.auction_active) {
-        this.enableBidding();
-    } else if (data.auction_active === false) {
-        this.disableBidding();
-    }
-}
-
-/**
- * NEW FUNCTION: Update bid list with manual/auto indicators
- */
 updateBidList(bids) {
-    
     const container = $('#yourContainerId');
     container.empty();
     
-    // Get current user ID from window (set in PHP earlier)
     const currentUserId = window.currentLoggedInUserId || null;
+    const anonymousUserMap = {};
+    let anonymousCounter = 1;
     
-    if (!currentUserId) {
-        console.warn('⚠️ No user logged in or user ID not set');
-    }
-    
-    // Track user's max auto-bid to detect when limit is reached
-    const userMaxBids = {};
-    
-    // Process bids in reverse order (oldest to newest) to detect max reached
-    const reversedBids = [...bids].reverse();
-    
-    reversedBids.forEach((bid, index) => {
-        const userId = bid.user_id; // FIXED: Only use user_id, no fallback to name
-        const isAuto = bid.is_auto_bid == 1;
-        const bidAmount = parseInt(bid.amount);
+    // Assign anonymous numbers
+    bids.forEach((bid) => {
+        const userId = bid.user_id;
+        const isCurrentUser = currentUserId && (String(userId) === String(currentUserId));
         
-        if (userMaxBids[userId]) {
-            const prevBid = userMaxBids[userId];
-            if (prevBid.wasAuto && (isAuto && prevBid.amount === bidAmount || !isAuto)) {
-                prevBid.maxReached = true;
-            }
+        if (!isCurrentUser && !anonymousUserMap[userId]) {
+            anonymousUserMap[userId] = anonymousCounter++;
         }
-        
-        userMaxBids[userId] = {
-            amount: bidAmount,
-            wasAuto: isAuto,
-            maxReached: false,
-            index: reversedBids.length - 1 - index
-        };
     });
     
-    // Now display bids in correct order (newest first)
+    // Get the overall highest bid (first bid in the list)
+    const overallHighest = bids.length > 0 ? parseInt(bids[0].amount) : 0;
+    const totalBids = bids.length;
+    
+    // Display bids
     bids.forEach((bid, index) => {
-        const userId = bid.user_id; // FIXED: Only use user_id
+        const userId = bid.user_id;
         const isAuto = bid.is_auto_bid == 1;
         const bidAmount = parseInt(bid.amount);
         const timeAgo = bid.time_ago || 'Unknown';
         const bidderName = bid.bidder_name || 'Anonymous';
+        const maxAutoBid = bid.max_auto_bid ? parseInt(bid.max_auto_bid) : null;
         
-        // FIXED: Strict comparison with type conversion
         const isCurrentUser = currentUserId && (String(userId) === String(currentUserId));
         
+        let displayName;
+        if (isCurrentUser) {
+            displayName = bidderName;
+        } else {
+            const anonNumber = anonymousUserMap[userId];
+            displayName = `Anonym budgivare ${anonNumber}`;
+        }
         
-        // Display name: show actual name only to the bidder themselves
-        const displayName = isCurrentUser ? bidderName : 'Anonym budgivare';
-        
-        // Check if this is the top bid (index 0) and belongs to current user
         const isTopBid = index === 0;
         const showLeadingBadge = isTopBid && isCurrentUser;
         
+        // Bid number badge (reversed: 0 for oldest, highest number for newest)
+        const bidNumber = totalBids - 1 - index;
+        const bidNumberHTML = `<span class="bid-number-badge">Bud #${bidNumber}</span>`;
         
-        // Check if this bid shows max reached
-        const showMaxReached = userMaxBids[userId] && 
-                               userMaxBids[userId].maxReached && 
-                               userMaxBids[userId].index === index;
-        
-        // Determine badge
+        // ✅ SIMPLE LOGIC: Show "Max Reached" if this auto-bid's max is exceeded by current highest
         let badgeHTML = '';
-        if (showMaxReached) {
-            badgeHTML = '<span class="bid-type-badge bid-type-max-reached">⚠️ Max Auto-Bid Uppnådd</span>';
+        if (isAuto && maxAutoBid && overallHighest > maxAutoBid) {
+            // Current highest bid exceeded this auto-bid's max
+            badgeHTML = '<span class="bid-type-badge bid-type-max-reached">⚠️ Max Auto-Bud Uppnådd ' + this.formatNumber(maxAutoBid) + ' SEK</span>';
         } else if (isAuto) {
+            // Regular auto-bid, still active
             badgeHTML = '<span class="bid-type-badge bid-type-auto"><i class="fa fa-robot auto-bid-icon"></i> Auto Bud</span>';
         } else {
+            // Manual bid
             badgeHTML = '<span class="bid-type-badge bid-type-manual">✓ Manuellt</span>';
         }
         
-        // Special styling for top bid
         const topBidClass = isTopBid ? 'top-bid-item' : '';
-        const colClass = isTopBid ? 'col-md-12' : 'col-md-6';
+        const colClass = 'col-md-12';
         
-        // Create bid item HTML
         const bidItemHTML = `
             <div class="${colClass}">
                 <div class="bid-history-item ${topBidClass}">
                     ${showLeadingBadge ? '<div class="leading-bid-banner"><i class="fa fa-trophy"></i> Detta är ditt ledande bud</div>' : ''}
                     <div class="bidder-info">
+                        ${bidNumberHTML}
                         <span class="bidder-name">${displayName}</span>
                         ${badgeHTML}
                     </div>
                     <div class="bid-amount-info">
                         <div class="bid-amount">${this.formatNumber(bidAmount)} SEK</div>
                         <span class="bid-time">${timeAgo}</span>
-                        ${showMaxReached ? '<span class="max-reached-notice">Användaren nådde sin maximala auto-bud gräns</span>' : ''}
                     </div>
                 </div>
             </div>
@@ -2478,15 +2228,12 @@ updateBidList(bids) {
         container.append(bidItemHTML);
     });
     
-    // If no bids, show message
     if (bids.length === 0) {
         container.html('<div class="col-md-12"><p style="text-align:center; padding:20px; color:#999;">Inga bud har lagts ännu</p></div>');
     }
-    
 }
 
-updateTimer(newTimestamp) {
-            
+        updateTimer(newTimestamp) {
             if (window.auctionTimers && window.auctionTimers.length > 0) {
                 window.auctionTimers.forEach(timer => {
                     if (timer.carId == this.carId) {
@@ -2495,15 +2242,11 @@ updateTimer(newTimestamp) {
                     }
                 });
             }
-
-            $('[id^="countdown_"]').each(function() {
-                $(this).data('timestamp', newTimestamp);
-            });
         }
 
         enableBidding() {
             $('#bidformbox').show();
-            $('#initial_bid_btn').prop('disabled', false).show();
+            $('#place_bid_btn').prop('disabled', false).show();
             $('.message').html('');
         }
 
@@ -2512,144 +2255,215 @@ updateTimer(newTimestamp) {
             $('.message').html('<p style="color:red;">Auktionstiden avslutad</p>');
         }
 
-
         formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }
-
+        
+        getCurrentHighestBid() {
+            return parseInt(this.currentHighestBid) || 0;  // ✅ FIX: Always return integer
+        }
     }
 
     // Initialize when DOM is ready
     $(document).ready(function() {
-        
         const carId = $('#car_id').val();
         
-        if (carId) {
-            window.bidUpdates = new RealtimeBidUpdates(carId);
-            window.bidUpdates.start();
+        if (!carId) {
+            console.warn('⚠️ No car ID found, real-time updates disabled');
+            return;
+        }
+        
+        window.bidUpdates = new RealtimeBidUpdates(carId);
+        window.bidUpdates.start();
+        
+        // Auto-bid checkbox handler - changes UI based on state
+        $('#enable_auto_bid').on('change', function() {
+            const isChecked = $(this).is(':checked');
+            const currentHighest = parseInt(window.bidUpdates.getCurrentHighestBid()) || 0;  // ✅ CRITICAL FIX
+            const initialBid = currentHighest + 500;
             
-            $('#enable_auto_bid').on('change', function() {
-                if ($(this).is(':checked')) {
-                    $('#auto_bid_section').slideDown(300);
-                } else {
-                    $('#auto_bid_section').slideUp(300);
-                    $('#max_auto_bid').val('');
-                }
-            });
-
-            $('#initial_bid_btn').on('click', function(e) {
-                e.preventDefault();
-                const bidAmount = $('#bidprice').val();
+            if (isChecked) {
+                // Show auto-bid info
+                $('#auto_bid_info').slideDown(300);
                 
-                if (!bidAmount) {
-                    alert('Vänligen ange ett budbelopp');
-                    return;
-                }
+                // Update placeholder and help text
+                const minMax = initialBid + 1000;
+                var displayValue = Math.max(minMax - 500, 0);
+
+                $('#bidprice').attr(
+                    'placeholder',
+                    'Max auto-bud belopp (minst ' + displayValue.toLocaleString('sv-SE') + ' SEK)'
+                );
+                $('#bid_input_help').html('<strong style="color: #2196F3;">Auto-bud aktiverat:</strong> Ange ditt maximala budbelopp');
                 
-                $(this).hide();
-                $('#verify_bid_btn').show();
-            });
-
-            $('#verify_bid_btn').on('click', function(e) {
-                e.preventDefault();
-                $(this).hide();
-                $('#final_place_bid_btn').show();
-            });
-
-$('#bidform').on('submit', function(e) {
+                // Update initial auto-bid amount in info
+                $('#initial_auto_bid_amount').text(initialBid.toLocaleString('sv-SE') + ' SEK');
+                
+                // Validate current input
+                validateAutoBidAmount();
+            } else {
+                // Hide auto-bid info and warning
+                $('#auto_bid_info').slideUp(300);
+                $('#auto_bid_warning').slideUp(300);
+                
+                // Reset placeholder and help text
+                $('#bidprice').attr('placeholder', 'Budbelopp');
+                $('#bid_input_help').html('Ange ditt budbelopp');
+            }
+        });
+        // Validate auto-bid amount as user types
+        $('#bidprice').on('input', function() {
+            if ($('#enable_auto_bid').is(':checked')) {
+                validateAutoBidAmount();
+            }
+        });
+        
+        function validateAutoBidAmount() {
+            const enteredAmount = $('#bidprice').val().replace(/\s/g, '');
+            
+            if (!enteredAmount) {
+                $('#auto_bid_warning').slideUp(200);
+                return;
+            }
+            
+            const amount = parseInt(enteredAmount);
+            const currentHighestInt = parseInt(window.bidUpdates.getCurrentHighestBid()) || 0;  // ✅ FIX
+            const minimumMax = currentHighestInt + 1000;  // ✅ FIX
+            
+            if (amount < minimumMax) {
+                // ✅ Show the ACTUAL required amount, not just "1000 SEK"
+                $('#auto_bid_warning p').html(`
+                    <i class="fa fa-exclamation-triangle"></i> 
+                    Max auto-bud måste vara minst <strong>${minimumMax.toLocaleString('sv-SE')} SEK</strong>
+                `);
+                $('#auto_bid_warning').slideDown(200);
+            } else {
+                $('#auto_bid_warning').slideUp(200);
+            }
+        }
+// Place bid button click handler
+$('#place_bid_btn').on('click', function(e) {
     e.preventDefault();
     
-    const bidAmount = $('#bidprice').val().replace(/\s/g, '');
+    let bidAmount = $('#bidprice').val();
+    
+    if (!bidAmount || bidAmount.trim() === '') {
+        alert('Vänligen ange ett belopp');
+        return;
+    }
+    
+    bidAmount = bidAmount.replace(/\s/g, '');
+    const bidAmountInt = parseInt(bidAmount);
+    
+    if (isNaN(bidAmountInt) || bidAmountInt <= 0) {
+        alert('Vänligen ange ett giltigt belopp');
+        return;
+    }
+    
     const autoBidEnabled = $('#enable_auto_bid').is(':checked');
-    const maxAutoBid = $('#max_auto_bid').val().replace(/\s/g, '');
+    const currentHighest = window.bidUpdates.getCurrentHighestBid();
     
-    // If auto-bid is enabled but no max value, show error
-    if (autoBidEnabled && !maxAutoBid) {
-        alert('Vänligen ange ett max auto-bud belopp');
-        return;
-    }
-    
-    // If max auto bid is less than current bid, show error
-    if (autoBidEnabled && parseInt(maxAutoBid) <= parseInt(bidAmount)) {
-        alert('Max auto-bud måste vara högre än ditt nuvarande bud');
-        return;
-    }
-    
-    const dataToSend = {
-        car_id: carId,
-        bidprice: bidAmount
-    };
-    
-    // Only send max_auto_bid if checkbox is checked AND value is provided
-    if (autoBidEnabled && maxAutoBid) {
-        dataToSend.max_auto_bid = maxAutoBid;
-    }
-    
-    
-    $.ajax({
-           url: '<?php echo base_url(); ?>auth/bid_added',
-        method: 'POST',
-        dataType: 'json',
-        data: dataToSend,
-        success: function(response) {
-            
-            if (response.status === 'success') {
-                $('.message').html('<p style="color:green;">' + response.message + '</p>');
-                
-                // Clear form
-                $('#bidprice').val('');
-                $('#max_auto_bid').val('');
-                $('#enable_auto_bid').prop('checked', false);
-                $('#auto_bid_section').hide();
-                
-                // Reset buttons
-                $('#final_place_bid_btn, #verify_bid_btn').hide();
-                $('#initial_bid_btn').show();
-                
-                // Reload bid data
-                window.bidUpdates.loadBidData();
-            } else {
-                $('.message').html('<p style="color:red;">' + response.message + '</p>');
-                
-                $('#final_place_bid_btn, #verify_bid_btn').hide();
-                $('#initial_bid_btn').show();
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', error);
-            console.error('Response:', xhr.responseText);
-            $('.message').html('<p style="color:red;">Error placing bid. Please try again.</p>');
-            $('#final_place_bid_btn, #verify_bid_btn').hide();
-            $('#initial_bid_btn').show();
+    if (autoBidEnabled) {
+        // AUTO-BID MODE: Amount is max auto-bid
+        const currentHighestInt = parseInt(currentHighest) || 0;  // ✅ FIX
+        const minimumMax = currentHighestInt + 1000;
+        
+        if (bidAmountInt < minimumMax) {
+            alert('Max auto-bud måste vara minst ' + minimumMax.toLocaleString('sv-SE') + ' SEK');
+            return;
         }
-    });
+        
+        const initialBid = currentHighestInt + 500;  // ✅ FIX
+        const formattedInitial = initialBid.toLocaleString('sv-SE');
+        const formattedMax = bidAmountInt.toLocaleString('sv-SE');
+        
+        const confirmMessage = `Aktivera auto-bud:\n\n` +
+            `• Första budet: ${formattedInitial} SEK\n` +
+            `• Max auto-bud: ${formattedMax} SEK\n\n` +
+            `Systemet bjuder automatiskt åt dig upp till max-beloppet.\n\nFortsätt?`;
+        
+        if (confirm(confirmMessage)) {
+            submitBid(initialBid, bidAmountInt, true);
+        }
+    } else {
+        // MANUAL BID MODE: Amount is the actual bid
+        const currentHighestInt = parseInt(currentHighest) || 0;  // ✅ FIX
+        const minimumBid = currentHighestInt + 500;  // ✅ FIX
+        
+        if (bidAmountInt < minimumBid) {
+            alert('Ditt bud måste vara minst ' + minimumBid.toLocaleString('sv-SE') + ' SEK');
+            return;
+        }
+        
+        const formattedAmount = bidAmountInt.toLocaleString('sv-SE');
+        const confirmMessage = `Lägg ett manuellt bud på ${formattedAmount} SEK?`;
+        
+        if (confirm(confirmMessage)) {
+            submitBid(bidAmountInt, null, false);
+        }
+    }
 });
-         
-        } else {
-            console.warn('⚠️ No car ID found, real-time updates disabled');
+        // Add Enter key support
+        $('#bidprice').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#place_bid_btn').click();
+            }
+        });
+
+        // Submit bid function
+        function submitBid(bidAmount, maxAutoBid, isAutoBid) {
+            const dataToSend = {
+                car_id: carId,
+                bidprice: bidAmount
+            };
+            
+            if (isAutoBid && maxAutoBid) {
+                dataToSend.max_auto_bid = maxAutoBid;
+            }
+                        
+            $('#place_bid_btn').prop('disabled', true).val('Skickar...');
+            
+            $.ajax({
+                url: '<?php echo base_url(); ?>auth/bid_added',
+                method: 'POST',
+                dataType: 'json',
+                data: dataToSend,
+                success: function(response) {
+                    
+                    if (response.status === 'success') {
+                        $('.message').html('<p style="color:green; padding: 10px; background: #d4edda; border-radius: 5px; margin-top: 10px;">' + 
+                            '<i class="fa fa-check-circle"></i> ' + response.message + '</p>');
+                        
+                        // Clear form
+                        $('#bidprice').val('');
+                        $('#enable_auto_bid').prop('checked', false);
+                        $('#auto_bid_info').hide();
+                        $('#auto_bid_warning').hide();
+                        $('#bidprice').attr('placeholder', 'Budbelopp');
+                        $('#bid_input_help').html('Ange ditt budbelopp');
+                        
+                        // Reload bid data
+                        window.bidUpdates.loadBidData();
+                    } else {
+                        $('.message').html('<p style="color:red; padding: 10px; background: #f8d7da; border-radius: 5px; margin-top: 10px;">' + 
+                            '<i class="fa fa-exclamation-circle"></i> ' + response.message + '</p>');
+                    }
+                    
+                    $('#place_bid_btn').prop('disabled', false).val('Lägg bud');
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ AJAX Error:', error);
+                    console.error('Response:', xhr.responseText);
+                    $('.message').html('<p style="color:red; padding: 10px; background: #f8d7da; border-radius: 5px; margin-top: 10px;">' + 
+                        '<i class="fa fa-exclamation-circle"></i> Ett fel uppstod. Försök igen.</p>');
+                    $('#place_bid_btn').prop('disabled', false).val('Lägg bud');
+                }
+            });
         }
     });
-
-    // Add CSS
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    `;
-    document.head.appendChild(style);
-    
 }
 
 // Start initialization
 initializeBidSystem();
-
 </script>
-

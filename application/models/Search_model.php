@@ -6,273 +6,204 @@ class Search_model extends CI_Model {
         $this->load->database();
     }
 
-    public function get_car_cat_by_slug_and_table_name($slug,$sulg_name,$table_name) {
-     
-      $this->db->from($table_name); 
-      $this->db->where($sulg_name, $slug);
-      $query = $this->db->get();
-
-      if ($query->num_rows() > 0) {
-          return $query->row_array();
-      } else {
-          return null; // or a default image path
-      }
-  }
-  
-  public function search($limit, $offset) {
-
-    // Get search parameters from the query string
-    $brand = $this->input->get('cat_brand');
-    $model = $this->input->get('cat_model');
-    $fuel = $this->input->get('cat_fuel');
-    $mileage = $this->input->get('mileage');
-    $model_year = $this->input->get('cat_year');
-    $price_at_car = $this->input->get('price_at_car');
-    $buy_method = $this->input->get('cat_buy_method');
-    $body = $this->input->get('cat_body');
-    $engine = $this->input->get('cat_engine');
-    $condition = $this->input->get('condition');
-    $category = $this->input->get('category');
-    $minmileage = $this->input->get('min-mileage');
-    $maxmileage = $this->input->get('max-mileage');
-    $minprice = $this->input->get('min-price');
-    $maxprice = $this->input->get('max-price');
-    $minyear = $this->input->get('min-year');
-    $maxyear = $this->input->get('max-year');
-    $priceRange  = $this->input->get('price');
-    $author  = $this->input->get('author');
-    $title = $this->input->get('title');
-    $order_by = $this->input->get('order_by');
-	
-	
-	
-    $brand_data =  $this->get_car_cat_by_slug_and_table_name($brand,'brand_slug','brand_category');
-    $model_data =  $this->get_car_cat_by_slug_and_table_name($model,'model_slug','model_category');
-    $fuel_data =  $this->get_car_cat_by_slug_and_table_name($fuel,'fuel_slug','fuel_category');
-   
-		$buy_method_data =  $this->get_car_cat_by_slug_and_table_name($buy_method,'buy_method_slug','buy_method_category');
-	
-	
-    $body_data =  $this->get_car_cat_by_slug_and_table_name($body,'body_slug','body_category');
-    $engine_data =  $this->get_car_cat_by_slug_and_table_name($engine,'engine_slug','engine_category');
-
-    // Start building the query
-// Start building the query
-$this->db->select('cars.*, MAX(bidding.bidding_price) as highest_bid, COUNT(DISTINCT bidding.user_id) as total_bidders, users.city');
-$this->db->from('cars');
-$this->db->join('bidding', 'cars.id = bidding.car_id', 'left');
-$this->db->join('users', 'cars.post_author_id = users.id', 'left'); // ADD THIS LINE
-$this->db->join('model_year_category', 'cars.cat_year = model_year_category.id', 'left');
-
-    // Apply filters based on provided search parameters
-    if (!empty($brand) && ($brand!='0')) { $this->db->where('cat_brand', $brand_data["id"]); }
-    if (!empty($model) && ($model!='0')) { $this->db->where('cat_model', $model_data["id"]); }
-    if (!empty($fuel) && ($fuel!='0')) { $this->db->where('cat_fuel', $fuel_data["id"]); }
-    if (!empty($buy_method) && ($buy_method!='0')) { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
-    if (!empty($body) && ($body!='0')) { $this->db->where('cat_body', $body_data["id"]); }
-    if (!empty($engine) && ($engine!='0')) { $this->db->where('cat_engine', $engine_data["id"]); }
-    if (!empty($condition) && ($condition!='0')) { $this->db->where('condition', $condition); }
-    if (!empty($category) && ($category!='0')) { $this->db->where('category', $category); }
-    if (!empty($title)) { $this->db->like('car_title', $title); }
-    if (!empty($author)) { $this->db->where('post_author_id', $author); }
-
-    // Apply the year range filter from the joined model_year_category table
-    if(!empty($minyear) && !empty($maxyear)) {
-        $this->db->where('model_year_category.year_slug >=', $minyear);
-        $this->db->where('model_year_category.year_slug <=', $maxyear);
+    public function get_car_cat_by_slug_and_table_name($slug, $sulg_name, $table_name) {
+        $this->db->from($table_name); 
+        $this->db->where($sulg_name, $slug);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->row_array();
+        } else {
+            return null;
+        }
     }
 
-    $this->db->where('auction_status', '0');
-
-    // Apply price range filter
-    if(!empty($minprice) && !empty($maxprice)) {
-        $this->db->where('fixed_price >=', $minprice);
-        $this->db->where('fixed_price <=', $maxprice);
-    }
-	
-	if($buy_method=='auction')
-	{
-	$this->db->where('DATEDIFF(date_add(curdate(),interval 1 day), cars.created) BETWEEN 1 AND 14');
-	}
-	//$this->db->where('cars.created <=', "CURDATE() + INTERVAL 14 DAY", false);
-	
-    // Apply mileage range filter
-    if(!empty($minmileage) && !empty($maxmileage)) {
-        $this->db->where('mileage >=', $minmileage);
-        $this->db->where('mileage <=', $maxmileage);
+    // ✅ NEW: Get only cities that have dealers
+    public function get_available_cities() {
+        $this->db->select('city');
+        $this->db->from('users');
+        $this->db->where('role', 'dealer');
+        $this->db->where('city !=', '');
+        $this->db->where('city IS NOT NULL', null, false);
+        $this->db->group_by('city');
+        $this->db->order_by('city', 'ASC');
+        $query = $this->db->get();
+        return $query->result_array();
     }
 
-    // Time left calculation and ordering
-    $this->db->select('DATEDIFF(DATE_ADD(cars.created, INTERVAL 14 DAY), NOW()) AS time_left');
+    public function search($limit, $offset) {
 
-    // Apply ordering based on the selected option
-    switch ($order_by) {
-        case '6': // Highest bid
-            $this->db->order_by('fixed_price', 'DESC');
-            break;
-		case '7': // Highest bid
-            $this->db->order_by('fixed_price', 'ASC');
-            break;
-		case '4': // Highest bid
-            $this->db->order_by('highest_bid', 'DESC');
-            break;
-        case '5': // Lowest bid
-            $this->db->order_by('highest_bid', 'ASC');
-            break;
-        case '2': // Less time left
-            $this->db->order_by('time_left', 'ASC');
-            break;
-        case '3': // Latest cars added
-            $this->db->order_by('cars.created', 'DESC');
-            break;
-        default:
-            $this->db->order_by('cars.car_title', 'DESC');
-            break;
+        $brand       = $this->input->get('cat_brand');
+        $model       = $this->input->get('cat_model');
+        $fuel        = $this->input->get('cat_fuel');
+        $mileage     = $this->input->get('mileage');
+        $model_year  = $this->input->get('cat_year');
+        $price_at_car = $this->input->get('price_at_car');
+        $buy_method  = $this->input->get('cat_buy_method');
+        $body        = $this->input->get('cat_body');
+        $engine      = $this->input->get('cat_engine');
+        $condition   = $this->input->get('condition');
+        $category    = $this->input->get('category');
+        $minmileage  = $this->input->get('min-mileage');
+        $maxmileage  = $this->input->get('max-mileage');
+        $minprice    = $this->input->get('min-price');
+        $maxprice    = $this->input->get('max-price');
+        $minyear     = $this->input->get('min-year');
+        $maxyear     = $this->input->get('max-year');
+        $priceRange  = $this->input->get('price');
+        $author      = $this->input->get('author');
+        $title       = $this->input->get('title');
+        $order_by    = $this->input->get('order_by');
+        $city        = $this->input->get('city'); // ✅ NEW
+
+        $brand_data      = $this->get_car_cat_by_slug_and_table_name($brand, 'brand_slug', 'brand_category');
+        $model_data      = $this->get_car_cat_by_slug_and_table_name($model, 'model_slug', 'model_category');
+        $fuel_data       = $this->get_car_cat_by_slug_and_table_name($fuel, 'fuel_slug', 'fuel_category');
+        $buy_method_data = $this->get_car_cat_by_slug_and_table_name($buy_method, 'buy_method_slug', 'buy_method_category');
+        $body_data       = $this->get_car_cat_by_slug_and_table_name($body, 'body_slug', 'body_category');
+        $engine_data     = $this->get_car_cat_by_slug_and_table_name($engine, 'engine_slug', 'engine_category');
+
+        $this->db->select('cars.*, MAX(bidding.bidding_price) as highest_bid, COUNT(DISTINCT bidding.user_id) as total_bidders, users.city');
+        $this->db->from('cars');
+        $this->db->join('bidding', 'cars.id = bidding.car_id', 'left');
+        $this->db->join('users', 'cars.post_author_id = users.id', 'left');
+        $this->db->join('model_year_category', 'cars.cat_year = model_year_category.id', 'left');
+
+        if (!empty($brand)      && $brand      != '0') { $this->db->where('cat_brand',      $brand_data["id"]); }
+        if (!empty($model)      && $model      != '0') { $this->db->where('cat_model',      $model_data["id"]); }
+        if (!empty($fuel)       && $fuel       != '0') { $this->db->where('cat_fuel',       $fuel_data["id"]); }
+        if (!empty($buy_method) && $buy_method != '0') { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
+        if (!empty($body)       && $body       != '0') { $this->db->where('cat_body',       $body_data["id"]); }
+        if (!empty($engine)     && $engine     != '0') { $this->db->where('cat_engine',     $engine_data["id"]); }
+        if (!empty($condition)  && $condition  != '0') { $this->db->where('condition',      $condition); }
+        if (!empty($category)   && $category   != '0') { $this->db->where('category',       $category); }
+        if (!empty($title))  { $this->db->like('car_title', $title); }
+        if (!empty($author)) { $this->db->where('post_author_id', $author); }
+
+        // ✅ NEW: City filter
+        if (!empty($city) && $city != '0') {
+            $this->db->where('LOWER(users.city)', strtolower($city));
+        }
+
+        if (!empty($minyear) && !empty($maxyear)) {
+            $this->db->where('model_year_category.year_slug >=', $minyear);
+            $this->db->where('model_year_category.year_slug <=', $maxyear);
+        }
+
+        $this->db->where('auction_status', '0');
+
+        if (!empty($minprice) && !empty($maxprice)) {
+            $this->db->where('fixed_price >=', $minprice);
+            $this->db->where('fixed_price <=', $maxprice);
+        }
+
+        if ($buy_method == 'auction') {
+            $this->db->where('DATEDIFF(date_add(curdate(),interval 1 day), cars.created) BETWEEN 1 AND 14');
+        }
+
+        if (!empty($minmileage) && !empty($maxmileage)) {
+            $this->db->where('mileage >=', $minmileage);
+            $this->db->where('mileage <=', $maxmileage);
+        }
+
+        $this->db->select('DATEDIFF(DATE_ADD(cars.created, INTERVAL 14 DAY), NOW()) AS time_left');
+
+        switch ($order_by) {
+            case '6': $this->db->order_by('fixed_price', 'DESC'); break;
+            case '7': $this->db->order_by('fixed_price', 'ASC');  break;
+            case '4': $this->db->order_by('highest_bid', 'DESC'); break;
+            case '5': $this->db->order_by('highest_bid', 'ASC');  break;
+            case '2': $this->db->order_by('time_left', 'ASC');    break;
+            case '3': $this->db->order_by('cars.created', 'DESC'); break;
+            default:  $this->db->order_by('cars.car_title', 'DESC'); break;
+        }
+
+        $this->db->group_by('cars.id');
+        $this->db->limit($limit, $offset);
+
+        $query = $this->db->get();
+        return $query->result();
     }
 
-    // Group by car_id to ensure that we get unique cars
-    $this->db->group_by('cars.id');
+    public function get_total_search_cars_count() {
 
-    // Limit and offset for pagination
-    $this->db->limit($limit, $offset);
+        $brand       = $this->input->get('cat_brand');
+        $model       = $this->input->get('cat_model');
+        $fuel        = $this->input->get('cat_fuel');
+        $buy_method  = $this->input->get('cat_buy_method');
+        $body        = $this->input->get('cat_body');
+        $engine      = $this->input->get('cat_engine');
+        $condition   = $this->input->get('condition');
+        $category    = $this->input->get('category');
+        $minmileage  = $this->input->get('min-mileage');
+        $maxmileage  = $this->input->get('max-mileage');
+        $minprice    = $this->input->get('min-price');
+        $maxprice    = $this->input->get('max-price');
+        $minyear     = $this->input->get('min-year');
+        $maxyear     = $this->input->get('max-year');
+        $author      = $this->input->get('author');
+        $title       = $this->input->get('title');
+        $order_by    = $this->input->get('order_by');
+        $city        = $this->input->get('city'); // ✅ NEW
 
-    // Execute the query and return the results
-    $query = $this->db->get();
-	//print_R($query);exit;
-    return $query->result();
-}
+        $brand_data      = $this->get_car_cat_by_slug_and_table_name($brand, 'brand_slug', 'brand_category');
+        $model_data      = $this->get_car_cat_by_slug_and_table_name($model, 'model_slug', 'model_category');
+        $fuel_data       = $this->get_car_cat_by_slug_and_table_name($fuel, 'fuel_slug', 'fuel_category');
+        $buy_method_data = $this->get_car_cat_by_slug_and_table_name($buy_method, 'buy_method_slug', 'buy_method_category');
+        $body_data       = $this->get_car_cat_by_slug_and_table_name($body, 'body_slug', 'body_category');
+        $engine_data     = $this->get_car_cat_by_slug_and_table_name($engine, 'engine_slug', 'engine_category');
 
-  
-  public function get_total_search_cars_count()
-  {
-  // Get search parameters from the query string
-    $brand = $this->input->get('cat_brand');
-    $model = $this->input->get('cat_model');
-    $fuel = $this->input->get('cat_fuel');
-    $mileage = $this->input->get('mileage');
-    $model_year = $this->input->get('cat_year');
-    $price_at_car = $this->input->get('price_at_car');
-    $buy_method = $this->input->get('cat_buy_method');
-    $body = $this->input->get('cat_body');
-    $engine = $this->input->get('cat_engine');
-    $condition = $this->input->get('condition');
-    $category = $this->input->get('category');
-    $minmileage = $this->input->get('min-mileage');
-    $maxmileage = $this->input->get('max-mileage');
-    $minprice = $this->input->get('min-price');
-    $maxprice = $this->input->get('max-price');
-    $minyear = $this->input->get('min-year');
-    $maxyear = $this->input->get('max-year');
-    $priceRange  = $this->input->get('price');
-    $author  = $this->input->get('author');
-    $title = $this->input->get('title');
-    $order_by = $this->input->get('order_by');
+        $this->db->select('cars.*, MAX(bidding.bidding_price) as highest_bid, COUNT(DISTINCT bidding.user_id) as total_bidders');
+        $this->db->from('cars');
+        $this->db->join('bidding', 'cars.id = bidding.car_id', 'left');
+        $this->db->join('users', 'cars.post_author_id = users.id', 'left'); // ✅ needed for city filter
+        $this->db->join('model_year_category', 'cars.cat_year = model_year_category.id', 'left');
 
-    $brand_data =  $this->get_car_cat_by_slug_and_table_name($brand,'brand_slug','brand_category');
-    $model_data =  $this->get_car_cat_by_slug_and_table_name($model,'model_slug','model_category');
-    $fuel_data =  $this->get_car_cat_by_slug_and_table_name($fuel,'fuel_slug','fuel_category');
-    $buy_method_data =  $this->get_car_cat_by_slug_and_table_name($buy_method,'buy_method_slug','buy_method_category');
-    $body_data =  $this->get_car_cat_by_slug_and_table_name($body,'body_slug','body_category');
-    $engine_data =  $this->get_car_cat_by_slug_and_table_name($engine,'engine_slug','engine_category');
+        if (!empty($brand)      && $brand      != '0') { $this->db->where('cat_brand',      $brand_data["id"]); }
+        if (!empty($model)      && $model      != '0') { $this->db->where('cat_model',      $model_data["id"]); }
+        if (!empty($fuel)       && $fuel       != '0') { $this->db->where('cat_fuel',       $fuel_data["id"]); }
+        if (!empty($buy_method) && $buy_method != '0') { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
+        if (!empty($body)       && $body       != '0') { $this->db->where('cat_body',       $body_data["id"]); }
+        if (!empty($engine)     && $engine     != '0') { $this->db->where('cat_engine',     $engine_data["id"]); }
+        if (!empty($condition)  && $condition  != '0') { $this->db->where('condition',      $condition); }
+        if (!empty($category)   && $category   != '0') { $this->db->where('category',       $category); }
+        if (!empty($title))  { $this->db->like('car_title', $title); }
+        if (!empty($author)) { $this->db->where('post_author_id', $author); }
 
-    // Start building the query
-    $this->db->select('cars.*, MAX(bidding.bidding_price) as highest_bid, COUNT(DISTINCT bidding.user_id) as total_bidders');
-    $this->db->from('cars');
-    $this->db->join('bidding', 'cars.id = bidding.car_id', 'left'); // Adjust the join condition based on your schema
+        // ✅ NEW: City filter
+        if (!empty($city) && $city != '0') {
+            $this->db->where('LOWER(users.city)', strtolower($city));
+        }
 
-    // Join the model_year_category table to get the actual year value
-    $this->db->join('model_year_category', 'cars.cat_year = model_year_category.id', 'left');
+        if (!empty($minyear) && !empty($maxyear)) {
+            $this->db->where('model_year_category.year_name >=', $minyear);
+            $this->db->where('model_year_category.year_name <=', $maxyear);
+        }
 
-    // Apply filters based on provided search parameters
-    if (!empty($brand) && ($brand!=0)) { $this->db->where('cat_brand', $brand_data["id"]); }
-    if (!empty($model) && ($model!=0)) { $this->db->where('cat_model', $model_data["id"]); }
-    if (!empty($fuel) && ($fuel!=0)) { $this->db->where('cat_fuel', $fuel_data["id"]); }
-    if (!empty($buy_method) && ($buy_method!=0)) { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
-    if (!empty($body) && ($body!=0)) { $this->db->where('cat_body', $body_data["id"]); }
-    if (!empty($engine) && ($engine!=0)) { $this->db->where('cat_engine', $engine_data["id"]); }
-    if (!empty($condition) && ($condition!=0)) { $this->db->where('condition', $condition); }
-    if (!empty($category) && ($category!=0)) { $this->db->where('category', $category); }
-    if (!empty($title)) { $this->db->like('car_title', $title); }
-    if (!empty($author)) { $this->db->where('post_author_id', $author); }
+        $this->db->where('auction_status', '0');
 
-    // Apply the year range filter from the joined model_year_category table
-    if(!empty($minyear) && !empty($maxyear)) {
-        $this->db->where('model_year_category.year_name >=', $minyear);
-        $this->db->where('model_year_category.year_name <=', $maxyear);
+        if (!empty($minprice) && !empty($maxprice)) {
+            $this->db->where('fixed_price >=', $minprice);
+            $this->db->where('fixed_price <=', $maxprice);
+        }
+
+        if (!empty($minmileage) && !empty($maxmileage)) {
+            $this->db->where('mileage >=', $minmileage);
+            $this->db->where('mileage <=', $maxmileage);
+        }
+
+        $this->db->select('DATEDIFF(DATE_ADD(cars.created, INTERVAL 14 DAY), NOW()) AS time_left');
+        $this->db->group_by('cars.id');
+        $this->db->get();
+
+        return $this->db->count_all_results();
     }
 
-    $this->db->where('auction_status', '0');
-
-    // Apply price range filter
-    if(!empty($minprice) && !empty($maxprice)) {
-        $this->db->where('fixed_price >=', $minprice);
-        $this->db->where('fixed_price <=', $maxprice);
+    public function get_auction_cars() {
+        $this->db->where('cat_buy_method', 3);
+        $this->db->where('winner_id', 0);
+        $this->db->where('auction_status', '0');
+        $query = $this->db->get('cars');
+        return $query->result();
     }
-
-    
-    // Apply mileage range filter
-    if(!empty($minmileage) && !empty($maxmileage)) {
-        $this->db->where('mileage >=', $minmileage);
-        $this->db->where('mileage <=', $maxmileage);
-    }
-
-    // Time left calculation and ordering
-    $this->db->select('DATEDIFF(DATE_ADD(cars.created, INTERVAL 14 DAY), NOW()) AS time_left');
-
-    // Apply ordering based on the selected option
-    switch ($order_by) {
-        case '4': // Highest bid
-            $this->db->order_by('highest_bid', 'DESC');
-            break;
-        case '5': // Lowest bid
-            $this->db->order_by('highest_bid', 'ASC');
-            break;
-        case '2': // Less time left
-            $this->db->order_by('time_left', 'DESC');
-            break;
-        case '3': // Latest cars added
-            $this->db->order_by('cars.created', 'DESC');
-            break;
-        default:
-            $this->db->order_by('cars.car_title', 'DESC');
-            break;
-    }
-
-    // Group by car_id to ensure that we get unique cars
-    $this->db->group_by('cars.id');
-
-    // Limit and offset for pagination
-    // $this->db->limit($limit, $offset);
-
-    // Execute the query and return the results
-     $this->db->get();
-      $count = $this->db->count_all_results();
-   //$count = $query->count_all_results();
-    
-    
-      // Count rows matching the condition
-    //   $this->db->from('cars'); // Use from() to specify the table for counting
-    //   $count = $this->db->count_all_results();
-  
-      return $count;
-  }
-  
-  
-  public function get_auction_cars() {
-    // Ensure $brand_id is a valid integer or sanitize it to avoid SQL injection
-  
-    
-    // Set the condition for the query
-    $this->db->where('cat_buy_method',3);
-    $this->db->where('winner_id',0);
-    $this->db->where('auction_status','0');
-    
-    // Execute the query on the 'model_category' table
-    $query = $this->db->get('cars');
-    
-    // Return the result as an array of rows
-    return $query->result();
-}
-  
 }
 ?>

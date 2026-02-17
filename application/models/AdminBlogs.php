@@ -616,6 +616,10 @@ public function sellyourcar_profileupdate($data) {
     $this->db->where('id', $data['id']);
     return $this->db->update('sellyourcar', $data);
 }
+public function delete_sellyourcar($id) {
+    $this->db->where('id', $id);
+    return $this->db->delete('sellyourcar'); 
+}
 
 public function get_dealerlist() {
     $this->db->select(['id','first_name','last_name','company_name']);
@@ -707,7 +711,6 @@ public function admin_user_delete($id){
 
 public function get_auction_cars($limit, $offset, $search_term = '')
 {
-    // Sanitize input
     $limit = (int)$limit;
     $offset = (int)$offset;
 
@@ -715,18 +718,18 @@ public function get_auction_cars($limit, $offset, $search_term = '')
     $this->db->where('status', 'publish');
     $this->db->where('auction_status', '0');
     $this->db->where('cat_buy_method', 3);
+    // ✅ Only cars whose 14-day auction window hasn't expired yet
+    $this->db->where('DATE_ADD(created, INTERVAL 14 DAY) >', date('Y-m-d H:i:s'));
 
-    // If a search term is provided, filter by car_title
     if (!empty($search_term)) {
         $this->db->like('car_title', $search_term);
     }
 
     $this->db->order_by('id', 'DESC');
 
-    $query = $this->db->get('cars'); // Assuming the table name is 'cars'
+    $query = $this->db->get('cars');
     return $query->result();
 }
-
 
 
 public function get_total_auction_cars_count($search_term = '')
@@ -734,16 +737,15 @@ public function get_total_auction_cars_count($search_term = '')
     $this->db->where('status', 'publish');
     $this->db->where('auction_status', '0');
     $this->db->where('cat_buy_method', 3);
+    // ✅ Same filter for accurate pagination count
+    $this->db->where('DATE_ADD(created, INTERVAL 14 DAY) >', date('Y-m-d H:i:s'));
 
-    // If a search term is provided, filter by car_title
     if (!empty($search_term)) {
         $this->db->like('car_title', $search_term);
     }
 
-    $this->db->from('cars'); // Use from() to specify the table for counting
-    $count = $this->db->count_all_results();
-
-    return $count;
+    $this->db->from('cars');
+    return $this->db->count_all_results();
 }
 
 

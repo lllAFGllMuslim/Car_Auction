@@ -11,6 +11,7 @@ class Auth extends CI_Controller {
         $this->load->helper(array('url', 'form')); // Load the URL helper here
         // $this->load->helper("simple_html_dom");
         // $this->load->library('simple_html_dom');
+        $this->load->library('email'); // ADD THIS LINE
     }
 
     public function register() {
@@ -167,7 +168,7 @@ public function get_bid_updates() {
     
     // Calculate recommended bid
     if (!empty($highest_bid)) {
-        $recommended_bid = $highest_bid + 1000;
+        $recommended_bid = $highest_bid + 500;
     } else {
         $recommended_bid = !empty($car_data['fixed_price']) ? $car_data['fixed_price'] * 0.7 : 10000;
     }
@@ -202,16 +203,19 @@ if (!empty($bids)) {
             'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
             'amount' => $bid['bidding_price'],
             'time_ago' => $time_ago,
-            'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0
+            'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0,
+            'max_auto_bid' => isset($bid['max_auto_bid']) ? $bid['max_auto_bid'] : null  // ✅ ADD THIS LINE
         );
     }
 }
+
             $bid_list[] = array(
     'user_id' => $bid['user_id'],
     'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
     'amount' => $bid['bidding_price'],
     'time_ago' => $time_ago,
-    'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0
+    'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0,
+    'max_auto_bid' => isset($bid['max_auto_bid']) ? $bid['max_auto_bid'] : null
 );
         }
     }
@@ -399,148 +403,162 @@ private function time_ago($datetime) {
     }
 
 
-    public function signup(){
-        $username = $this->input->post('first_name') . $this->input->post('last_name');
-        $email = $this->input->post('email_address');
+public function signup(){
     
+    try {
+        // Get form data
+        $first_name = $this->input->post('first_name');
+        $last_name = $this->input->post('last_name');
+        $username = $first_name . $last_name;
+        $email = $this->input->post('email_address');
+        
         // Check if username or email already exists
         if ($this->User_model->is_username_taken($username)) {
-            $response = array('status' => 'error', 'message' => 'Username already taken.');
-        } elseif ($this->User_model->is_email_taken($email)) {
-            $response = array('status' => 'error', 'message' => 'Email already taken.');
-        } else {
-            $set = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $code = substr(str_shuffle($set), 0, 12);
-            // Proceed with user registration
-            $data = array(
-                'username' => $username,
-                'profle_photo_id' => $this->input->post('profle_photo_id'),
-                'first_name' => ucwords(strtolower($this->input->post('first_name'))),
-                'last_name' => ucwords(strtolower($this->input->post('last_name'))),
-                'email' => $email,
-                'phone_number' => $this->input->post('phone_number'),
-                'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
-                'role' => $this->input->post('role'),
-                'company_name' => ucwords(strtolower($this->input->post('company_name'))),
-                'registration_number' => $this->input->post('registration_number'),
-                'code' => $code,
-                'active' => false
-            );
-    
-            $insert_status = $this->User_model->signup($data);
-            
-            
-            
-
-            // print_r($insert_status);
-    
-if ($insert_status) {
-                //$this->session->set_userdata('user_id', $insert_status->id);
-                //$this->session->set_userdata('user_role', $insert_status->role);
-
-                //$response = array('status' => 'success', 'message' => 'Signup successfully! Please hold on while we redirect you to your profile dashboard.');
-                $response = array('status' => 'success', 'message' => 'Registration successful! Please check your email to verify your account.');
-                $account_active_link = site_url('/account_activation?id='.$insert_status->id.'&code='.$code);
-                
-                if($this->input->post('role')=='dealer'){
-                    $message='
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #2c3e50;">Welcome to Zogglo Car Auction</h2>
-        
-        <p>Dear '.$username.',</p>
-        
-        <p>Thank you for registering as a dealer with Zogglo. Your account has been created successfully.</p>
-        
-        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Account Details:</strong></p>
-            <p style="margin: 5px 0;">Username: '.$email.'</p>
-            <p style="margin: 5px 0;">Role: '.ucfirst($this->input->post('role')).'</p>
-        </div>
-        
-        <p>To complete your registration, please activate your account by clicking the button below:</p>
-        
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="'.$account_active_link.'" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Activate My Account</a>
-        </div>
-        
-        <p style="font-size: 12px; color: #666;">If the button doesn\'t work, copy and paste this link into your browser:<br/>
-        <a href="'.$account_active_link.'" style="color: #007bff;">'.$account_active_link.'</a></p>
-        
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        
-        <p style="margin: 0;">Best regards,<br/>
-        <strong>The Zogglo Team</strong></p>
-    </div>
-</body>
-</html>';
-
-                } else {
-                    $message='
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #2c3e50;">Welcome to Zogglo Car Auction</h2>
-        
-        <p>Dear '.$username.',</p>
-        
-        <p>Thank you for registering with Zogglo. Your account has been created successfully.</p>
-        
-        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Account Details:</strong></p>
-            <p style="margin: 5px 0;">Username: '.$email.'</p>
-            <p style="margin: 5px 0;">Role: '.ucfirst($this->input->post('role')).'</p>
-        </div>
-        
-        <p>To complete your registration, please activate your account by clicking the button below:</p>
-        
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="'.$account_active_link.'" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Activate My Account</a>
-        </div>
-        
-        <p style="font-size: 12px; color: #666;">If the button doesn\'t work, copy and paste this link into your browser:<br/>
-        <a href="'.$account_active_link.'" style="color: #007bff;">'.$account_active_link.'</a></p>
-        
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        
-        <p style="margin: 0;">Best regards,<br/>
-        <strong>The Zogglo Team</strong></p>
-    </div>
-</body>
-</html>';
-                }
-                
-// To send HTML mail, the Content-type header must be set
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
-// Additional headers
-// $headers .= 'From: sender@example.com' . "\r\n";
-// $headers .= 'Reply-To: sender@example.com' . "\r\n";
-
-$subject ="Thanks for your registration as on our car auction website";
-
-mail($email, $subject, $message, $headers);
-
-                
-            } else {
-                $response = array('status' => 'error', 'message' => 'Failed to sign up.');
-            }
+            echo json_encode(array('status' => 'error', 'message' => 'Username already taken.'));
+            return;
         }
-    
+        
+        if ($this->User_model->is_email_taken($email)) {
+            echo json_encode(array('status' => 'error', 'message' => 'Email already taken.'));
+            return;
+        }
+
+
+        // Generate activation code
+        $set = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $code = substr(str_shuffle($set), 0, 12);
+        
+
+        // Prepare data
+        $data = array(
+            'username' => $username,
+            'profle_photo_id' => $this->input->post('profle_photo_id'),
+            'first_name' => ucwords(strtolower($first_name)),
+            'last_name' => ucwords(strtolower($last_name)),
+            'email' => $email,
+            'phone_number' => $this->input->post('phone_number'),
+            'social_security_number' => $this->input->post('social_security_number'),
+            'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
+            'role' => $this->input->post('role'),
+            'company_name' => ucwords(strtolower($this->input->post('company_name'))),
+            'registration_number' => $this->input->post('registration_number'),
+            'city' => ucwords(strtolower($this->input->post('city'))),
+            'state' => ucwords(strtolower($this->input->post('state'))),
+            'address' => $this->input->post('address'),
+            'pincode' => $this->input->post('pincode'),
+            'code' => $code,
+            'active' => 0
+        );
+
+
+        // Insert user
+        $insert_status = $this->User_model->signup($data);
+
+        if (!$insert_status) {
+            echo json_encode(array('status' => 'error', 'message' => 'Failed to sign up.'));
+            return;
+        }
+
+
+        // Prepare activation link
+        $account_active_link = site_url('account_activation?id='.$insert_status->id.'&code='.$code);
+        
+
+        // Prepare email message
+        if($this->input->post('role') == 'dealer'){
+            $message = '<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2c3e50;">Welcome to Zogglo Car Auction</h2>
+        <p>Dear '.$username.',</p>
+        <p>Thank you for registering as a dealer with Zogglo. Your account has been created successfully.</p>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Account Details:</strong></p>
+            <p style="margin: 5px 0;">Username: '.$email.'</p>
+            <p style="margin: 5px 0;">Role: Dealer</p>
+        </div>
+        <p>To complete your registration, please activate your account by clicking the button below:</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="'.$account_active_link.'" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Activate My Account</a>
+        </div>
+        <p style="font-size: 12px; color: #666;">If the button doesn\'t work, copy and paste this link into your browser:<br/>
+        <a href="'.$account_active_link.'" style="color: #007bff;">'.$account_active_link.'</a></p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="margin: 0;">Best regards,<br/><strong>The Zogglo Team</strong></p>
+    </div>
+</body>
+</html>';
+        } else {
+            $message = '<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2c3e50;">Welcome to Zogglo Car Auction</h2>
+        <p>Dear '.$username.',</p>
+        <p>Thank you for registering with Zogglo. Your account has been created successfully.</p>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Account Details:</strong></p>
+            <p style="margin: 5px 0;">Username: '.$email.'</p>
+            <p style="margin: 5px 0;">Role: User</p>
+        </div>
+        <p>To complete your registration, please activate your account by clicking the button below:</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="'.$account_active_link.'" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Activate My Account</a>
+        </div>
+        <p style="font-size: 12px; color: #666;">If the button doesn\'t work, copy and paste this link into your browser:<br/>
+        <a href="'.$account_active_link.'" style="color: #007bff;">'.$account_active_link.'</a></p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="margin: 0;">Best regards,<br/><strong>The Zogglo Team</strong></p>
+    </div>
+</body>
+</html>';
+        }
+
+
+        $subject = "Thanks for your registration on our car auction website";
+
+        // Load and initialize email
+        
+        try {
+            $this->config->load('email', TRUE);
+            $email_config = $this->config->item('email');
+            
+            
+            $this->email->initialize($email_config);
+            $this->email->clear();
+            $this->email->from('info@zogglo.se', 'Zogglo Car Auction');
+            $this->email->to($email);
+            $this->email->subject($subject);
+            $this->email->message($message);
+
+
+            $email_sent = $this->email->send();
+            
+            
+        } catch (Exception $e) {
+        }
+
+
+        // Always return success if user was created
+        $response = array(
+            'status' => 'success', 
+            'message' => 'Registration successful! Please check your email to verify your account.'
+        );
+        
         echo json_encode($response);
+        
+        
+    } catch (Exception $e) {
+        
+        echo json_encode(array(
+            'status' => 'error', 
+            'message' => 'An error occurred during registration. Please try again.'
+        ));
     }
-
-
+}
     public function loginprocess(){
 
         $this->load->library('form_validation');
@@ -586,7 +604,7 @@ mail($email, $subject, $message, $headers);
     }
 
 
-    public function post_car(){
+public function post_car(){
   
         // if (!$this->session->userdata('user_id')) {
         //     redirect(base_url());
@@ -606,88 +624,16 @@ mail($email, $subject, $message, $headers);
         $data['model_year_category'] = $this->User_model->get_model_year_category();
         $data['fuel_category'] = $this->User_model->get_fuel_category();
         
-        // if(isset($search_car_no)) {
-        //     // echo $search_car_no;
-        //     if(FALSE !== ($json_string = @file_get_contents('https://api.car.info/v2/app/demo/license-plate/S/'.$search_car_no))) {
-        //         $json_array = json_decode($json_string, TRUE);
-        //         // print_r($json_array['result']);
-        //         $data['Car_Detail_Internet'] = $json_array["result"];
-        //         // $response = array('status' => 'success', 'message' => 'Successfully Fetched car info');
-        //     } else {
-        //         // echo "could not fetch data";
-        //         $data['Car_Detail_Internet'] = array('response' => 'not found');
-        //         // $response = array('status' => 'error', 'message' => 'Could not fetch Car info');
-        //     }
-        // } else {
-        //     // echo "no car found";
-        //     $data['Car_Detail_Internet'] = array('response' => 'not submitted');
-        //     // $response = array('status' => 'error', 'message' => 'No Car found');
-        // }
-        
+        // NEW: Use Car_scraper library instead of file_get_html
         if(isset($search_car_no)) {
-            // echo $search_car_no;
-            $context = stream_context_create(array(
-                'http' => array(
-                    'header' => array('User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201'),
-                ),
-            ));
-            $api_url = "https://biluppgifter.se/fordon/".$search_car_no."/";
-            // $html = file_get_html($api_url, false, $context);
-            if(FALSE !== ($html = file_get_html($api_url, false, $context))) {
-                $vehical_data = $html->find('section[id=vehicle-data]',0);
-                if($vehical_data == null) {
-                    $data['CarAPI_data'] = array('response' => 'not found');
-                } else {
-                    $data['CarAPI_data'] = array('response' => 'successfully');
-                    foreach ($vehical_data->find('div[class=inner]',0)->find('ul') as $vehical_ul) {
-                        foreach ($vehical_ul->find('li') as $vehical_li) {
-                            foreach ($vehical_li->find('span') as $vehical_span) {
-                                if($vehical_span->class == 'label') {
-                                    $vlabel = $vehical_span->plaintext;
-                                } elseif($vehical_span->class == 'value') {
-                                    $vvalue = $vehical_span->plaintext;
-                                }
-                                if(isset($vlabel) && isset($vvalue)) {
-                                    if($vlabel == 'Mätarställning (besiktning)') {
-                                        $vlabel_new = "Mätarställning";
-                                        $vvalue_new = str_replace("mil","",$vvalue);
-                                        $vvalue_new = str_replace(" ","",$vvalue_new);
-                                    } elseif($vlabel == 'Fordonsår / Modellår') {
-                                        $vlabel_new = 'Fordonsår';
-                                        $vvalue_new = preg_replace('/ \/.*/', '', $vvalue);
-                                    } else {
-                                        $vlabel_new = $vlabel;
-                                        $vvalue_new = $vvalue;
-                                    }
-                                    $data['CarAPI_data'][$vlabel_new] = $vvalue_new;
-                                }
-                            }
-                        }
-                    }
-                    $technical_data = $html->find('section[id=technical-data]',0);
-                    foreach ($technical_data->find('div[class=inner]',0)->find('ul') as $technical_ul) {
-                        foreach ($technical_ul->find('li') as $technical_li) {
-                            foreach ($technical_li->find('span') as $technical_span) {
-                                if($technical_span->class == 'label') {
-                                    $vlabel = $technical_span->plaintext;
-                                } elseif($technical_span->class == 'value') {
-                                    $vvalue = $technical_span->plaintext;
-                                }
-                                if(isset($vlabel) && isset($vvalue)) {
-                                    if($vlabel == 'Passagerare') {
-                                        $vlabel_new = "Passagerare";
-                                        $vvalue_new = preg_replace('/ st .*/', '', $vvalue);
-                                    } else {
-                                        $vlabel_new = $vlabel;
-                                        $vvalue_new = $vvalue;
-                                    }
-                                    $data['CarAPI_data'][$vlabel_new] = $vvalue_new;
-                                }
-                            }
-                        }
-                    }
-
-                }
+            // Load the Car_scraper library
+            $this->load->library('car_scraper');
+            
+            // Get car data using Selenium (bypasses Cloudflare)
+            $car_data = $this->car_scraper->get_car_data($search_car_no);
+            
+            if($car_data !== FALSE) {
+                $data['CarAPI_data'] = $car_data;
             } else {
                 $data['CarAPI_data'] = array('response' => 'not found');
             }
@@ -695,17 +641,12 @@ mail($email, $subject, $message, $headers);
             $data['CarAPI_data'] = array('response' => 'not submitted');
         }
 
-        // print_r($data['CarAPI_data']);
-
-        // foreach ($data['CarAPI_data'] as $key => $value) {
-        //     echo $key." - ".$value." <br />";
-        // }
-
+        // Rest of your code remains the same
         $this->load->view('header');
         $this->load->view('post_car',$data);
         $this->load->view('footer');
-
     }
+
 
     public function car_added() {
 
@@ -757,7 +698,7 @@ mail($email, $subject, $message, $headers);
                     'finish' => $this->input->post('finish'),
                     'service_history' => $this->input->post('service_history'),
                     'textile' => $this->input->post('textile'),
-                    'chassis_number' => $this->input->post('chassis_number_text'),
+                    'chassis_number' => $this->input->post('chassis_number'),
                     'next_inspection' => $this->input->post('next_inspection'),
                     'curb_weight' => $this->input->post('curb_weight'),
                     'tax_weight' => $this->input->post('tax_weight'),
@@ -799,20 +740,24 @@ Your car has been added to our platform.  <br/>
 View Car Details:  '.$url.'  <br/>
 
 Regards,<br/>
-Car Auction Company';
+Zogglo';
 
 // To send HTML mail, the Content-type header must be set
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
 // Additional headers
 // $headers .= 'From: sender@example.com' . "\r\n";
 // $headers .= 'Reply-To: sender@example.com' . "\r\n";
 
-$subject ="Added Car successfully";
+$subject = "Added Car successfully";
 
-mail($email, $subject, $message, $headers);
-                    
+$this->email->clear();
+$this->email->from('info@zogglo.se', 'Zogglo Car Auction');
+$this->email->to($email);
+$this->email->subject($subject);
+$this->email->message($message);
+
+if(!$this->email->send()) {
+    log_message('error', 'Email failed: ' . $this->email->print_debugger());
+}                    
                 } else {
                     $response = array('status' => 'error', 'message' => 'Failed to create.');
                 }
@@ -937,17 +882,21 @@ Regards,<br/>
 Car Auction Company';
 
 // To send HTML mail, the Content-type header must be set
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
 // Additional headers
 // $headers .= 'From: sender@example.com' . "\r\n";
 // $headers .= 'Reply-To: sender@example.com' . "\r\n";
 
-$subject ="Added Car successfully";
+$subject = "Car Deletion Request";
 
-mail($email, $subject, $message, $headers);
-    
+$this->email->clear();
+$this->email->from('info@zogglo.se', 'Zogglo Car Auction');
+$this->email->to($email);
+$this->email->subject($subject);
+$this->email->message($message);
+
+if(!$this->email->send()) {
+    log_message('error', 'Email failed: ' . $this->email->print_debugger());
+}    
 } else {
     $response = array('status' => 'error', 'message' => 'Failed to delete.');
 }
@@ -998,7 +947,7 @@ echo json_encode($response);
                     'finish' => $this->input->post('finish'),
                     'service_history' => $this->input->post('service_history'),
                     'textile' => $this->input->post('textile'),
-                    'chassis_number' => $this->input->post('chassis_number_text'),
+                    'chassis_number' => $this->input->post('chassis_number'),
                     'next_inspection' => $this->input->post('next_inspection'),
                     'curb_weight' => $this->input->post('curb_weight'),
                     'tax_weight' => $this->input->post('tax_weight'),
@@ -1339,18 +1288,30 @@ public function bid_added()
         return;
     }
     
-    $bidprice = $this->input->post('bidprice');
+    $manual_bid_price = floatval($this->input->post('bidprice'));
     $car_id = $this->input->post('car_id');
     $max_auto_bid = $this->input->post('max_auto_bid');
+    $current_user_id = $this->session->userdata('user_id');
     
-    if (empty($max_auto_bid) || $max_auto_bid == 0) {
+    // Validate max_auto_bid if provided
+    if (!empty($max_auto_bid) && $max_auto_bid != 0) {
+        $max_auto_bid = floatval($max_auto_bid);
+        
+        // Max auto bid must be at least 1000 SEK more than manual bid
+        if ($max_auto_bid < ($manual_bid_price + 1000)) {
+            $response = array(
+                'status' => 'error', 
+                'message' => 'Max auto-bud måste vara minst 1000 SEK högre än ditt nuvarande bud'
+            );
+            echo json_encode($response);
+            return;
+        }
+    } else {
         $max_auto_bid = NULL;
     }
-    
-    $is_auto_bid = 0;
 
-    $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $this->session->userdata('user_id'));
-
+    // Get unique ID for this user
+    $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $current_user_id);
     if ($unique_id_data == 0) {
         $unique_id_number = $this->User_model->get_unique_id_of_car($car_id);
         $unique_id = $unique_id_number + 1;
@@ -1358,42 +1319,52 @@ public function bid_added()
         $unique_id = $unique_id_data;
     }
 
+    // Get current highest bid
     $highest_bid = $this->User_model->get_highest_bid($car_id);
-    $bid_increment = 500;
+    $bid_increment = 500; // Fixed 500 SEK increment
     $minimum_bid = $highest_bid + $bid_increment;
 
-    if ($bidprice >= $minimum_bid) {
-        // **Get the previous highest bidder BEFORE inserting new bid**
-        $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
-        
-        // Insert the new bid
-        $data = array(
-            'car_id' => $car_id,
-            'bidding_price' => $bidprice,
-            'max_auto_bid' => $max_auto_bid,
-            'is_auto_bid' => 0,
-            'unique_id' => $unique_id,
-            'user_id' => $this->session->userdata('user_id')
-        );
-        
-        $this->User_model->insert_bid($data);
-
-        // **Notify the previous highest bidder they've been outbid**
-        if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $this->session->userdata('user_id')) {
-            notify_outbid($previous_highest_bidder['user_id'], $car_id, $bidprice);
-        }
-
-        $extension_result = extend_auction_time($car_id);
-        $this->process_auto_bidding($car_id, $bidprice, $this->session->userdata('user_id'), $bid_increment);
-
+    // Validate manual bid amount
+    if ($manual_bid_price < $minimum_bid) {
         $response = array(
-            'status' => 'success', 
-            'message' => 'Bid placed successfully.',
-            'extension' => $extension_result
+            'status' => 'error', 
+            'message' => 'Ditt minsta bud måste vara ' . number_format($minimum_bid) . ' SEK eller mer'
         );
-    } else {
-        $response = array('status' => 'error', 'message' => 'Your minimum bid amount should be '.$minimum_bid.' SEK or more you can place.');
+        echo json_encode($response);
+        return;
     }
+
+    // Get previous highest bidder BEFORE inserting new bid
+    $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
+    
+    // Insert the manual bid
+    $data = array(
+        'car_id' => $car_id,
+        'bidding_price' => $manual_bid_price,
+        'max_auto_bid' => $max_auto_bid,
+        'is_auto_bid' => 0,
+        'unique_id' => $unique_id,
+        'user_id' => $current_user_id
+    );
+    
+    $this->User_model->insert_bid($data);
+
+    // Notify the previous highest bidder they've been outbid
+    if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $current_user_id) {
+        notify_outbid($previous_highest_bidder['user_id'], $car_id, $manual_bid_price);
+    }
+
+    // Extend auction time if applicable
+    $extension_result = extend_auction_time($car_id);
+    
+    // Process auto-bidding for OTHER users
+    $this->process_auto_bidding($car_id, $manual_bid_price, $current_user_id, $bid_increment);
+
+    $response = array(
+        'status' => 'success', 
+        'message' => 'Bud har lagts framgångsrikt.',
+        'extension' => $extension_result
+    );
 
     echo json_encode($response);
 }
@@ -1405,24 +1376,36 @@ public function bid_added()
  */
 private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_id, $increment = 500)
 {
+    // Get all active auto-bids for this car, excluding the current bidder
     $auto_bids = $this->User_model->get_active_auto_bids($car_id, $new_bidder_user_id);
     
     if (empty($auto_bids)) {
-        return;
+        return; // No auto-bids to process
     }
 
+    // Sort by max_auto_bid descending (highest auto-bid gets priority)
+    usort($auto_bids, function($a, $b) {
+        return $b['max_auto_bid'] - $a['max_auto_bid'];
+    });
+
+    // Track if we placed an auto-bid
+    $auto_bid_placed = false;
+    $winning_auto_bidder = null;
+
     foreach ($auto_bids as $auto_bid) {
-        $max_auto_bid = $auto_bid['max_auto_bid'];
+        $max_auto_bid = floatval($auto_bid['max_auto_bid']);
         $auto_bidder_user_id = $auto_bid['user_id'];
         
+        // Calculate next bid price (current highest + 500 SEK)
         $next_bid_price = $new_bid_price + $increment;
         
+        // Check if auto-bidder's max is high enough
         if ($next_bid_price <= $max_auto_bid) {
-            // **Get the current highest bidder BEFORE placing auto-bid**
+            // Get previous highest bidder before placing auto-bid
             $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
             
+            // Get unique ID for auto-bidder
             $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $auto_bidder_user_id);
-            
             if ($unique_id_data == 0) {
                 $unique_id_number = $this->User_model->get_unique_id_of_car($car_id);
                 $unique_id = $unique_id_number + 1;
@@ -1430,6 +1413,7 @@ private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_
                 $unique_id = $unique_id_data;
             }
             
+            // Place auto-bid
             $auto_bid_data = array(
                 'car_id' => $car_id,
                 'bidding_price' => $next_bid_price,
@@ -1441,29 +1425,59 @@ private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_
             
             $this->User_model->insert_bid($auto_bid_data);
             
-            // **Notify the previous highest bidder they've been auto-outbid**
+            // Notify the previous highest bidder they've been auto-outbid
             if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $auto_bidder_user_id) {
                 notify_outbid($previous_highest_bidder['user_id'], $car_id, $next_bid_price);
             }
             
+            // Extend auction time
             extend_auction_time($car_id);
             
-            // **Check if we've reached max auto-bid**
+            // Mark that we placed an auto-bid
+            $auto_bid_placed = true;
+            $winning_auto_bidder = $auto_bidder_user_id;
+            $new_bid_price = $next_bid_price; // Update for next iteration
+            
+            // Check if we've reached max auto-bid
             if ($next_bid_price >= $max_auto_bid) {
                 notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
+                break; // This user reached their max, stop processing their auto-bids
             }
             
-            if ($next_bid_price < $max_auto_bid) {
+            // Check if there are OTHER auto-bidders who can counter-bid
+            $can_continue = false;
+            foreach ($auto_bids as $other_auto_bid) {
+                if ($other_auto_bid['user_id'] != $auto_bidder_user_id) {
+                    $other_max = floatval($other_auto_bid['max_auto_bid']);
+                    $potential_next = $next_bid_price + $increment;
+                    
+                    if ($potential_next <= $other_max) {
+                        $can_continue = true;
+                        break;
+                    }
+                }
+            }
+            
+            // If another auto-bidder can counter, recurse
+            if ($can_continue) {
                 $this->process_auto_bidding($car_id, $next_bid_price, $auto_bidder_user_id, $increment);
             }
             
-            break;
-        } else {
-            // **Max reached - notify user**
-            notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
-        }
+            break; // Only process the highest auto-bidder in this iteration
+            } else {
+                // ✅ FIX: This auto-bidder's max is too low - the new bid exceeded their max
+                // Check if they have any previous bids - if yes, their last bid was at their max
+                $user_last_bid = $this->User_model->get_user_highest_bid($car_id, $auto_bidder_user_id);
+                
+                if ($user_last_bid) {
+                    // They had auto-bids before, and now someone outbid their max
+                    // Their last bid was their max reached
+                    notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
+                }
+            }
     }
 }
+
 
 public function get_bid(){
     $car_id = $this->input->post('id');
@@ -1720,26 +1734,25 @@ public function sellyourcar(){
             $message .= '</body></html>';
             
             // To send HTML mail, the Content-type header must be set
-            $headers = "MIME-Version: 1.0" . "\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            
+                                
             // Additional headers
             // $headers .= 'From: sender@example.com' . "\r\n";
             // $headers .= 'Reply-To: sender@example.com' . "\r\n";
             
-            $subject ="Car Information Submission";
-            
-            // mail($email, $subject, $message, $headers);
-            
-            if(mail($email, $subject, $message, $headers)) {
-            
-                   $response = array('status' => 'success', 'message' => 'Email has been sent successfully.');
-                         
-            } else {
-            
-                    $response = array('status' => 'error', 'message' => 'Failed to send email.');
-                
-            }
+$subject = "Contact Form Submission";
+
+$this->email->clear();
+$this->email->from('info@zogglo.se', 'Zogglo Car Auction');
+$this->email->to($email);
+$this->email->subject($subject);
+$this->email->message($message);
+
+if($this->email->send()) {
+    $response = array('status' => 'success', 'message' => 'Email has been sent successfully.');
+} else {
+    log_message('error', 'Email failed: ' . $this->email->print_debugger());
+    $response = array('status' => 'error', 'message' => 'Failed to send email.');
+}
         } else {
             $response = array('status' => 'error', 'message' => 'Your car Information data could not be submitted!.');
         }
@@ -1768,7 +1781,7 @@ public function sellyourcar(){
                 $reset_link = site_url('/reset_password?token=' . $token);
                 $this->User_model->store_reset_token($user->id, $token);
                 $message = '
-                Hello Name, <br/>
+                Hello, <br/>
                 Click on the following link to reset your password: <a href="' . $reset_link . '">' . $reset_link . '</a>
                 <br/>
                 Regards,<br/>
@@ -1779,21 +1792,24 @@ Car Auction Company
         
 
 // To send HTML mail, the Content-type header must be set
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
 // Additional headers
 // $headers .= 'From: sender@example.com' . "\r\n";
 // $headers .= 'Reply-To: sender@example.com' . "\r\n";
 
-$subject ="Foreget password";
+$subject = "Forgot Password";
 
-              if(mail($email, $subject, $message, $headers)) {
+$this->email->clear();
+$this->email->from('info@zogglo.se', 'Zogglo Car Auction');
+$this->email->to($email);
+$this->email->subject($subject);
+$this->email->message($message);
 
-                     $response = array('status' => 'success', 'message' => 'Password reset link has been sent to your email.');
-                } else {
-                    $response = array('status' => 'error', 'message' => 'Failed to send email.');
-                }
+if($this->email->send()) {
+    $response = array('status' => 'success', 'message' => 'Password reset link has been sent to your email.');
+} else {
+    log_message('error', 'Email failed: ' . $this->email->print_debugger());
+    $response = array('status' => 'error', 'message' => 'Failed to send email.');
+}
             } else {
               
                  $response = array('status' => 'error', 'message' => 'No account found with that email address.');
@@ -1869,27 +1885,24 @@ $subject ="Foreget password";
             $message .= '</body></html>';
 
 // To send HTML mail, the Content-type header must be set
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
 // Additional headers
 // $headers .= 'From: sender@example.com' . "\r\n";
 // $headers .= 'Reply-To: sender@example.com' . "\r\n";
 
-$subject ="Car Information Submission";
+$subject = "Car Information Submission";
 
-// mail($email, $subject, $message, $headers);
+$this->email->clear();
+$this->email->from('info@zogglo.se', 'Zogglo Car Auction');
+$this->email->to($email);
+$this->email->subject($subject);
+$this->email->message($message);
 
-if(mail($email, $subject, $message, $headers)) {
-
-       $response = array('status' => 'success', 'message' => 'Email has been sent successfully.');
-             
+if($this->email->send()) {
+    $response = array('status' => 'success', 'message' => 'Email has been sent successfully.');
 } else {
-
-        $response = array('status' => 'error', 'message' => 'Failed to send email.');
-    
+    log_message('error', 'Email failed: ' . $this->email->print_debugger());
+    $response = array('status' => 'error', 'message' => 'Failed to send email.');
 }
-
    echo json_encode($response);
     
 }

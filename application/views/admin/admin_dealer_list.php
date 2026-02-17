@@ -1,4 +1,11 @@
 <div class="product-page pt-40 mb-20">
+  <style>
+    .product-page .container {
+    max-width: 2000px !important;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+  </style>
 <div class="container">
 <div class="row g-xl-4 gy-5">
 
@@ -30,9 +37,10 @@
     <td class="head15699 stuj899">&nbsp;</td>
     <td class="head15699">Company Name</td>
     <td class="head15699">Dealer name</td>
-	 <td class="head15699 ">Email address</td>
-     <td class="head15699 text-center">Phone</td>
+    <td class="head15699">Email address</td>
+    <td class="head15699 text-center">Phone</td>
     <td class="head15699 text-center">Organization number</td>
+    <td class="head15699 text-center">Address</td>  <!-- ✅ NEW -->
     <td class="head15699 text-center">Active cars</td>
     <td class="head15699 text-center">Auction completed</td>
     <td class="head15699 text-center">Won auction</td>
@@ -40,40 +48,39 @@
     <td class="head15699">&nbsp;</td>
   </tr>
 
-  <?php 
- 
-if(!empty($users)){
-
-  foreach ($users as $user) {
-  
-
-  ?>
+  <?php if(!empty($users)): foreach ($users as $user): ?>
   <tr class="sert54">
-    <td class="head15700 stuj5 stuj89 hj15"><img src="<?php if(!empty($user->profle_photo_id)){echo get_image_path_by_id($user->profle_photo_id);  }else{ ?><?= base_url(); ?>assets/img/us3.jpg<?php } ?>" width="50px" alt="" /></td>
+    <td class="head15700 stuj5 stuj89 hj15"><img src="<?php if(!empty($user->profle_photo_id)){ echo get_image_path_by_id($user->profle_photo_id); }else{ ?><?= base_url(); ?>assets/img/us3.jpg<?php } ?>" width="50px" alt="" /></td>
     <td class="head15700 stuj5"><?php echo $user->company_name; ?></td>
     <td class="head15700 stuj5"><?php echo $user->first_name.' '.$user->last_name; ?></td>
-	<td class="head15700 stuj5"><?php echo $user->email; ?></td>
-     <td class="head15700 stuj5 text-center"><?php if(!empty($user->phone_number)){ echo $user->phone_number; }else{ echo"-"; } ?></td>
-    <td class="head15700 stuj5 text-center"><?php if(!empty($user->registration_number)){ echo $user->registration_number; }else{ echo"-"; } ?></td>
-    <td class="head15700 stuj5 text-center"><a target="blank" href="<?= base_url(); ?>/car-list?author=<?php echo $user->id; ?>"><?php echo get_car_by_data('post_author_id',$user->id); ?></a></td>
+    <td class="head15700 stuj5"><?php echo $user->email; ?></td>
+    <td class="head15700 stuj5 text-center"><?php echo !empty($user->phone_number) ? $user->phone_number : '-'; ?></td>
+    <td class="head15700 stuj5 text-center"><?php echo !empty($user->registration_number) ? $user->registration_number : '-'; ?></td>
+    <td class="head15700 stuj5 text-center"> <!-- ✅ NEW -->
+      <?php
+        $address_parts = array_filter([
+          $user->address ?? '',
+          $user->city    ?? '',
+          $user->state   ?? '',
+          $user->pincode ?? '',
+        ]);
+        echo !empty($address_parts) ? implode(', ', $address_parts) : '-';
+      ?>
+    </td>
+    <td class="head15700 stuj5 text-center"><a target="blank" href="<?= base_url(); ?>/car-list?author=<?php echo $user->id; ?>"><?php echo get_car_by_data('post_author_id', $user->id); ?></a></td>
     <td class="head15700 stuj5 text-center"><a target="blank" href="<?= base_url(); ?>admin/car/admin_aution_completed?completed_by_user=<?php echo $user->id; ?>"><?php echo get_compllete_car_auction_by_id($user->id); ?></a></td>
     <td class="head15700 stuj5 text-center"><a target="blank" href="<?= base_url(); ?>admin/car/admin_aution_completed?win_by_user=<?php echo $user->id; ?>"><?php echo get_win_car_auction_by_id($user->id); ?></a></td>
     <td class="head15700 stuj5 text-center"><a target="blank" href="<?= base_url(); ?>car/bid/dealercars?bid_by_user=<?php echo $user->id; ?>"><?php echo get_bid_by_userid_distin($user->id); ?></a></td>
     <td class="head15700 stuj5 text-center der55">
       <a href="<?= base_url(); ?>/car/bid/dealercars?author=<?php echo $user->id; ?>" class="view_new" title="View"><i class="fa fa-eye"></i></a>
-       <a href="javascript:;" class="red_bt_new delete_user" data-id="<?php echo $user->id; ?>" title="Delete"><i class="fa fa-trash-o"></i></a>
+      <a href="javascript:;" class="red_bt_new delete_user" data-id="<?php echo $user->id; ?>" title="Delete"><i class="fa fa-trash-o"></i></a>
     </td>
   </tr>
-
-  <?php } }else{
-?>
- <tr>
- <td colspan="8" class="drio55">No Dealer Found.</td>
- </tr>
-<?php 
-
-  } ?>
-  
+  <?php endforeach; else: ?>
+  <tr>
+    <td colspan="12" class="drio55">No Dealer Found.</td>
+  </tr>
+  <?php endif; ?>
 </table>
 </div>
 </div>

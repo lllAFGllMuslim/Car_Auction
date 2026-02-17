@@ -79,7 +79,8 @@ if(!empty($cars)){
                     if($total_pages>1){
                     
                     for ($i = 1; $i <= $total_pages; $i++): ?>
-                        <li class="<?php echo ($i == $current_page) ? 'active' : ''; ?>"><a href="<?php echo base_url('car-list/' . $i); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></a></li>
+                        <li class="<?php echo ($i == $current_page) ? 'active' : ''; ?>"><a href="<?php echo base_url('AdminBlogsController/admin_aution_cars/' . $i); ?>">
+<?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></a></li>
                     <?php endfor; 
                     }
                     ?>

@@ -122,3 +122,42 @@ $contact_data = get_contact_page_by_id(1);
 </div>
 </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#contact_form').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Disable submit button
+        var submitBtn = $(this).find('button[type="submit"]');
+        var originalText = submitBtn.text();
+        submitBtn.prop('disabled', true).text('Skickar...');
+        
+        var formData = $(this).serialize();
+        
+        $.ajax({
+            url: '<?php echo base_url('contact/send'); ?>',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('.message').html('<span style="color: green; font-weight: bold; display: block; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; margin-top: 20px;">' + response.message + '</span>');
+                    $('#contact_form')[0].reset();
+                } else {
+                    $('.message').html('<span style="color: red; font-weight: bold; display: block; padding: 15px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; margin-top: 20px;">' + response.message + '</span>');
+                }
+                
+                // Re-enable submit button
+                submitBtn.prop('disabled', false).text(originalText);
+            },
+            error: function() {
+                $('.message').html('<span style="color: red; font-weight: bold; display: block; padding: 15px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; margin-top: 20px;">Ett fel uppstod. Försök igen.</span>');
+                
+                // Re-enable submit button
+                submitBtn.prop('disabled', false).text(originalText);
+            }
+        });
+    });
+});
+</script>

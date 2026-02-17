@@ -8,7 +8,7 @@ class PageController extends CI_Controller {
         $this->load->helper('url');
         $this->load->model('Pages_model');
         $this->load->model('User_model');
-        
+        $this->load->library('email');
         $this->load->library('upload');
         $this->load->library('session');
         
@@ -178,7 +178,7 @@ public function update_terms_and_conditions() {
     public function update_header_footer() {
         // $data = $this->input->post();
         $data = array(
-            'id' => $this->input->post('id'), // Assuming the form has a hidden field for 'id'
+            'id' => $this->input->post('id'), 
             'logo_id' => $this->input->post('logo_id'),
             'favicon_id' => $this->input->post('favicon_id'),
             'site_title' => $this->input->post('site_title'),
@@ -598,7 +598,84 @@ public function market_price_added(){
     echo json_encode($response);
 }
 
+public function send_contact_email() {
+    
+    // Only allow POST requests
+    if ($this->input->method() !== 'post') {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
+        return;
+    }
 
+    // Get and sanitize form data
+    $fullname = $this->input->post('fullname', TRUE);
+    $phone = $this->input->post('phone', TRUE);
+    $email = $this->input->post('email', TRUE);
+    $subject = $this->input->post('subject', TRUE);
+    $message = $this->input->post('message', TRUE);
+    
+    // Validation
+    if (empty($fullname) || empty($phone) || empty($email) || empty($subject) || empty($message)) {
+        echo json_encode(['status' => 'error', 'message' => 'Vänligen fyll i alla fält.']);
+        return;
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(['status' => 'error', 'message' => 'Ogiltig e-postadress.']);
+        return;
+    }
+    
+    // Load email library
+    $this->load->library('email');
+
+    // Prepare email
+    $this->email->from('info@zogglo.se', 'Zogglo Website');
+    $this->email->to('info@zogglo.se');
+    $this->email->reply_to($email, $fullname);
+    $this->email->subject('Ny förfrågan: ' . $subject);
+    
+    // Email body (HTML)
+    $email_body = '
+    <html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #0066cc;">Ny kontaktförfrågan från webbplatsen</h2>
+        <table style="width: 100%; max-width: 600px; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>Namn:</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">' . htmlspecialchars($fullname) . '</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>Telefon:</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">' . htmlspecialchars($phone) . '</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>Email:</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">' . htmlspecialchars($email) . '</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>Ämne:</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">' . htmlspecialchars($subject) . '</td>
+            </tr>
+        </table>
+        <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #0066cc;">
+            <h3 style="margin-top: 0;">Meddelande:</h3>
+            <p>' . nl2br(htmlspecialchars($message)) . '</p>
+        </div>
+    </body>
+    </html>
+    ';
+
+    $this->email->message($email_body);
+
+    if ($this->email->send()) {
+        echo json_encode(['status' => 'success', 'message' => 'Tack! Ditt meddelande har skickats.']);
+    } else {
+                
+        echo json_encode([
+            'status' => 'error', 
+            'message' => 'Ett fel uppstod. Försök igen senare.',
+        ]);
+    }
+}
 
 
 

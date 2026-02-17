@@ -334,13 +334,16 @@ class User_model extends CI_Model {
 
                                     public function get_all_cars($limit, $offset)
                                     {
+                                        $this->db->select('cars.*, users.city, users.username as dealer_name');
+                                        $this->db->from('cars');
+                                        $this->db->join('users', 'users.id = cars.post_author_id', 'left');
+                                        $this->db->where('cars.auction_status', '0');
+                                        $this->db->order_by('cars.id', 'DESC');
                                         $this->db->limit($limit, $offset);
-                                         $this->db->where('auction_status', '0' );
-                                            $this->db->order_by('id', 'DESC');
-                                        $query = $this->db->get('cars'); // Assuming the table name is 'blogs'
+                                        
+                                        $query = $this->db->get();
                                         return $query->result();
-                                    }
-                                
+                                    }                                
                                     public function get_total_all_cars_count()
                                     {
                                         // Get the user ID from session data

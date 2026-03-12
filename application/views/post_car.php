@@ -416,11 +416,11 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 <label>Beskrivning</label>
 <select name="Breaks_description" id="Breaks_description" class="form-control" onchange="syncRatingFromDropdown(this, 'bracks_count', 'bracks_count')">
   <option value="">Välj beskrivning</option>
-  <option value="1">Betyg 1 – Mycket dåligt skick: Bromsarna är kraftigt slitna med dålig bromsverkan. Oljud, vibrationer eller ojämn bromsning förekommer. Åtgärd krävs omedelbart.</option>
-  <option value="2">Betyg 2 – Dåligt skick: Bromsarna fungerar bristfälligt och visar tecken på slitage. Förlängd bromssträcka och eventuellt missljud. Rekommenderas åtgärd snarast.</option>
-  <option value="3">Betyg 3 – Godkänt skick: Bromsarna fungerar tillfredsställande vid normal körning. Viss förslitning finns men inom godkända gränser.</option>
-  <option value="4">Betyg 4 – Bra skick: Bromsarna är i gott skick med jämn och effektiv bromsverkan. Inga onormala ljud eller vibrationer.</option>
-  <option value="5">Betyg 5 – Mycket bra skick: Bromsarna är i mycket bra eller nyskick med utmärkt bromsverkan och hög säkerhet. Inga anmärkningar.</option>
+  <option data-num="1" value="Betyg 1 – Mycket dåligt skick: Bromsarna är kraftigt slitna med dålig bromsverkan. Oljud, vibrationer eller ojämn bromsning förekommer. Åtgärd krävs omedelbart.">Betyg 1 – Mycket dåligt skick: Bromsarna är kraftigt slitna med dålig bromsverkan. Oljud, vibrationer eller ojämn bromsning förekommer. Åtgärd krävs omedelbart.</option>
+  <option data-num="2" value="Betyg 2 – Dåligt skick: Bromsarna fungerar bristfälligt och visar tecken på slitage. Förlängd bromssträcka och eventuellt missljud. Rekommenderas åtgärd snarast.">Betyg 2 – Dåligt skick: Bromsarna fungerar bristfälligt och visar tecken på slitage. Förlängd bromssträcka och eventuellt missljud. Rekommenderas åtgärd snarast.</option>
+  <option data-num="3" value="Betyg 3 – Godkänt skick: Bromsarna fungerar tillfredsställande vid normal körning. Viss förslitning finns men inom godkända gränser.">Betyg 3 – Godkänt skick: Bromsarna fungerar tillfredsställande vid normal körning. Viss förslitning finns men inom godkända gränser.</option>
+  <option data-num="4" value="Betyg 4 – Bra skick: Bromsarna är i gott skick med jämn och effektiv bromsverkan. Inga onormala ljud eller vibrationer.">Betyg 4 – Bra skick: Bromsarna är i gott skick med jämn och effektiv bromsverkan. Inga onormala ljud eller vibrationer.</option>
+  <option data-num="5" value="Betyg 5 – Mycket bra skick: Bromsarna är i mycket bra eller nyskick med utmärkt bromsverkan och hög säkerhet. Inga anmärkningar.">Betyg 5 – Mycket bra skick: Bromsarna är i mycket bra eller nyskick med utmärkt bromsverkan och hög säkerhet. Inga anmärkningar.</option>
 </select>
 <input type="hidden" name="bracks_count" id="bracks_count" value="1" />
 </div>
@@ -440,11 +440,11 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 <label>Beskrivning</label>
 <select name="exterior_body_description" id="exterior_body_description" class="form-control" onchange="syncRatingFromDropdown(this, 'exterior_body', 'exterior_body')">
   <option value="">Välj beskrivning</option>
-  <option value="1">Betyg 1 – Mindre bra skick: Karossen visar tydliga tecken på användning med flera synliga märken.</option>
-  <option value="2">Betyg 2 – Acceptabelt skick: Mindre bucklor, repor eller bruksspår förekommer.</option>
-  <option value="3">Betyg 3 – Normalt skick: Karossen är i normalt skick för ålder och användning, med mindre skavanker.</option>
-  <option value="4">Betyg 4 – Bra skick: Karossen är i gott skick med få och mindre bruksspår.</option>
-  <option value="5">Betyg 5 – Mycket bra skick: Karossen är i mycket fint skick med ett välvårdat intryck.</option>
+  <option data-num="1" value="Betyg 1 – Mindre bra skick: Karossen visar tydliga tecken på användning med flera synliga märken.">Betyg 1 – Mindre bra skick: Karossen visar tydliga tecken på användning med flera synliga märken.</option>
+  <option data-num="2" value="Betyg 2 – Acceptabelt skick: Mindre bucklor, repor eller bruksspår förekommer.">Betyg 2 – Acceptabelt skick: Mindre bucklor, repor eller bruksspår förekommer.</option>
+  <option data-num="3" value="Betyg 3 – Normalt skick: Karossen är i normalt skick för ålder och användning, med mindre skavanker.">Betyg 3 – Normalt skick: Karossen är i normalt skick för ålder och användning, med mindre skavanker.</option>
+  <option data-num="4" value="Betyg 4 – Bra skick: Karossen är i gott skick med få och mindre bruksspår.">Betyg 4 – Bra skick: Karossen är i gott skick med få och mindre bruksspår.</option>
+  <option data-num="5" value="Betyg 5 – Mycket bra skick: Karossen är i mycket fint skick med ett välvårdat intryck.">Betyg 5 – Mycket bra skick: Karossen är i mycket fint skick med ett välvårdat intryck.</option>
 </select>
 <input type="hidden" name="exterior_body" id="exterior_body" value="1" />
 </div>
@@ -464,11 +464,11 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 <label>Beskrivning</label>
 <select name="tires_description" id="tires_description" class="form-control" onchange="syncRatingFromDropdown(this, 'tires', 'tires')">
   <option value="">Välj beskrivning</option>
-  <option value="1">Betyg 1 – Mycket dåligt skick: Däcken är kraftigt slitna med mönsterdjup under rekommenderad nivå. Sprickor och ojämnt slitage förekommer. Bör bytas omedelbart.</option>
-  <option value="2">Betyg 2 – Dåligt skick: Däcken är tydligt slitna och har begränsat grepp, särskilt på vått underlag. Kan användas kortvarigt men byte rekommenderas snarast.</option>
-  <option value="3">Betyg 3 – Godkänt skick: Däcken har acceptabelt mönsterdjup och jämnt slitage. Fungerar tillfredsställande under normala förhållanden men är på väg att behöva bytas.</option>
-  <option value="4">Betyg 4 – Bra skick: Däcken är i gott skick med bra mönsterdjup och goda köregenskaper. Inga synliga skador.</option>
-  <option value="5">Betyg 5 – Mycket bra skick: Däcken är nästan nya med utmärkt mönsterdjup och optimalt grepp. Inga anmärkningar.</option>
+  <option data-num="1" value="Betyg 1 – Mycket dåligt skick: Däcken är kraftigt slitna med mönsterdjup under rekommenderad nivå. Sprickor och ojämnt slitage förekommer. Bör bytas omedelbart.">Betyg 1 – Mycket dåligt skick: Däcken är kraftigt slitna med mönsterdjup under rekommenderad nivå. Sprickor och ojämnt slitage förekommer. Bör bytas omedelbart.</option>
+  <option data-num="2" value="Betyg 2 – Dåligt skick: Däcken är tydligt slitna och har begränsat grepp, särskilt på vått underlag. Kan användas kortvarigt men byte rekommenderas snarast.">Betyg 2 – Dåligt skick: Däcken är tydligt slitna och har begränsat grepp, särskilt på vått underlag. Kan användas kortvarigt men byte rekommenderas snarast.</option>
+  <option data-num="3" value="Betyg 3 – Godkänt skick: Däcken har acceptabelt mönsterdjup och jämnt slitage. Fungerar tillfredsställande under normala förhållanden men är på väg att behöva bytas.">Betyg 3 – Godkänt skick: Däcken har acceptabelt mönsterdjup och jämnt slitage. Fungerar tillfredsställande under normala förhållanden men är på väg att behöva bytas.</option>
+  <option data-num="4" value="Betyg 4 – Bra skick: Däcken är i gott skick med bra mönsterdjup och goda köregenskaper. Inga synliga skador.">Betyg 4 – Bra skick: Däcken är i gott skick med bra mönsterdjup och goda köregenskaper. Inga synliga skador.</option>
+  <option data-num="5" value="Betyg 5 – Mycket bra skick: Däcken är nästan nya med utmärkt mönsterdjup och optimalt grepp. Inga anmärkningar.">Betyg 5 – Mycket bra skick: Däcken är nästan nya med utmärkt mönsterdjup och optimalt grepp. Inga anmärkningar.</option>
 </select>
 <input type="hidden" name="tires" id="tires" value="1" />
 </div>
@@ -488,11 +488,11 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
 <label>Beskrivning</label>
 <select name="interior_body_description" id="interior_body_description" class="form-control" onchange="syncRatingFromDropdown(this, 'interior_body', 'interior_body')">
   <option value="">Välj beskrivning</option>
-  <option value="1">Betyg 1 – Enklare skick: Interiören är använd och har tydliga bruksspår.</option>
-  <option value="2">Betyg 2 – Godtagbart skick: Viss synlig användning förekommer, exempelvis slitage på säten eller paneler.</option>
-  <option value="3">Betyg 3 – Normalt skick: Interiören är i normalt skick för ålder och användning, med mindre bruksspår.</option>
-  <option value="4">Betyg 4 – Välskött skick: Interiören är i bra skick och upplevs som väl omhändertagen.</option>
-  <option value="5">Betyg 5 – Mycket välskött skick: Interiören är i mycket fint skick med ett trivsamt helhetsintryck.</option>
+  <option data-num="1" value="Betyg 1 – Enklare skick: Interiören är använd och har tydliga bruksspår.">Betyg 1 – Enklare skick: Interiören är använd och har tydliga bruksspår.</option>
+  <option data-num="2" value="Betyg 2 – Godtagbart skick: Viss synlig användning förekommer, exempelvis slitage på säten eller paneler.">Betyg 2 – Godtagbart skick: Viss synlig användning förekommer, exempelvis slitage på säten eller paneler.</option>
+  <option data-num="3" value="Betyg 3 – Normalt skick: Interiören är i normalt skick för ålder och användning, med mindre bruksspår.">Betyg 3 – Normalt skick: Interiören är i normalt skick för ålder och användning, med mindre bruksspår.</option>
+  <option data-num="4" value="Betyg 4 – Välskött skick: Interiören är i bra skick och upplevs som väl omhändertagen.">Betyg 4 – Välskött skick: Interiören är i bra skick och upplevs som väl omhändertagen.</option>
+  <option data-num="5" value="Betyg 5 – Mycket välskött skick: Interiören är i mycket fint skick med ett trivsamt helhetsintryck.">Betyg 5 – Mycket välskött skick: Interiören är i mycket fint skick med ett trivsamt helhetsintryck.</option>
 </select>
 <input type="hidden" id="interior_body" name="interior_body" value="1" />
 </div>
@@ -525,10 +525,11 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
      * @param {string}            hiddenId   - ID of the hidden input to update (e.g. 'bracks_count')
      */
     function syncRatingFromDropdown(selectEl, spanClass, hiddenId) {
-        var rating = parseInt(selectEl.value);
-        if (!rating) return; // nothing selected
+        var selectedOption = selectEl.options[selectEl.selectedIndex];
+        var rating = parseInt(selectedOption.getAttribute('data-num'));
+        if (!rating) return;
 
-        // Update hidden input
+        // Update hidden numeric input
         document.getElementById(hiddenId).value = rating;
 
         // Update active span
@@ -540,7 +541,6 @@ foreach (array('Vit','Grå','Svart','röd','Beige','Blå','Grön','Silver','Gul'
             }
         });
     }
-
     (function () {
         'use strict';
 

@@ -1,4 +1,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer">
+
    <style>
        .max-value{
            float:right;
@@ -553,32 +556,66 @@ document.getElementById("slider2").style.display = "";
 
 <div class="recent-product-section bg_wrap_gray5">
 <div class="container max_wrapfull">
-<div class="row mb-30 wow fadeInUp z_ind5" data-wow-delay="200ms">
+<div class="row mb-30 z_ind5">
 <div class="col-lg-12 product-page">
-<div class="show-item-and-filte" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-  
+<div class="show-item-and-filte d-none d-sm-block">
+<p></p>
+<div class="filter-view">
+<div data-testid="count" class="HitAndSorting__Container-sc-17cri1-0 iILyEm"><?php echo $total_blogs;?> Bilar</div>
+
+<div class="filter-atra">
+<h6>Filtrera:</h6>
+<form name="search" id="search" action="" method="get" >
+<div class="form-inner orderby">
+<select name="order" id="order" >
+<option <?php if($this->input->get('order_by')==1){ echo"selected";  }  ?> value="1">Rekommenderad</option>
+<option <?php if($this->input->get('order_by')==3){ echo"selected";  }  ?> value="3">Senaste bilarna tillagda</option>
+<?php if($_REQUEST['cat_buy_method']=='auction')
+{
+?>
+<option <?php if($this->input->get('order_by')==2){ echo"selected";  }  ?>  value="2">Mindre tid kvar</option>
+<option <?php if($this->input->get('order_by')==4){ echo"selected";  }  ?>  value="4">Högsta bud</option>
+<option <?php if($this->input->get('order_by')==5){ echo"selected";  }  ?>  value="5">Lägsta bud</option>
+<?php
+}
+?>
+
+
+<option <?php if($this->input->get('order_by')==6){ echo"selected";  }  ?>  value="6">Högsta pris hos återförsäljare</option>
+<option <?php if($this->input->get('order_by')==7){ echo"selected";  }  ?>  value="7">Lägsta pris hos återförsäljare</option>
+</select>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<div class="show-item-and-filte d-flex d-lg-none" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
   <!-- Count -->
-  <div data-testid="count" class="HitAndSorting__Container-sc-17cri1-0 iILyEm" style="white-space:nowrap;">
-    <?php echo count($cars); ?> ST
-  </div>
+<div data-testid="count" class="HitAndSorting__Container-sc-17cri1-0 iILyEm" style="white-space:nowrap;">
+    <?php echo $total_blogs; ?> ST
+</div>
 
   <!-- Sort dropdown (no label) -->
-  <form name="search" id="search" action="" method="get" style="margin:0;">
-    <div class="form-inner orderby" style="margin:0;">
-      <select name="order" id="order">
-        <option <?php if($this->input->get('order_by')==1) echo 'selected'; ?> value="1">Rekommenderad</option>
-        <option <?php if($this->input->get('order_by')==3) echo 'selected'; ?> value="3">Senaste bilarna tillagda</option>
-        <?php if(!empty($_REQUEST['cat_buy_method']) && $_REQUEST['cat_buy_method']=='auction'): ?>
-        <option <?php if($this->input->get('order_by')==2) echo 'selected'; ?> value="2">Mindre tid kvar</option>
-        <option <?php if($this->input->get('order_by')==4) echo 'selected'; ?> value="4">Högsta bud</option>
-        <option <?php if($this->input->get('order_by')==5) echo 'selected'; ?> value="5">Lägsta bud</option>
-        <?php endif; ?>
-        <option <?php if($this->input->get('order_by')==6) echo 'selected'; ?> value="6">Högsta pris hos återförsäljare</option>
-        <option <?php if($this->input->get('order_by')==7) echo 'selected'; ?> value="7">Lägsta pris hos återförsäljare</option>
-      </select>
-    </div>
-  </form>
+    <form name="search" id="search" action="" method="get" style="margin:0;">
+        <div class="form-inner orderby" style="margin:0;">
+            <select name="order_by" id="order_by" class="order-select text-white border-0" onchange="this.form.submit()">
+                <option <?php if($this->input->get('order_by')==1) echo 'selected'; ?> value="1">Rekommenderad</option>
+                <option <?php if($this->input->get('order_by')==3) echo 'selected'; ?> value="3">Senaste bilarna tillagda</option>
 
+                <?php if(!empty($_REQUEST['cat_buy_method']) && $_REQUEST['cat_buy_method']=='auction'): ?>
+                    <option <?php if($this->input->get('order_by')==2) echo 'selected'; ?> value="2">Mindre tid kvar</option>
+                    <option <?php if($this->input->get('order_by')==4) echo 'selected'; ?> value="4">Högsta bud</option>
+                    <option <?php if($this->input->get('order_by')==5) echo 'selected'; ?> value="5">Lägsta bud</option>
+                <?php endif; ?>
+
+                <option <?php if($this->input->get('order_by')==6) echo 'selected'; ?> value="6">Högsta pris hos återförsäljare</option>
+                <option <?php if($this->input->get('order_by')==7) echo 'selected'; ?> value="7">Lägsta pris hos återförsäljare</option>
+            </select>
+        </div>
+    </form>
+    
   <!-- Layout switcher (icons only) -->
   <div style="display:flex; gap:6px; margin-left:auto;">
     <button type="button" class="layout-switch-btn active" id="layout-btn-1" onclick="switchMobileLayout(1)">
@@ -593,7 +630,7 @@ document.getElementById("slider2").style.display = "";
 </div><!-- ✅ close col-lg-12 product-page -->
 </div><!-- ✅ close row mb-30 -->
 
-<div class="row">
+<div class="row g-0">
 <div class="car-grid-wrapper-section">
 <div class="tab-content">
 <div class="tab-pane fade show active" id="popular-car1" role="tabpanel" aria-labelledby="popular-car1-tab">
@@ -616,9 +653,7 @@ foreach ($cars as $car):
   
 
 ?>
-<div class="col-lg-3 col-md-6 col-sm-10 hovgh55 wow fadeInUp" data-wow-delay="200ms" style="cursor: pointer;" <?php /*?>onclick=' window.location.href = "<?php echo base_url();  ?>car/<?php echo $car->car_slug; ?>"'<?php */?>>
-
-
+<div class="col-lg-3 col-md-6 col-sm-10 hovgh55" style="cursor: pointer;">
 <div class="product-card">
 <div class="product-img">
   <?php if($car->cat_buy_method==3){
@@ -675,8 +710,10 @@ if(!empty($car->reduce_price)){
 <?php if(!empty($gallery_images)){ ?>
 <div class="suporty587 mobile-slider-container">
     <?php
-        $gallery_images  =    json_decode( $gallery_images);
-        
+        // already decoded at top of loop — ensure it's an array
+        if (!is_array($gallery_images)) {
+            $gallery_images = json_decode($gallery_images, true);
+        }
         $image_urls = array();
         $i = 0;
          if (is_array($gallery_images) && !empty($gallery_images)) {
@@ -716,16 +753,128 @@ if(!empty($car->reduce_price)){
 </div>
 <?php } ?>
 
+<style>
+/* Mobile product card image slider */
+@media (max-width: 768px) {
 
+    .desktop-image-view {
+        display: none !important;
+    }
+
+    .mobile-image-slider {
+        display: block;
+        position: relative;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .slider-image {
+        display: none;
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .slider-image.active {
+        display: block;
+    }
+
+    .slider-image a {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .slider-dots {
+        position: absolute;
+        bottom: 8px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        z-index: 10;
+    }
+
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .dot.active {
+        background: #fff;
+    }
+}
+
+/* Desktop: hide mobile slider, show desktop view */
+@media (min-width: 769px) {
+    .mobile-image-slider {
+        display: none !important;
+    }
+
+    .desktop-image-view {
+        display: block;
+    }
+}
+</style>
 </div>
 <div class="product-content">
+<?php
+$_logged_user = $this->session->userdata('user_id');
+if (!empty($_logged_user) && $car->cat_buy_method == 3) {
+    $_card_bids = get_bid_by_id($car->id);
+    if (!empty($_card_bids)) {
+
+        // ── find if THIS user has any bid on this car ──────────
+        $_user_has_bid = false;
+        foreach ($_card_bids as $_b) {
+            // adjust 'bidder_id' below to match your actual DB column
+            $bid_owner = !empty($_b->bidder_id) ? $_b->bidder_id
+                       : (!empty($_b->user_id)   ? $_b->user_id
+                       : null);
+
+            if ((int)$bid_owner === (int)$_logged_user) {
+                $_user_has_bid = true;
+                break;
+            }
+        }
+
+        if ($_user_has_bid) {
+            // check top bid owner the same way
+            $_top = $_card_bids[0];
+            $_top_owner = !empty($_top->bidder_id) ? $_top->bidder_id
+                        : (!empty($_top->user_id)   ? $_top->user_id
+                        : null);
+            $_is_leading = (int)$_top_owner === (int)$_logged_user;
+?>
+    <div class="notice-sign">
+        <?php if ($_is_leading): ?>
+            <b style="color:#D4AF37;">
+                <i class="fa-solid fa-gavel" style="margin-right:6px;"></i>
+                DU LEDER
+            </b>
+        <?php else: ?>
+            <b style="color:black;">
+                <i class="fa-solid fa-circle-exclamation" style="margin-right:6px; color:red !important;"></i>
+                ÖVERBJUDEN
+            </b>
+        <?php endif; ?>
+    </div>
+<?php } } } ?>
 <h5><a href="<?php echo base_url();  ?>car/<?php echo $car->car_slug; ?>"> <?php echo $car->car_title; ?> </a></h5>
 <?php if(!empty($car->car_sub_title)): ?>
 <p class="car-subtitle" style="font-size: 13px; color: #666; margin: 5px 0 10px 0;"><?php echo $car->car_sub_title; ?></p>
 <?php endif; ?>
 <div class="date_wrap">
     <span><?php if(!empty($model_year)){ echo  $model_year["year_name"]; } ?></span> 
-    <span><?php echo $car->mileage; ?> Mil</span> 
+    <span><?php echo number_format($car->mileage, 0, '.', ' '); ?> Mil</span>
     <span><?php if(!empty($fuel)){ echo  $fuel["fuel_name"]; } ?></span>  
     <span><?php if(!empty($engine)){ echo  $engine["engine_name"]; } ?></span>
     <?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
@@ -758,7 +907,7 @@ $bids=get_bid_by_id($car->id);
 // if(!empty($bids)){
     ?>
 
-<div class="price_wrap15"><span class="fix_st1">ledande bud</span>
+<div class="price_wrap15"><span class="fix_st1">Ledande Bud</span>
 
 <span class="fix_st2 ledf55">
 <?php if(!empty($bids)) { echo number_format($bids[0]->bidding_price); } else { echo 0; } ?> <?php echo $this->config->item('CURRENCY'); ?>
@@ -843,14 +992,20 @@ endforeach;
 <div class="pagination">
 <ul>
 <?php
-                    // echo "<h2>".$total_pages."</h2>";
-                    if($total_pages>1){
-                    
-                    for ($i = 1; $i <= $total_pages; $i++): ?>
-                        <li class="<?php echo ($i == $current_page) ? 'active' : ''; ?>"><a href="<?php echo base_url('search/' . $i); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></a></li>
-                    <?php endfor; 
-                    }
-                    ?>
+    if($total_pages > 1){
+        $query_params = $_GET;
+        unset($query_params['page']);
+        $query_string = !empty($query_params) ? '?' . http_build_query($query_params) : '';
+
+        for ($i = 1; $i <= $total_pages; $i++): ?>
+            <li class="<?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                <a href="<?php echo base_url('search/' . $i) . $query_string; ?>">
+                    <?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?>
+                </a>
+            </li>
+        <?php endfor;
+    }
+?>
 </ul>
 </div>
 <div class="next-prev-btn">

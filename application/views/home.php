@@ -327,7 +327,7 @@ if(!empty($car->reduce_price)){
     <?php if(isset($car->cat_buy_method) && $car->cat_buy_method == 3): ?>
 <div class="bidder-count-wrapper" style="display: inline-block; float: right; font-size: 12px;">
     <i class="fa fa-gavel" style="color: #007bff;"></i>
-    <span class="bidder-count"><?php echo isset($car->total_bidders) ? $car->total_bidders : 0; ?></span>
+    <span class="bidder-count"><?php echo $car->total_bidders ?? 0; ?></span>
     <i class="fa fa-info-circle" 
        data-toggle="tooltip" 
        data-placement="top" 

@@ -1,3 +1,8 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
 <?php 
 $profile_data = get_profile($car_view["post_author_id"]);
 
@@ -27,7 +32,7 @@ if (!empty($highest_bid) && !empty($car_view["fixed_price"]) && $car_view["fixed
 
 // Hide in last 24 hours of auction
 $timer_data = get_auction_timer_data($car_view['id']);
-if ($timer_data['show_timer']) {
+if ($timer_data['show_timer'] && $car_view['cat_buy_method'] == 3) {
     $hide_fast_pris = true;
 }
 ?>
@@ -98,6 +103,7 @@ li span {
 .bid-type-max-reached {
     background-color: #f59e0b;
     color: white;
+    font-size:8px !important;
     animation: pulse 2s infinite;
 }
 
@@ -108,7 +114,7 @@ li span {
 
 .bid-history-item {
     padding: 10px 15px;
-    border-bottom: 1px solid #e5e7eb;
+    border: 1px solid #000000;
     transition: background-color 0.2s;
 }
 
@@ -133,7 +139,7 @@ li span {
 }
 
 .bid-amount {
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     font-size: 16px;
 }
@@ -193,9 +199,9 @@ li span {
 </div>
 </div>
 <div class="row">
-    <div class="col-lg-12" style="font-size:0px !important;">
+    <div class="col-lg-12" style="font-size:0px !important; padding:0px !important;">
         <!-- SWIPER.JS DUPLICATE SLIDER SECTION -->
-<div class="col-lg-12 mb-5">
+<div class="col-lg-12 mb-0 mb-lg-5">
     <div class="swiper-container-wrapper">
         <!-- Main Swiper Slider -->
         <div class="swiper main-swiper-test">
@@ -473,17 +479,35 @@ const thumbnailSwiperTest = new Swiper('.thumbnail-swiper-test', {
     }
   }
 });
-  const mainSwiperTest = new Swiper('.main-swiper-test', {
+    const mainSwiperTest = new Swiper('.main-swiper-test', {
     spaceBetween: 10,
-    speed: 450,               // ✅ smoother main slider too
+    speed: 450,
     loop: false,
     navigation: {
-      nextEl: '.main-swiper-test .swiper-button-next',
-      prevEl: '.main-swiper-test .swiper-button-prev',
+        nextEl: '.main-swiper-test .swiper-button-next',
+        prevEl: '.main-swiper-test .swiper-button-prev',
     },
     keyboard: { enabled: true },
     thumbs: { swiper: thumbnailSwiperTest },
-  });
+    touchStartPreventDefault: false,
+    allowTouchMove: true,        // ← ADD THIS
+    passiveListeners: true,      // ← ADD THIS
+});
+
+const mainSwiperEl = document.querySelector('.main-swiper-test');
+
+mainSwiperEl.addEventListener('touchstart', function(e) {
+    if (e.touches.length > 1) {
+        mainSwiperTest.allowTouchMove = false;
+    } else {
+        mainSwiperTest.allowTouchMove = true;
+    }
+}, { passive: true });
+
+mainSwiperEl.addEventListener('touchend', function(e) {
+    mainSwiperTest.allowTouchMove = true;
+}, { passive: true });
+
 
   // ✅ Auto-scroll thumbs so active thumb stays visible (desktop + mobile)
 function keepThumbInView(activeIndex) {
@@ -601,6 +625,17 @@ function keepThumbInView(activeIndex) {
 </div>
 
 <style>
+    .main-swiper-test .swiper-slide img {
+    touch-action: pinch-zoom !important;
+    -ms-touch-action: pinch-zoom !important;
+}
+
+.main-swiper-test,
+.main-swiper-test .swiper-wrapper,
+.main-swiper-test .swiper-slide {
+    touch-action: pan-y pinch-zoom !important;
+}
+
 .mibreit-thumbElement {
     height: auto !important;
     background-size: cover !important;
@@ -621,7 +656,7 @@ function keepThumbInView(activeIndex) {
 <img src="<?php echo base_url();  ?>assets/img/inner-page/icon/mileage.svg" alt>
 </div>
 <div class="content">
-<h6><?php if(!empty($car_view["mileage"])){ echo $car_view["mileage"]; }else{ echo"-"; } ?></h6>
+<h6><?php echo !empty($car_view["mileage"]) ? number_format($car_view["mileage"], 0, '.', ' ') : '-'; ?></h6>
 <span><?php echo $footer_data["mileage_text"]; ?></span>
 </div>
 </li>
@@ -723,29 +758,34 @@ function keepThumbInView(activeIndex) {
         <div class="resv_wrap">
             <span class="reservation_cls">Reservationspriset har inte uppnåtts</span>
             <a href="javascript:void(0)" onClick="openNav()" class="see_wrap_bid">Se Budgivning</a>
-            <span>Budgivning Avslutas: 
-                <?php if (get_post_status($car_view["id"]) == 'timer'): ?>
-                    <b id="countdown_mobile_<?php echo $car_view["id"]; ?>" style="color:red;"></b>
-                <?php else: ?>
-                    <b><?php 
-                        $status = get_post_status($car_view["id"]);
-                        echo ($status == "Auction Time Completed") ? "Auktionstid avslutad" : $status; 
-                    ?></b>
+<?php 
+$auction_end_time = strtotime($car_view['created'] . ' + 14 days');
+if (time() >= $auction_end_time): ?>
+    <span class="auction-end-text">
+        <?php if (!empty($highest_bid)): ?>
+            Auktionen avslutades vid detta bud: 
+            <b style="color:black !important;"><?php echo number_format($highest_bid); ?> <?php echo $this->config->item('CURRENCY'); ?></b>
+        <?php else: ?>
+            Auktionen är avslutad
+        <?php endif; ?>
+    </span>
+<?php else: ?>
+    <span class="auction-end-text">Budgivning Avslutas: 
+        <b style="color:black !important;"><?php echo date('d-M, H:i', $auction_end_time); ?></b>
+    </span>
+<?php endif; ?>
 
-                <?php endif; ?>
-            </span>
-        </div>
+</div>
     </div>
     <?php } ?>
     <?php 
 $car_id = $car_view['id'];
 $timer_data = get_auction_timer_data($car_id);
 
-if ($timer_data['show_timer']): 
+if ($timer_data['show_timer'] && $car_view['cat_buy_method'] == 3): 
 ?>
     <div class="auction-details">
-        <h3>Auktionen avslutas snart!</h3>
-        
+<h3 class="auction-status-heading">Auktionen avslutas snart!</h3>        
         <div class="auction-timer-wrapper" 
              data-car-id="<?php echo $car_id; ?>"
              data-created-timestamp="<?php echo $timer_data['created_timestamp']; ?>"
@@ -923,7 +963,7 @@ if(!empty($cat_engine)){
 <li><span><?php echo $footer_data["brand_text"]; ?>  </span> <?php if(!empty($brand["brand_name"])){ echo ucwords($brand["brand_name"]); }else{ echo"-"; } ?> </li> 
 <li><span><?php echo $footer_data["model_text"]; ?>  </span> <?php if(!empty($model["model_name"])){ echo ucwords($model["model_name"]); }else{ echo"-"; } ?> </li> 
 <li><span><?php echo $footer_data["fuel_type_text"]; ?>  </span> <?php if(!empty($fuel["fuel_name"])){ echo ucwords($fuel["fuel_name"]); }else{ echo"-"; } ?> </li> 
-<li><span><?php echo $footer_data["mileage_text"]; ?>  </span> <?php if(!empty($car_view["mileage"])){ echo $car_view["mileage"]." Mileage"; }else{ echo"-"; } ?>  </li> 
+<li><span><?php echo $footer_data["mileage_text"]; ?>  </span> <?php echo !empty($car_view["mileage"]) ? number_format($car_view["mileage"], 0, '.', ' ') . ' Mileage' : '-'; ?>  </li> 
 <li><span><?php echo $footer_data["model_year_text"]; ?> year</span> <?php if(!empty($model_year["year_name"])){ echo $year["year_name"]; }else{ echo"-"; } ?></li> 
  <li><span><?php echo $footer_data["body_text"]; ?> </span> <?php if(!empty($body["body_name"])){ echo ucwords($body["body_name"]); }else{ echo"-"; } ?> </li>
  <li><span><?php echo $footer_data["engine_text"]; ?> </span> <?php if(!empty($engine["engine_name"])){ echo ucwords($engine["engine_name"]); }else{ echo"-"; } ?> </li>
@@ -968,6 +1008,11 @@ if(!empty($cat_engine)){
 </div>
 </div>
 </div>
+<?php 
+$_remark_check = json_decode($car_view['remark_image_ids'], true);
+$_remark_check = json_decode($_remark_check);
+if (!empty($_remark_check) && is_array($_remark_check)): 
+?>
 <div class="single-item mb-50" id="car-color">
 <div class="car-colors">
 <div class="title-and-slider-btn mb-25">
@@ -989,47 +1034,20 @@ if(!empty($cat_engine)){
 </div>
 <div class="swiper car-color-slider">
 <div class="swiper-wrapper">
-
-<?php 
-            
-            if(!empty($car_view["car_photo_gallery_ids"])){
-              $remark_images = json_decode($car_view['remark_image_ids'], true); 
-            ?>
-<?php
-       // Decode as an associative array
-        
-   
-       $remark_images  =    json_decode( $remark_images);
-          
-       if (is_array($remark_images) && !empty($remark_images)) {
-           foreach ($remark_images as $image) {
-
-               
-          ?>
-             
-              <div class="swiper-slide">
-<div class="car-color-wrap">
-    
-<div class="car-img">
-<img src="<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>" alt>
-</div>
-</div>
-</div>
-              <?php
-              }
-          }
-               
-          ?>
-
-              <?php } ?>
-
-
-
-
+<?php foreach ($_remark_check as $image): ?>
+    <div class="swiper-slide">
+        <div class="car-color-wrap">
+            <div class="car-img">
+                <img src="<?php if (!empty($image)) { echo get_image_path_by_id($image); } ?>" alt>
+            </div>
+        </div>
+    </div>
+<?php endforeach; ?>
 </div>
 </div>
 </div>
 </div>
+<?php endif; ?>
 <div class="single-item mb-0" id="car-milage">
 <div class="car-milage">
 <div class="title mb-25">
@@ -1162,17 +1180,22 @@ if($car_view["cat_buy_method"]==2){
 <span class="reservation_cls">Reservationspriset har inte uppnåtts</span>
 <a href="javascript:void(0)" onClick="openNav()" class="see_wrap_bid">Se Budgivning</a>
 
-            <span>Budgivning Avslutas: 
-                <?php if (get_post_status($car_view["id"]) == 'timer'): ?>
-                    <b id="countdown_mobile_<?php echo $car_view["id"]; ?>" style="color:red;"></b>
-                <?php else: ?>
-                    <b><?php 
-                        $status = get_post_status($car_view["id"]);
-                        echo ($status == "Auction Time Completed") ? "Auktionstid avslutad" : $status; 
-                    ?></b>
-
-                <?php endif; ?>
-            </span>
+<?php 
+$auction_end_time = strtotime($car_view['created'] . ' + 14 days');
+if (time() >= $auction_end_time): ?>
+    <span class="auction-end-text">
+        <?php if (!empty($highest_bid)): ?>
+            Auktionen avslutades vid detta bud: 
+            <b style="color:black !important;"><?php echo number_format($highest_bid); ?> <?php echo $this->config->item('CURRENCY'); ?></b>
+        <?php else: ?>
+            Auktionen är avslutad
+        <?php endif; ?>
+    </span>
+<?php else: ?>
+    <span class="auction-end-text">Budgivning Avslutas: 
+        <b style="color:black !important;"><?php echo date('d-M, H:i', $auction_end_time); ?></b>
+    </span>
+<?php endif; ?>
 
 </div>
 </div>
@@ -1181,11 +1204,10 @@ if($car_view["cat_buy_method"]==2){
 $car_id = $car_view['id'];
 $timer_data = get_auction_timer_data($car_id);
 
-if ($timer_data['show_timer']): 
+if ($timer_data['show_timer'] && $car_view['cat_buy_method'] == 3): 
 ?>
     <div class="auction-details">
-        <h3>Auktionen avslutas snart!</h3>
-        
+<h3 class="auction-status-heading">Auktionen avslutas snart!</h3>        
         <div class="auction-timer-wrapper" 
              data-car-id="<?php echo $car_id; ?>"
              data-created-timestamp="<?php echo $timer_data['created_timestamp']; ?>"
@@ -1604,14 +1626,12 @@ $gallery_images = json_decode($car_view["car_photo_gallery_ids"], true);
            <img src="<?php if (!empty($gallery_images[0])) { echo get_image_path_by_id($gallery_images[0]); } ?>" class="mrapp_mk5" alt="" />
            <h2><?php echo $car_view["car_title"]; ?></h2>
            <p><?php echo $car_view["car_sub_title"]; ?></p>
-            <ul class="list-unstyled d-flex flex-wrap align-items-center gap-5 mt-3">
-
-                <!-- Mileage -->
+                <ul class="list-unstyled d-none d-lg-flex flex-wrap align-items-center gap-5 mt-3 justify-content-start">
                 <li class="d-flex align-items-center gap-2">
                     <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/mileage.svg" width="24" height="24" alt="">
                     <div>
                         <h6 class="mb-0 fw-semibold">
-                            <?php echo !empty($car_view["mileage"]) ? $car_view["mileage"] : "-"; ?>
+                            <?php echo !empty($car_view["mileage"]) ? number_format($car_view["mileage"], 0, '.', ' ') : "-"; ?>
                         </h6>
                         <small class="text-muted">
                             <?php echo $footer_data["mileage_text"]; ?>
@@ -1667,6 +1687,60 @@ $gallery_images = json_decode($car_view["car_photo_gallery_ids"], true);
                 </li>
 
             </ul>
+                        
+            <!-- mobile version -->
+            <ul class="list-unstyled d-flex d-lg-none flex-wrap align-items-center gap-3 mt-3 justify-content-center">
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/mileage.svg" width="20" height="20" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php echo !empty($car_view["mileage"]) ? number_format($car_view["mileage"], 0, '.', ' ') : '-'; ?>
+                        </h6>
+                    </div>
+                </li>
+
+                <!-- Engine -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/engine.svg" width="20" height="20" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php 
+                            if(!empty($car_view["cat_engine"])) {
+                                $cat_engine = get_car_cat_by_id_and_table_name($car_view["cat_engine"], 'engine_category');
+                                echo !empty($cat_engine) ? $cat_engine["engine_name"] : "-";
+                            } else { echo "-"; }
+                            ?>
+                        </h6>
+                    </div>
+                </li>
+
+                <!-- Fuel -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/fuel.svg" width="20" height="20" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php 
+                            if(!empty($car_view["cat_fuel"])) {
+                                $cat_fuel = get_car_cat_by_id_and_table_name($car_view["cat_fuel"], 'fuel_category');
+                                echo !empty($cat_fuel) ? $cat_fuel["fuel_name"] : "-";
+                            } else { echo "-"; }
+                            ?>
+                        </h6>
+                    </div>
+                </li>
+
+                <!-- Year -->
+                <li class="d-flex align-items-center gap-2">
+                    <img src="<?php echo base_url(); ?>assets/img/inner-page/icon/condition.svg" width="20" height="20" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <?php echo !empty($year_data['year_name']) ? $year_data['year_name'] : "-"; ?>
+                        </h6>
+                    </div>
+                </li>
+
+            </ul>
+
 
            </div>
           </div>
@@ -1687,25 +1761,24 @@ $car_id = $car_view['id'];
 $timer_data = get_auction_timer_data($car_id);
 
 // Only show h2 and p if second timer should NOT be shown
-if (!$timer_data['show_timer']): 
+if ($timer_data['show_timer'] && $car_view['cat_buy_method'] == 3): 
 ?>
     <h2><?php if($this->session->userdata('user_id')!=$car_view["post_author_id"]) { echo "Delta i budgivningen"; } else { echo "Du kan inte delta i budet"; } ?></h2>
-    <p><?php if (get_post_status($car_view["id"]) == 'timer'): ?>
-        <span id="countdown_<?php echo $car_view["id"]; ?>" style="color:red;"></span>
-    <?php else: ?>
-        <span><?php echo get_post_status($car_view["id"]); ?></span>
-    <?php endif; ?></p>
+<p><?php if (get_post_status($car_view["id"]) == 'timer'): ?>
+    <span id="countdown_<?php echo $car_view["id"]; ?>" style="color:red;"></span>
+<?php else: ?>
+    <span><?php echo get_post_status($car_view["id"]) == 'Auction Time Completed' ? 'Auktionstid slutförd' : get_post_status($car_view["id"]); ?></span>
+<?php endif; ?></p>
 <?php endif; ?>
 
 <?php 
 $car_id = $car_view['id'];
 $timer_data = get_auction_timer_data($car_id);
 
-if ($timer_data['show_timer']): 
+if ($timer_data['show_timer'] && $car_view['cat_buy_method'] == 3): 
 ?>
     <div class="auction-details">
-        <h3>Auktionen avslutas snart!</h3>
-        
+<h3 class="auction-status-heading">Auktionen avslutas snart!</h3>        
         <div class="auction-timer-wrapper" 
              data-car-id="<?php echo $car_id; ?>"
              data-created-timestamp="<?php echo $timer_data['created_timestamp']; ?>"
@@ -1716,7 +1789,7 @@ if ($timer_data['show_timer']):
 <?php endif; ?>
           </div>
           
-          <div class="gray_wrap554">
+          <div class="gray_wrap554" id="bidgiving-box">
           <?php if(!$this->session->userdata('user_id')){ ?>
           <div class="sign_filpo5">
       
@@ -1732,78 +1805,78 @@ if ($timer_data['show_timer']):
 			
 			if($car_view["auction_status"]!=1){ ?>
             
-<div class="plaf55" id="bidformbox">
-<?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>  
-<h3>Lägg ett bud på detta fordon</h3>
+            <div class="plaf55" id="bidformbox">
+            <?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>  
+            <h3>Lägg ett bud på detta fordon</h3>
 
-<?php 
-// Show recommended bid if there's already a bid placed
-if(!empty($highest_bid)) { 
-    $recommended = $highest_bid + 500;
-?>
-<div id="recommended_bid" style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-left: 3px solid #2196F3; border-radius: 4px;">
-    <small style="color: #666; font-size: 12px;">Rekommenderat bud:</small>
-    <div style="font-size: 16px; font-weight: 600; color: #2196F3; margin-top: 3px;">
-        <?php echo number_format($recommended, 0, '', ' ') . ' ' . $this->config->item('CURRENCY'); ?>
-    </div>
-</div>
-<?php 
-}
-?>
+            <?php 
+            // Show recommended bid if there's already a bid placed
+            if(!empty($highest_bid)) { 
+                $recommended = $highest_bid + 500;
+            ?>
+            <div id="recommended_bid" style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-left: 3px solid #2196F3; border-radius: 4px;">
+                <small style="color: #666; font-size: 12px;">Rekommenderat bud:</small>
+                <div style="font-size: 16px; font-weight: 600; color: #2196F3; margin-top: 3px;">
+                    <?php echo number_format($recommended, 0, '', ' ') . ' ' . $this->config->item('CURRENCY'); ?>
+                </div>
+            </div>
+            <?php 
+            }
+            ?>
 
-<?php } ?>
+            <?php } ?>
 
-<div class="place_wrap_add">
-<?php if(($this->session->userdata('user_id')!=$car_view["post_author_id"]) && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
+            <div class="place_wrap_add">
+            <?php if(($this->session->userdata('user_id')!=$car_view["post_author_id"]) && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
 
-<!-- Single input field that changes purpose based on checkbox -->
-<input name="bidprice" id="bidprice" class="plac_inpt" placeholder="Budbelopp" type="text" required>
+            <!-- Single input field that changes purpose based on checkbox -->
+            <input name="bidprice" id="bidprice" class="plac_inpt" placeholder="Budbelopp" type="text" required>
 
 
-<!-- Single Lägg bud button -->
-<input name="" id="place_bid_btn" class="plac_inpt2" value="Lägg bud" type="button"> 
-<?php } ?>
+            <!-- Single Lägg bud button -->
+            <input name="" id="place_bid_btn" class="plac_inpt2" value="Lägg bud" type="button"> 
+            <?php } ?>
 
-<input type="hidden" name="car_id" id="car_id" value="<?php echo $car_view["id"]; ?>" />
-</div>
-</div>
-<!-- Dynamic help text that changes based on checkbox -->
-<div id="bid_input_help" style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 10px;">
-    Ange ditt budbelopp
-</div>
+            <input type="hidden" name="car_id" id="car_id" value="<?php echo $car_view["id"]; ?>" />
+            </div>
+            </div>
+            <!-- Dynamic help text that changes based on checkbox -->
+            <div id="bid_input_help" style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 10px;">
+                Ange ditt budbelopp
+            </div>
 
-<p class="message"></p>
+            <p class="message"></p>
 
-<!-- SIMPLIFIED AUTO-BID CHECKBOX -->
-<?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
-<div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
-    <label style="display: flex; align-items: center; margin-bottom: 0; cursor: pointer;">
-        <input type="checkbox" id="enable_auto_bid" name="enable_auto_bid" style="margin-right: 8px; width: 18px; height: 18px;">
-        <span style="font-size: 15px; font-weight: 600; color: #495057;">
-            <i class="fa fa-robot" style="color: #3b82f6;"></i> Aktivera Auto-Bud
-        </span>
-    </label>
-    
-    <!-- Info section that shows when checkbox is checked -->
-    <div id="auto_bid_info" style="display: none; margin-top: 12px; background: #e3f2fd; padding: 12px; border-radius: 6px; border-left: 3px solid #2196F3;">
-        <p style="font-size: 12px; color: #1565c0; margin: 0; line-height: 1.6;">
-            <i class="fa fa-info-circle"></i> 
-            <strong>Hur det fungerar:</strong><br>
-            • Beloppet ovan blir ditt <strong>maximala auto-bud</strong><br>
-            • Systemet lägger först ett bud på <span id="initial_auto_bid_amount" style="font-weight: 600;">-</span><br>
-            • Därefter bjuds automatiskt åt dig med 500 SEK åt gången<br>
-            • Budgivningen fortsätter tills någon bjuder över ditt max-belopp
-        </p>
-    </div>
-    
-    <!-- Warning if amount is too low -->
-    <div id="auto_bid_warning" style="display: none; margin-top: 10px; background: #fff3cd; padding: 10px; border-radius: 6px; border-left: 3px solid #ffc107;">
-        <p style="font-size: 11px; color: #856404; margin: 0;">
-            <i class="fa fa-exclamation-triangle"></i> 
-            Max auto-bud måste vara minst <strong>1000 SEK</strong> högre än nuvarande högsta bud
-        </p>
-    </div>
-</div>
+            <!-- SIMPLIFIED AUTO-BID CHECKBOX -->
+            <?php if($this->session->userdata('user_id')!=$car_view["post_author_id"] && get_post_status($car_view["id"]) != "Auction Time Completed"){ ?>
+            <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                <label style="display: flex; align-items: center; margin-bottom: 0; cursor: pointer;">
+                    <input type="checkbox" id="enable_auto_bid" name="enable_auto_bid" style="margin-right: 8px; width: 18px; height: 18px;">
+                    <span style="font-size: 15px; font-weight: 600; color: #495057;">
+                        <i class="fa fa-robot" style="color: #3b82f6;"></i> Aktivera Auto-Bud
+                    </span>
+                </label>
+                
+                <!-- Info section that shows when checkbox is checked -->
+                <div id="auto_bid_info" style="display: none; margin-top: 12px; background: #e3f2fd; padding: 12px; border-radius: 6px; border-left: 3px solid #2196F3;">
+                    <p style="font-size: 12px; color: #1565c0; margin: 0; line-height: 1.6;">
+                        <i class="fa fa-info-circle"></i> 
+                        <strong>Hur det fungerar:</strong><br>
+                        • Beloppet ovan blir ditt <strong>maximala auto-bud</strong><br>
+                        • Systemet lägger först ett bud på <span id="initial_auto_bid_amount" style="font-weight: 600;">-</span><br>
+                        • Därefter bjuds automatiskt åt dig med 500 SEK åt gången<br>
+                        • Budgivningen fortsätter tills någon bjuder över ditt max-belopp
+                    </p>
+                </div>
+                
+                <!-- Warning if amount is too low -->
+                <div id="auto_bid_warning" style="display: none; margin-top: 10px; background: #fff3cd; padding: 10px; border-radius: 6px; border-left: 3px solid #ffc107;">
+                    <p style="font-size: 11px; color: #856404; margin: 0;">
+                        <i class="fa fa-exclamation-triangle"></i> 
+                        Max auto-bud måste vara minst <strong>1000 SEK</strong> högre än nuvarande högsta bud
+                    </p>
+                </div>
+            </div>
 <?php } ?>
           <?php }else{ ?>
 		  <button name="" class="plac_inpt" style="border-radius: 7px;font-size: 13px;font-weight: 600;background-color: #ff7400;padding: 5px 0px; color: #fff;" value="" type="button"><i class="fa fa-trophy"></i> Vinnare utsedd</button>
@@ -2010,6 +2083,11 @@ if (!empty($current_user_id)) {
     echo "window.currentLoggedInUserId = null;";
 }
 ?>
+<?php 
+$current_user_role = $this->session->userdata('user_role');
+echo "window.currentUserRole = " . json_encode($current_user_role ?: null) . ";";
+?>
+
 
 // Function to initialize everything
 function initializeBidSystem() {
@@ -2136,12 +2214,28 @@ function initializeBidSystem() {
                 this.updateTimer(data.timer_timestamp);
             }
 
-            // Update auction status
-            if (data.auction_active !== undefined && data.auction_active) {
+            // Update auction status heading + bidding
+            if (data.auction_active !== undefined && data.auction_active !== null) {
+                const isActive = data.auction_active == 1 || data.auction_active === true || data.auction_active === 'true';
+                
+            if (isActive) {
                 this.enableBidding();
-            } else if (data.auction_active === false) {
+                $('.auction-status-heading').text('Auktionen avslutas snart!');
+            } else {
                 this.disableBidding();
+                $('.auction-status-heading').text('Auktionen är avslutad');
+                $('#bidformbox').hide();
+                $('#bid_input_help').hide();
+                $('.message').hide();
+                $('#enable_auto_bid').closest('div').hide();                
+                // Update "Budgivning Avslutas" to show winning bid
+                const winBid = data.highest_bid && parseInt(data.highest_bid) > 0
+                    ? 'Auktionen avslutades vid detta bud: <b style="color:black !important;">' + this.formatNumber(parseInt(data.highest_bid)) + ' SEK</b>'
+                    : 'Auktionen är avslutad';
+                $('.auction-end-text').html(winBid);
+                
             }
+            }        
         }
 
 updateBidList(bids) {
@@ -2178,13 +2272,13 @@ updateBidList(bids) {
         const isCurrentUser = currentUserId && (String(userId) === String(currentUserId));
         
         let displayName;
-        if (isCurrentUser) {
+        const isAdmin = window.currentUserRole === 'admin';
+        if (isCurrentUser || isAdmin) {
             displayName = bidderName;
         } else {
             const anonNumber = anonymousUserMap[userId];
-            displayName = `Anonym budgivare ${anonNumber}`;
-        }
-        
+            displayName = `👤 ${anonNumber}`;
+        }        
         const isTopBid = index === 0;
         const showLeadingBadge = isTopBid && isCurrentUser;
         
@@ -2196,36 +2290,57 @@ updateBidList(bids) {
         let badgeHTML = '';
         if (isAuto && maxAutoBid && overallHighest > maxAutoBid) {
             // Current highest bid exceeded this auto-bid's max
-            badgeHTML = '<span class="bid-type-badge bid-type-max-reached">⚠️ Max Auto-Bud Uppnådd ' + this.formatNumber(maxAutoBid) + ' SEK</span>';
+            badgeHTML = '<span class="bid-type-badge bid-type-max-reached"> Max Auto-Bud Uppnådd ' + this.formatNumber(maxAutoBid) + ' SEK</span>';
         } else if (isAuto) {
             // Regular auto-bid, still active
             badgeHTML = '<span class="bid-type-badge bid-type-auto"><i class="fa fa-robot auto-bid-icon"></i> Auto Bud</span>';
         } else {
             // Manual bid
-            badgeHTML = '<span class="bid-type-badge bid-type-manual">✓ Manuellt</span>';
+            badgeHTML = '<span class="bid-type-badge bid-type-manual">Manuellt</span>';
         }
         
         const topBidClass = isTopBid ? 'top-bid-item' : '';
         const colClass = 'col-md-12';
         
-        const bidItemHTML = `
-            <div class="${colClass}">
-                <div class="bid-history-item ${topBidClass}">
-                    ${showLeadingBadge ? '<div class="leading-bid-banner"><i class="fa fa-trophy"></i> Detta är ditt ledande bud</div>' : ''}
+const bidItemHTML = `
+${showLeadingBadge ? `
+  <style>
+    .leading-badge b{ font-size:14px; }
+    @media (min-width: 992px){ .leading-badge b{ font-size:18px; } }
+    @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css");
+
+  </style>
+
+  <div class="leading-badge" style="display:flex; justify-content:center; align-items:center; margin-top:6px;">
+    <b style="color:#D4AF37;">
+      <i class="fa-solid fa-gavel" style="margin-right:6px;"></i>
+      Du Leder Budgivningen
+    </b>
+  </div>
+` : ''}
+  <div class="${colClass}">
+    <div class="bid-history-item ${topBidClass}">
+      <div class="bid-amount-info">
+        <div class="bid-amount">${this.formatNumber(bidAmount)} SEK</div>
+
+      </div>
+      <div class="bidder-info">
+        ${badgeHTML}
+      </div>
+    </div>
+
+    <div class="bid-meta-row">
                     <div class="bidder-info">
-                        ${bidNumberHTML}
                         <span class="bidder-name">${displayName}</span>
-                        ${badgeHTML}
+                        ${isAdmin && bid.phone_number ? `<a href="https://wa.me/${bid.phone_number.replace(/[^0-9]/g, '')}" target="_blank" style="font-size:11px; color:#25D366; margin-left:6px; text-decoration:none;"><i class="fa fa-whatsapp"></i> ${bid.phone_number}</a>` : ''}
                     </div>
-                    <div class="bid-amount-info">
-                        <div class="bid-amount">${this.formatNumber(bidAmount)} SEK</div>
-                        <span class="bid-time">${timeAgo}</span>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        container.append(bidItemHTML);
+      <div class="bid-meta-right">
+        ${isAuto ? 'Autobud,' : 'Manuellt,'}
+        ${this.formatBidTime(bid.created)}
+      </div>
+    </div>
+  </div>
+`;        container.append(bidItemHTML);
     });
     
     if (bids.length === 0) {
@@ -2254,7 +2369,29 @@ updateBidList(bids) {
             $('#bidformbox').hide();
             $('.message').html('<p style="color:red;">Auktionstiden avslutad</p>');
         }
-
+        formatBidTime(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            const isToday = date.toDateString() === now.toDateString();
+            
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+            const isYesterday = date.toDateString() === yesterday.toDateString();
+            
+            const timeStr = `${day}-${month}, ${hours}:${minutes}`;
+            
+            if (isToday) return `Today at ${timeStr}`;
+            if (isYesterday) return `Yesterday at ${timeStr}`;
+            return timeStr;
+        }
         formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }

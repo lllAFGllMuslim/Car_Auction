@@ -25,6 +25,7 @@ public function index($page = 1) {
         'cars' => $cars,
         'total_pages' => $total_pages,
         'current_page' => $page,
+        'total_blogs' => $total_blogs,  // ADD THIS
         'loop' => 1,
     ];
 

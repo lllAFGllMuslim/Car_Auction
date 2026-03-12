@@ -155,8 +155,8 @@ SIGN UP
 <ul class="menu-list">
 <?php if(!empty($header_data['manu_name1'])){?> <li><a href="<?= base_url() ?>" class="drop-down"> <?php echo $header_data['manu_name1']; ?> </a></li><?php   } ?>
 <?php if(!empty($header_data['manu_name2'])){?> <li><a href="<?= base_url('about-us') ?>" class="drop-down"> <?php echo $header_data['manu_name2']; ?> </a></li><?php   } ?>
-<?php if(!empty($header_data['manu_name3'])){?> <li><a href="<?= base_url('search') ?>?cat_buy_method=fixed-price" class="drop-down"> <?php echo $header_data['manu_name3']; ?> </a></li><?php   } ?>
-<?php if(!empty($header_data['manu_name4'])){?> <li><a href="<?= base_url('search') ?>?cat_buy_method=auction" class="drop-down"> <?php echo $header_data['manu_name4']; ?> </a></li><?php   } ?>
+<?php if(!empty($header_data['manu_name3'])){?> <li><a href="<?= base_url('search') ?>?cat_buy_method=fast-pris" class="drop-down"> <?php echo $header_data['manu_name3']; ?> </a></li><?php   } ?>
+<?php if(!empty($header_data['manu_name4'])){?> <li><a href="<?= base_url('search') ?>?cat_buy_method=budgivning" class="drop-down"> <?php echo $header_data['manu_name4']; ?> </a></li><?php   } ?>
 <?php if(!empty($header_data['manu_name5'])){?> <li><a href="<?= base_url('faq') ?>" class="drop-down"> <?php echo $header_data['manu_name5']; ?> </a></li><?php   } ?>
 <?php if(!empty($header_data['manu_name6'])){?> <li><a href="<?= base_url('contact-us') ?>" class="drop-down"> <?php echo $header_data['manu_name6']; ?> </a></li><?php   } ?>
 
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var icon = icons[notification.type] || '📢';
             var toastClass = 'toast-' + notification.type.replace(/_/g, '-');
             
-            var toastHtml = '<div class="toast-notification ' + toastClass + '" data-id="' + notification.id + '" data-car-id="' + (notification.car_id || '') + '">' +
+            '<div class="toast-notification ' + toastClass + '" data-id="' + notification.id + '" data-car-id="' + (notification.car_id || '') + '" data-car-slug="' + (notification.car_slug || '') + '">' +
                 '<div class="toast-icon">' + icon + '</div>' +
                 '<div class="toast-content">' +
                     '<div class="toast-title">' + escapeHtml(notification.title) + '</div>' +
@@ -474,9 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
             $toast.on('click', function(e) {
                 if ($(e.target).hasClass('toast-close')) return;
                 
-                var carId = $(this).data('car-id');
-                if (carId) {
-                    window.location.href = '<?php echo base_url(); ?>car/' + carId;
+                var carSlug = $(this).data('car-slug') || $(this).data('car-id');
+                if (carSlug) {
+                    window.location.href = '<?php echo base_url(); ?>car/' + carSlug;
                 }
             });
             

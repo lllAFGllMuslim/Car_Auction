@@ -68,13 +68,12 @@ class Search_model extends CI_Model {
         $this->db->join('users', 'cars.post_author_id = users.id', 'left');
         $this->db->join('model_year_category', 'cars.cat_year = model_year_category.id', 'left');
 
-        if (!empty($brand)      && $brand      != '0') { $this->db->where('cat_brand',      $brand_data["id"]); }
-        if (!empty($model)      && $model      != '0') { $this->db->where('cat_model',      $model_data["id"]); }
-        if (!empty($fuel)       && $fuel       != '0') { $this->db->where('cat_fuel',       $fuel_data["id"]); }
-        if (!empty($buy_method) && $buy_method != '0') { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
-        if (!empty($body)       && $body       != '0') { $this->db->where('cat_body',       $body_data["id"]); }
-        if (!empty($engine)     && $engine     != '0') { $this->db->where('cat_engine',     $engine_data["id"]); }
-        if (!empty($condition)  && $condition  != '0') { $this->db->where('condition',      $condition); }
+        if (!empty($brand)      && $brand      != '0' && !empty($brand_data))      { $this->db->where('cat_brand',      $brand_data["id"]); }
+        if (!empty($model)      && $model      != '0' && !empty($model_data))      { $this->db->where('cat_model',      $model_data["id"]); }
+        if (!empty($fuel)       && $fuel       != '0' && !empty($fuel_data))       { $this->db->where('cat_fuel',       $fuel_data["id"]); }
+        if (!empty($buy_method) && $buy_method != '0' && !empty($buy_method_data)) { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
+        if (!empty($body)       && $body       != '0' && !empty($body_data))       { $this->db->where('cat_body',       $body_data["id"]); }
+        if (!empty($engine)     && $engine     != '0' && !empty($engine_data))     { $this->db->where('cat_engine',     $engine_data["id"]); }        if (!empty($condition)  && $condition  != '0') { $this->db->where('condition',      $condition); }
         if (!empty($category)   && $category   != '0') { $this->db->where('category',       $category); }
         if (!empty($title))  { $this->db->like('car_title', $title); }
         if (!empty($author)) { $this->db->where('post_author_id', $author); }
@@ -157,13 +156,12 @@ class Search_model extends CI_Model {
         $this->db->join('bidding', 'cars.id = bidding.car_id', 'left');
         $this->db->join('users', 'cars.post_author_id = users.id', 'left'); // ✅ needed for city filter
         $this->db->join('model_year_category', 'cars.cat_year = model_year_category.id', 'left');
-
-        if (!empty($brand)      && $brand      != '0') { $this->db->where('cat_brand',      $brand_data["id"]); }
-        if (!empty($model)      && $model      != '0') { $this->db->where('cat_model',      $model_data["id"]); }
-        if (!empty($fuel)       && $fuel       != '0') { $this->db->where('cat_fuel',       $fuel_data["id"]); }
-        if (!empty($buy_method) && $buy_method != '0') { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
-        if (!empty($body)       && $body       != '0') { $this->db->where('cat_body',       $body_data["id"]); }
-        if (!empty($engine)     && $engine     != '0') { $this->db->where('cat_engine',     $engine_data["id"]); }
+        if (!empty($brand)      && $brand      != '0' && !empty($brand_data))      { $this->db->where('cat_brand',      $brand_data["id"]); }
+        if (!empty($model)      && $model      != '0' && !empty($model_data))      { $this->db->where('cat_model',      $model_data["id"]); }
+        if (!empty($fuel)       && $fuel       != '0' && !empty($fuel_data))       { $this->db->where('cat_fuel',       $fuel_data["id"]); }
+        if (!empty($buy_method) && $buy_method != '0' && !empty($buy_method_data)) { $this->db->where('cat_buy_method', $buy_method_data["id"]); }
+        if (!empty($body)       && $body       != '0' && !empty($body_data))       { $this->db->where('cat_body',       $body_data["id"]); }
+        if (!empty($engine)     && $engine     != '0' && !empty($engine_data))     { $this->db->where('cat_engine',     $engine_data["id"]); }
         if (!empty($condition)  && $condition  != '0') { $this->db->where('condition',      $condition); }
         if (!empty($category)   && $category   != '0') { $this->db->where('category',       $category); }
         if (!empty($title))  { $this->db->like('car_title', $title); }
@@ -193,9 +191,8 @@ class Search_model extends CI_Model {
 
         $this->db->select('DATEDIFF(DATE_ADD(cars.created, INTERVAL 14 DAY), NOW()) AS time_left');
         $this->db->group_by('cars.id');
-        $this->db->get();
-
-        return $this->db->count_all_results();
+        $query = $this->db->get();
+        return $query->num_rows();
     }
 
     public function get_auction_cars() {

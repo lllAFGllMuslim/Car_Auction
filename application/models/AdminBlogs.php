@@ -751,43 +751,30 @@ public function get_total_auction_cars_count($search_term = '')
 
 public function get_aution_completed_cars($limit, $offset, $search_term = '')
 {
-    
-        $completed_by_user = isset($_GET['completed_by_user']) ? $_GET['completed_by_user'] : '';
-        $win_by_user = isset($_GET['win_by_user']) ? $_GET['win_by_user'] : '';
-        
-    // Sanitize input
     $limit = (int)$limit;
     $offset = (int)$offset;
 
     $this->db->limit($limit, $offset);
     $this->db->where('status', 'publish');
-    $this->db->where('auction_status', '1');
     $this->db->where('cat_buy_method', 3);
 
-    // If a search term is provided, filter by car_title
+    // ✅ Completed = manually marked done OR 14-day window expired
+    $this->db->group_start();
+        $this->db->where('auction_status', '1');
+        $this->db->or_group_start();
+            $this->db->where('auction_status', '0');
+            $this->db->where('DATE_ADD(created, INTERVAL 14 DAY) <=', date('Y-m-d H:i:s'));
+        $this->db->group_end();
+    $this->db->group_end();
+
     if (!empty($search_term)) {
         $this->db->like('car_title', $search_term);
     }
-    
-    if (!empty($search_term)) {
-        $this->db->like('car_title', $search_term);
-    }
-    
-     if (!empty($completed_by_user)) {
-        $this->db->like('post_author_id', $completed_by_user);
-    }
-    
-       if (!empty($win_by_user)) {
-        $this->db->like('winner_user_id', $win_by_user);
-    }
-    
 
     $this->db->order_by('id', 'DESC');
-
-    $query = $this->db->get('cars'); // Assuming the table name is 'cars'
+    $query = $this->db->get('cars');
     return $query->result();
 }
-
 
 
 public function get_total_aution_completed_cars_count($search_term = '')

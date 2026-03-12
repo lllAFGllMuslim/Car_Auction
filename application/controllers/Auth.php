@@ -139,15 +139,17 @@ public function get_bid_updates() {
     // If it's in timer mode, calculate the actual countdown
     $time_remaining = '';
     if ($post_status === 'timer') {
+        $timezone = new DateTimeZone('Europe/Stockholm'); // set your timezone
+
         $post = $this->Image_model->get_post($car_id);
-        $created_at = new DateTime($post->created);
+        $created_at = new DateTime($post->created, $timezone);
         $expiration_time = clone $created_at;
         $expiration_time->add(new DateInterval('P14D'));
         
-        $current_time = new DateTime();
+        $current_time = new DateTime('now', $timezone);
         $interval = $current_time->diff($expiration_time);
         
-        $time_remaining = sprintf('%dh %dm %ds', $interval->h, $interval->i, $interval->s);
+        $time_remaining = sprintf('%dH %dM %dS', $interval->h, $interval->i, $interval->s);
     }
 
     if (!$car_id) {
@@ -202,9 +204,12 @@ if (!empty($bids)) {
             'user_id' => $bid['user_id'],
             'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
             'amount' => $bid['bidding_price'],
+            'created' => isset($bid['created']) ? $bid['created'] : null,
             'time_ago' => $time_ago,
             'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0,
-            'max_auto_bid' => isset($bid['max_auto_bid']) ? $bid['max_auto_bid'] : null  // ✅ ADD THIS LINE
+            'max_auto_bid' => isset($bid['max_auto_bid']) ? $bid['max_auto_bid'] : null,  // ✅ ADD THIS LINE
+                'phone_number' => isset($bid['phone_number']) ? $bid['phone_number'] : null 
+
         );
     }
 }
@@ -213,9 +218,12 @@ if (!empty($bids)) {
     'user_id' => $bid['user_id'],
     'bidder_name' => isset($bid['username']) ? $bid['username'] : 'User #' . $bid['unique_id'],
     'amount' => $bid['bidding_price'],
+    'created' => isset($bid['created']) ? $bid['created'] : null,
     'time_ago' => $time_ago,
     'is_auto_bid' => isset($bid['is_auto_bid']) ? $bid['is_auto_bid'] : 0,
-    'max_auto_bid' => isset($bid['max_auto_bid']) ? $bid['max_auto_bid'] : null
+    'max_auto_bid' => isset($bid['max_auto_bid']) ? $bid['max_auto_bid'] : null,
+        'phone_number' => isset($bid['phone_number']) ? $bid['phone_number'] : null  // ADD THIS
+
 );
         }
     }
@@ -227,11 +235,15 @@ if (!empty($bids)) {
     // **IMPORTANT: Check if auction is still active**
     $auction_active = true;
     if ($car_data['auction_status'] == 1) {
-        $auction_active = false; // Auction completed
+        $auction_active = false;
     } else {
-        // Check if timer expired
-        if ($timer_timestamp) {
-            $current_time = time();
+        // Check if main 14-day auction period has expired
+        $auction_end_time = strtotime($car_data['created'] . ' + 14 days');
+        if (time() >= $auction_end_time) {
+            $auction_active = false;
+        }
+        // Check if 3-minute extension timer expired
+        if ($timer_timestamp) {            $current_time = time();
             $elapsed = $current_time - $timer_timestamp;
             $three_minutes = 3 * 60;
             
@@ -775,28 +787,38 @@ if(!$this->email->send()) {
 
 
        
-   public function car_list($page = 1)
-   {
+    public function car_list($page = 1)
+    {
+        $limit = 16;
+        $offset = ($page - 1) * $limit;
 
-    $limit = 16; // Number of blogs per page
-    $offset = ($page - 1) * $limit;
+        $filter = $this->input->get('filter'); // 'auction', 'fastpris', or null
 
-    $blogs = $this->User_model->get_cars($limit, $offset);
-    $total_blogs = $this->User_model->get_total_cars_count();
-    $total_pages = ceil($total_blogs / $limit);
+        // Apply filter to model queries
+        if ($filter === 'auction') {
+            $blogs       = $this->User_model->get_cars_by_buy_method($limit, $offset, 3, '=');
+            $total_blogs = $this->User_model->get_total_cars_count_by_buy_method(3, '=');
+        } elseif ($filter === 'fastpris') {
+            $blogs       = $this->User_model->get_cars_by_buy_method($limit, $offset, 3, '!=');
+            $total_blogs = $this->User_model->get_total_cars_count_by_buy_method(3, '!=');
+        } else {
+            $blogs       = $this->User_model->get_cars($limit, $offset);
+            $total_blogs = $this->User_model->get_total_cars_count();
+        }
 
-    $data = [
-        'cars' => $blogs,
-        'total_pages' => $total_pages,
-        'current_page' => $page
-    ];
+        $total_pages = ceil($total_blogs / $limit);
 
+        $data = [
+            'cars'         => $blogs,
+            'total_pages'  => $total_pages,
+            'current_page' => $page,
+            'filter'       => $filter
+        ];
 
-    $this->load->view('header');
-    $this->load->view('car_list',$data);
-    $this->load->view('footer',$data);
-
-   }
+        $this->load->view('header');
+        $this->load->view('car_list', $data);
+        $this->load->view('footer', $data);
+    }
 
    public function car_edit($id) {
 
@@ -1335,38 +1357,59 @@ public function bid_added()
     }
 
     // Get previous highest bidder BEFORE inserting new bid
-    $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
-    
-    // Insert the manual bid
-    $data = array(
-        'car_id' => $car_id,
-        'bidding_price' => $manual_bid_price,
-        'max_auto_bid' => $max_auto_bid,
-        'is_auto_bid' => 0,
-        'unique_id' => $unique_id,
-        'user_id' => $current_user_id
-    );
-    
-    $this->User_model->insert_bid($data);
+$actual_bid_price = $manual_bid_price;
+$is_auto_bid_flag = 0;
 
-    // Notify the previous highest bidder they've been outbid
-    if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $current_user_id) {
-        notify_outbid($previous_highest_bidder['user_id'], $car_id, $manual_bid_price);
+if ($max_auto_bid !== NULL) {
+    $is_auto_bid_flag    = 1;
+    $competing_auto_bids = $this->User_model->get_active_auto_bids($car_id, $current_user_id);
+
+    if (!empty($competing_auto_bids)) {
+        usort($competing_auto_bids, function($a, $b) {
+            return floatval($b['max_auto_bid']) - floatval($a['max_auto_bid']);
+        });
+
+        $competitor_max = floatval($competing_auto_bids[0]['max_auto_bid']);
+
+        if ($max_auto_bid > $competitor_max) {
+            // New bidder wins — jump straight to competitor_max + 500
+            $actual_bid_price = $competitor_max + $bid_increment;
+        } else {
+            // Competitor wins — new bidder goes to their own max,
+            // process_auto_bidding will place competitor's counter
+            $actual_bid_price = $max_auto_bid;
+        }
     }
+}
 
-    // Extend auction time if applicable
-    $extension_result = extend_auction_time($car_id);
-    
-    // Process auto-bidding for OTHER users
-    $this->process_auto_bidding($car_id, $manual_bid_price, $current_user_id, $bid_increment);
+$previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
 
-    $response = array(
-        'status' => 'success', 
-        'message' => 'Bud har lagts framgångsrikt.',
-        'extension' => $extension_result
-    );
+$data = array(
+    'car_id'        => $car_id,
+    'bidding_price' => $actual_bid_price,
+    'max_auto_bid'  => $max_auto_bid,
+    'is_auto_bid'   => $is_auto_bid_flag,
+    'unique_id'     => $unique_id,
+    'user_id'       => $current_user_id
+);
 
-    echo json_encode($response);
+$this->User_model->insert_bid($data);
+
+if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $current_user_id) {
+    notify_outbid($previous_highest_bidder['user_id'], $car_id, $actual_bid_price);
+}
+
+$extension_result = extend_auction_time($car_id);
+$this->process_auto_bidding($car_id, $actual_bid_price, $current_user_id, $bid_increment, $max_auto_bid);
+
+$response = array(
+    'status'    => 'success',
+    'message'   => 'Bud har lagts framgångsrikt.',
+    'extension' => $extension_result
+);
+
+echo json_encode($response);
+
 }
 
 
@@ -1374,110 +1417,75 @@ public function bid_added()
  * Process auto-bidding when a new bid is placed
  * Automatically places counter-bids for users with auto-bid enabled
  */
-private function process_auto_bidding($car_id, $new_bid_price, $new_bidder_user_id, $increment = 500)
+private function process_auto_bidding($car_id, $current_bid_price, $new_bidder_user_id, $increment = 500, $new_bidder_max = null)
 {
-    // Get all active auto-bids for this car, excluding the current bidder
-    $auto_bids = $this->User_model->get_active_auto_bids($car_id, $new_bidder_user_id);
-    
-    if (empty($auto_bids)) {
-        return; // No auto-bids to process
-    }
+    $competing_auto_bids = $this->User_model->get_active_auto_bids($car_id, $new_bidder_user_id);
 
-    // Sort by max_auto_bid descending (highest auto-bid gets priority)
-    usort($auto_bids, function($a, $b) {
-        return $b['max_auto_bid'] - $a['max_auto_bid'];
+    if (empty($competing_auto_bids)) return;
+
+    usort($competing_auto_bids, function($a, $b) {
+        return floatval($b['max_auto_bid']) - floatval($a['max_auto_bid']);
     });
 
-    // Track if we placed an auto-bid
-    $auto_bid_placed = false;
-    $winning_auto_bidder = null;
+    $top             = $competing_auto_bids[0];
+    $competitor_max  = floatval($top['max_auto_bid']);
+    $competitor_uid  = $top['user_id'];
 
-    foreach ($auto_bids as $auto_bid) {
-        $max_auto_bid = floatval($auto_bid['max_auto_bid']);
-        $auto_bidder_user_id = $auto_bid['user_id'];
-        
-        // Calculate next bid price (current highest + 500 SEK)
-        $next_bid_price = $new_bid_price + $increment;
-        
-        // Check if auto-bidder's max is high enough
-        if ($next_bid_price <= $max_auto_bid) {
-            // Get previous highest bidder before placing auto-bid
-            $previous_highest_bidder = $this->User_model->get_highest_bidder_info($car_id);
-            
-            // Get unique ID for auto-bidder
-            $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $auto_bidder_user_id);
-            if ($unique_id_data == 0) {
-                $unique_id_number = $this->User_model->get_unique_id_of_car($car_id);
-                $unique_id = $unique_id_number + 1;
-            } else {
-                $unique_id = $unique_id_data;
+    if ($new_bidder_max !== NULL) {
+        // AUTO vs AUTO
+        if ($new_bidder_max > $competitor_max) {
+            // New bidder already won — just notify loser
+            notify_auto_bid_max_reached($competitor_uid, $car_id, $competitor_max);
+
+        } elseif ($competitor_max > $new_bidder_max) {
+            // Competitor wins — place ONE counter bid
+            $counter_price = $new_bidder_max + $increment;
+            if ($counter_price <= $competitor_max) {
+                $this->_place_auto_counter_bid($car_id, $competitor_uid, $counter_price, $competitor_max);
             }
-            
-            // Place auto-bid
-            $auto_bid_data = array(
-                'car_id' => $car_id,
-                'bidding_price' => $next_bid_price,
-                'max_auto_bid' => $max_auto_bid,
-                'is_auto_bid' => 1,
-                'unique_id' => $unique_id,
-                'user_id' => $auto_bidder_user_id
-            );
-            
-            $this->User_model->insert_bid($auto_bid_data);
-            
-            // Notify the previous highest bidder they've been auto-outbid
-            if ($previous_highest_bidder && $previous_highest_bidder['user_id'] != $auto_bidder_user_id) {
-                notify_outbid($previous_highest_bidder['user_id'], $car_id, $next_bid_price);
-            }
-            
-            // Extend auction time
-            extend_auction_time($car_id);
-            
-            // Mark that we placed an auto-bid
-            $auto_bid_placed = true;
-            $winning_auto_bidder = $auto_bidder_user_id;
-            $new_bid_price = $next_bid_price; // Update for next iteration
-            
-            // Check if we've reached max auto-bid
-            if ($next_bid_price >= $max_auto_bid) {
-                notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
-                break; // This user reached their max, stop processing their auto-bids
-            }
-            
-            // Check if there are OTHER auto-bidders who can counter-bid
-            $can_continue = false;
-            foreach ($auto_bids as $other_auto_bid) {
-                if ($other_auto_bid['user_id'] != $auto_bidder_user_id) {
-                    $other_max = floatval($other_auto_bid['max_auto_bid']);
-                    $potential_next = $next_bid_price + $increment;
-                    
-                    if ($potential_next <= $other_max) {
-                        $can_continue = true;
-                        break;
-                    }
-                }
-            }
-            
-            // If another auto-bidder can counter, recurse
-            if ($can_continue) {
-                $this->process_auto_bidding($car_id, $next_bid_price, $auto_bidder_user_id, $increment);
-            }
-            
-            break; // Only process the highest auto-bidder in this iteration
-            } else {
-                // ✅ FIX: This auto-bidder's max is too low - the new bid exceeded their max
-                // Check if they have any previous bids - if yes, their last bid was at their max
-                $user_last_bid = $this->User_model->get_user_highest_bid($car_id, $auto_bidder_user_id);
-                
-                if ($user_last_bid) {
-                    // They had auto-bids before, and now someone outbid their max
-                    // Their last bid was their max reached
-                    notify_auto_bid_max_reached($auto_bidder_user_id, $car_id, $max_auto_bid);
-                }
-            }
+            notify_auto_bid_max_reached($new_bidder_user_id, $car_id, $new_bidder_max);
+
+        } else {
+            // Equal maxes — first bidder keeps lead, notify new bidder
+            notify_auto_bid_max_reached($new_bidder_user_id, $car_id, $new_bidder_max);
+        }
+
+    } else {
+        // MANUAL bid — competitor places ONE auto counter
+        $counter_price = $current_bid_price + $increment;
+        if ($counter_price <= $competitor_max) {
+            $this->_place_auto_counter_bid($car_id, $competitor_uid, $counter_price, $competitor_max);
+        } else {
+            notify_auto_bid_max_reached($competitor_uid, $car_id, $competitor_max);
+        }
     }
 }
 
+
+private function _place_auto_counter_bid($car_id, $user_id, $bid_price, $max_auto_bid)
+{
+    $unique_id_data = $this->User_model->get_unique_id_of_user($car_id, $user_id);
+    $unique_id = ($unique_id_data == 0)
+        ? $this->User_model->get_unique_id_of_car($car_id) + 1
+        : $unique_id_data;
+
+    $prev_highest = $this->User_model->get_highest_bidder_info($car_id);
+
+    $this->User_model->insert_bid(array(
+        'car_id'        => $car_id,
+        'bidding_price' => $bid_price,
+        'max_auto_bid'  => $max_auto_bid,
+        'is_auto_bid'   => 1,
+        'unique_id'     => $unique_id,
+        'user_id'       => $user_id
+    ));
+
+    if ($prev_highest && $prev_highest['user_id'] != $user_id) {
+        notify_outbid($prev_highest['user_id'], $car_id, $bid_price);
+    }
+
+    extend_auction_time($car_id);
+}
 
 public function get_bid(){
     $car_id = $this->input->post('id');

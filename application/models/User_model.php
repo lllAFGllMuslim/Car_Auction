@@ -316,7 +316,40 @@ class User_model extends CI_Model {
                                         return $count;
                                     }
                                 
-                                    
+                                    public function get_cars_by_buy_method($limit, $offset, $method_id, $operator = '=')
+                                    {
+                                        $this->db->limit($limit, $offset);
+                                        
+                                        if ($this->session->userdata('user_id') && $this->session->userdata('user_role') != 'admin') {
+                                            $this->db->where('post_author_id', $this->session->userdata('user_id'));
+                                        } else {
+                                            if (@$_REQUEST['author'] != '') {
+                                                $this->db->where('post_author_id', $_REQUEST['author']);
+                                            }
+                                        }
+                                        
+                                        $this->db->where('status', 'publish');
+                                        $this->db->where('auction_status', '0');
+                                        $this->db->where('cat_buy_method ' . $operator, $method_id);
+                                        $this->db->order_by('id', 'DESC');
+                                        
+                                        $query = $this->db->get('cars');
+                                        return $query->result();
+                                    }
+
+                                    public function get_total_cars_count_by_buy_method($method_id, $operator = '=')
+                                    {
+                                        if ($this->session->userdata('user_id') && $this->session->userdata('user_role') != 'admin') {
+                                            $this->db->where('post_author_id', $this->session->userdata('user_id'));
+                                        }
+                                        
+                                        $this->db->where('status', 'publish');
+                                        $this->db->where('auction_status', '0');
+                                        $this->db->where('cat_buy_method ' . $operator, $method_id);
+                                        $this->db->from('cars');
+                                        
+                                        return $this->db->count_all_results();
+                                    }
                                     public function delete_car($id) {
                                         $this->db->where('id', $id);
                                         return $this->db->delete('cars');
@@ -334,16 +367,21 @@ class User_model extends CI_Model {
 
                                     public function get_all_cars($limit, $offset)
                                     {
-                                        $this->db->select('cars.*, users.city, users.username as dealer_name');
+                                        $this->db->select('cars.*, users.city, users.username as dealer_name,
+                                            COUNT(DISTINCT bidding.user_id) as total_bidders,
+                                            MAX(bidding.bidding_price) as highest_bid');
                                         $this->db->from('cars');
                                         $this->db->join('users', 'users.id = cars.post_author_id', 'left');
+                                        $this->db->join('bidding', 'bidding.car_id = cars.id', 'left');
                                         $this->db->where('cars.auction_status', '0');
+                                        $this->db->group_by('cars.id');
                                         $this->db->order_by('cars.id', 'DESC');
                                         $this->db->limit($limit, $offset);
                                         
                                         $query = $this->db->get();
                                         return $query->result();
-                                    }                                
+                                    }
+                                    
                                     public function get_total_all_cars_count()
                                     {
                                         // Get the user ID from session data
@@ -548,7 +586,7 @@ public function get_bid($car_id) {
 }
 
 public function get_bid_with_name($car_id) {
-    // Select all fields from both bidding and users tables
+    $this->db->select('bidding.*, users.*, users.phone_number');  // already selects all but be explicit
     $this->db->select('bidding.*, users.*');
     $this->db->from('bidding');
     $this->db->join('users', 'users.id = bidding.user_id'); // Join users table on user_id

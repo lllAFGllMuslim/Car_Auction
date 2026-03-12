@@ -200,7 +200,46 @@ class AuctionTimer {
         this.stopTimer();
     }
 }
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-toggle="tooltip"]').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+            e.stopPropagation();
 
+            // Remove any existing mobile tooltips
+            document.querySelectorAll('.mobile-tooltip-box').forEach(t => t.remove());
+
+            const msg = el.getAttribute('title') || el.getAttribute('data-original-title');
+            if (!msg) return;
+
+            const box = document.createElement('div');
+            box.className = 'mobile-tooltip-box';
+            box.textContent = msg;
+            box.style.cssText = `
+                position: absolute;
+                background: #333;
+                color: #fff;
+                padding: 6px 10px;
+                border-radius: 6px;
+                font-size: 10px;
+                max-width: 950px;
+                z-index: 99;
+                line-height: 1.4;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            `;
+
+            document.body.appendChild(box);
+
+            // Position near the icon
+            const rect = el.getBoundingClientRect();
+            box.style.top  = (window.scrollY + rect.top - box.offsetHeight - 8) + 'px';
+            box.style.left = Math.max(8, rect.left - box.offsetWidth / 2 + rect.width / 2) + 'px';
+
+            // Auto close after 3 seconds or on tap elsewhere
+            setTimeout(() => box.remove(), 3000);
+            document.addEventListener('click', () => box.remove(), { once: true });
+        });
+    });
+});
 // Auto-initialize all timer elements on page load
 document.addEventListener('DOMContentLoaded', function() {
     const timerElements = document.querySelectorAll('.auction-timer-wrapper');
@@ -301,23 +340,28 @@ function switchMobileLayout(columns) {
     }
 })();
 
-// Ultra-fast inline execution - no DOM wait
 (function() {
     const products = document.getElementsByClassName('product-content');
     
     for (let i = 0; i < products.length; i++) {
-        const fixed = products[i].getElementsByClassName('fix_st2')[0];
         const orig = products[i].getElementsByClassName('price_wrap16')[0];
-        
-        if (fixed && orig) {
-            const f = parseInt(fixed.textContent.replace(/\D/g, ''));
-            const o = parseInt(orig.textContent.replace(/\D/g, ''));
-            
-            if (f < o) fixed.style.color = '#ff0000';
+        if (!orig) continue;
+
+        const o = parseInt(orig.textContent.replace(/\D/g, ''));
+
+        // Find the Fast Pris span by checking which fix_st1 label says "Fast Pris"
+        const labels = products[i].getElementsByClassName('fix_st1');
+        for (let j = 0; j < labels.length; j++) {
+            if (labels[j].textContent.trim().toLowerCase().includes('fast pris')) {
+                const priceSpan = labels[j].parentElement.getElementsByClassName('fix_st2')[0];
+                if (priceSpan) {
+                    const f = parseInt(priceSpan.textContent.replace(/\D/g, ''));
+                    if (f < o) priceSpan.style.color = '#ff0000';
+                }
+            }
         }
     }
 })();
-
 
 pureScriptSelect = (selector) => {
     let selectors = document.querySelectorAll(selector);

@@ -6,6 +6,71 @@
 <?php $this->load->view('sidebar'); ?>
 </div>
 <div class="col-xl-9">
+
+<!-- Filter Tabs -->
+<div class="car-filter-tabs mb-3" style="display:flex; gap:10px; flex-wrap:wrap;">
+  <button class="filter-tab-btn" data-filter="all"
+    style="padding:8px 20px; border-radius:25px; border:2px solid #0492c2;
+           background:transparent; color:#0492c2; font-weight:600; cursor:pointer;">
+    Alla bilar
+  </button>
+  <button class="filter-tab-btn" data-filter="auction"
+    style="padding:8px 20px; border-radius:25px; border:2px solid #0492c2;
+           background:transparent; color:#0492c2; font-weight:600; cursor:pointer;">
+    <i class="fa fa-gavel"></i> Auktion
+  </button>
+  <button class="filter-tab-btn" data-filter="fastpris"
+    style="padding:8px 20px; border-radius:25px; border:2px solid #0492c2;
+           background:transparent; color:#0492c2; font-weight:600; cursor:pointer;">
+    <i class="fa fa-tag"></i> Fast Pris
+  </button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const buttons = document.querySelectorAll('.filter-tab-btn');
+
+  // Read current filter from URL, default to 'all'
+  const urlParams = new URLSearchParams(window.location.search);
+  const activeFilter = urlParams.get('filter') || 'all';
+
+  // Set active button style only
+  function setActiveButton(filter) {
+    buttons.forEach(function (b) {
+      b.style.background = 'transparent';
+      b.style.color = '#0492c2';
+    });
+    const activeBtn = document.querySelector('.filter-tab-btn[data-filter="' + filter + '"]');
+    if (activeBtn) {
+      activeBtn.style.background = '#0492c2';
+      activeBtn.style.color = '#fff';
+    }
+  }
+
+  // On page load: highlight correct button
+  setActiveButton(activeFilter);
+
+  // On button click: navigate to page 1 with filter param (server handles filtering)
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const filter = this.getAttribute('data-filter');
+      const url = new URL(window.location.href);
+
+      if (filter === 'all') {
+        url.searchParams.delete('filter');
+      } else {
+        url.searchParams.set('filter', filter);
+      }
+
+      // Reset to page 1 when switching filter
+      url.pathname = url.pathname.replace(/\/\d+$/, '/1');
+
+      window.location.href = url.toString();
+    });
+  });
+});
+</script>
+
 <div class="row g-4 mb-40">
 <div class="col-lg-12">
 <div class="add_new_car_head">
@@ -36,10 +101,11 @@ if(!empty($cars)){
         $currency = $this->config->item('CURRENCY');
 ?>
 
-<div class="col-lg-4 col-md-6 col-sm-10 wow fadeInUp hovgh55" data-wow-delay="200ms">
+<div class="col-lg-4 col-md-6 col-sm-10 wow fadeInUp hovgh55" data-wow-delay="200ms" data-buy-method="<?php echo $car->cat_buy_method; ?>">
 <div class="product-card">
 <div class="product-img">
 
+<?php if($car->cat_buy_method == 3): ?>
 <div class="number-of-img">
   <i class="fa fa-clock"></i>  
   <?php if (get_post_status($car->id) == 'timer'): ?>
@@ -48,6 +114,7 @@ if(!empty($cars)){
     <span><?php echo get_post_status($car->id); ?></span>
   <?php endif; ?>
 </div>
+<?php endif; ?>
 
 <?php if (empty($this->session->userdata('user_id'))): ?>
   <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#signUpModal01" class="fav add-fav"><i class="fa fa-heart-o"></i></a>
@@ -110,13 +177,15 @@ if(!empty($cars)){
     </span>
   </div>
 
-  <!-- Ledande Bud -->
+  <!-- Ledande Bud - auction only -->
+  <?php if($car->cat_buy_method == 3): ?>
   <div class="price_wrap15">
     <span class="fix_st1">Ledande Bud:</span>
     <span class="fix_st2 ledf55">
       <?php echo !empty($leading_bid) ? number_format($leading_bid).' '.$currency : 'Inga bud ännu'; ?>
     </span>
   </div>
+  <?php endif; ?>
 
   <!-- Reservationpris (only if set) -->
   <?php if(!empty($car->reservation_price)): ?>
@@ -156,9 +225,14 @@ if(!empty($cars)){
     <div class="pagination full_wid55">
       <ul class="mty155">
         <?php if($total_pages > 1): ?>
-          <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+          <?php 
+            $filter_param = !empty($_GET['filter']) ? '?filter=' . $_GET['filter'] : '';
+            for ($i = 1; $i <= $total_pages; $i++): 
+          ?>
             <li class="<?php echo ($i == $current_page) ? 'active' : ''; ?>">
-              <a href="<?php echo base_url('car-list/' . $i); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></a>
+              <a href="<?php echo base_url('car-list/' . $i) . $filter_param; ?>">
+                <?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?>
+              </a>
             </li>
           <?php endfor; ?>
         <?php endif; ?>

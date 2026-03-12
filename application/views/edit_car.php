@@ -450,12 +450,12 @@ if (!empty($remark_images)) {
 <div class="add_sty1 mt-3 mb-0">
 <label>Beskrivning</label>
 <select name="Breaks_description" id="Breaks_description" class="form-control" onchange="syncRatingFromDropdown(this, 'bracks_count', 'bracks_count')">
-    <option value="">Välj beskrivning</option>
-    <option value="1" <?php if ($car['Breaks_description'] == '1') echo 'selected'; ?>>Betyg 1 – Mycket dåligt skick: Bromsarna är kraftigt slitna med dålig bromsverkan. Oljud, vibrationer eller ojämn bromsning förekommer. Åtgärd krävs omedelbart.</option>
-    <option value="2" <?php if ($car['Breaks_description'] == '2') echo 'selected'; ?>>Betyg 2 – Dåligt skick: Bromsarna fungerar bristfälligt och visar tecken på slitage. Förlängd bromssträcka och eventuellt missljud. Rekommenderas åtgärd snarast.</option>
-    <option value="3" <?php if ($car['Breaks_description'] == '3') echo 'selected'; ?>>Betyg 3 – Godkänt skick: Bromsarna fungerar tillfredsställande vid normal körning. Viss förslitning finns men inom godkända gränser.</option>
-    <option value="4" <?php if ($car['Breaks_description'] == '4') echo 'selected'; ?>>Betyg 4 – Bra skick: Bromsarna är i gott skick med jämn och effektiv bromsverkan. Inga onormala ljud eller vibrationer.</option>
-    <option value="5" <?php if ($car['Breaks_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket bra skick: Bromsarna är i mycket bra eller nyskick med utmärkt bromsverkan och hög säkerhet. Inga anmärkningar.</option>
+  <option value="">Välj beskrivning</option>
+  <option data-num="1" value="Betyg 1 – Mycket dåligt skick: Bromsarna är kraftigt slitna med dålig bromsverkan. Oljud, vibrationer eller ojämn bromsning förekommer. Åtgärd krävs omedelbart." <?php if($car['Breaks_description'] == '1') echo 'selected'; ?>>Betyg 1 – Mycket dåligt skick...</option>
+  <option data-num="2" value="Betyg 2 – Dåligt skick: Bromsarna fungerar bristfälligt och visar tecken på slitage. Förlängd bromssträcka och eventuellt missljud. Rekommenderas åtgärd snarast." <?php if($car['Breaks_description'] == '2') echo 'selected'; ?>>Betyg 2 – Dåligt skick...</option>
+  <option data-num="3" value="Betyg 3 – Godkänt skick: Bromsarna fungerar tillfredsställande vid normal körning. Viss förslitning finns men inom godkända gränser." <?php if($car['Breaks_description'] == '3') echo 'selected'; ?>>Betyg 3 – Godkänt skick...</option>
+  <option data-num="4" value="Betyg 4 – Bra skick: Bromsarna är i gott skick med jämn och effektiv bromsverkan. Inga onormala ljud eller vibrationer." <?php if($car['Breaks_description'] == '4') echo 'selected'; ?>>Betyg 4 – Bra skick...</option>
+  <option data-num="5" value="Betyg 5 – Mycket bra skick: Bromsarna är i mycket bra eller nyskick med utmärkt bromsverkan och hög säkerhet. Inga anmärkningar." <?php if($car['Breaks_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket bra skick...</option>
 </select>
 <input type="hidden" name="bracks_count" id="bracks_count" value="<?php echo $bracks_count_val; ?>">
 </div>
@@ -472,12 +472,12 @@ if (!empty($remark_images)) {
 <div class="add_sty1 mt-3 mb-0">
 <label>Beskrivning</label>
 <select name="exterior_body_description" id="exterior_body_description" class="form-control" onchange="syncRatingFromDropdown(this, 'exterior_body', 'exterior_body')">
-    <option value="">Välj beskrivning</option>
-    <option value="1" <?php if ($car['exterior_body_description'] == '1') echo 'selected'; ?>>Betyg 1 – Mindre bra skick: Karossen visar tydliga tecken på användning med flera synliga märken.</option>
-    <option value="2" <?php if ($car['exterior_body_description'] == '2') echo 'selected'; ?>>Betyg 2 – Acceptabelt skick: Mindre bucklor, repor eller bruksspår förekommer.</option>
-    <option value="3" <?php if ($car['exterior_body_description'] == '3') echo 'selected'; ?>>Betyg 3 – Normalt skick: Karossen är i normalt skick för ålder och användning, med mindre skavanker.</option>
-    <option value="4" <?php if ($car['exterior_body_description'] == '4') echo 'selected'; ?>>Betyg 4 – Bra skick: Karossen är i gott skick med få och mindre bruksspår.</option>
-    <option value="5" <?php if ($car['exterior_body_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket bra skick: Karossen är i mycket fint skick med ett välvårdat intryck.</option>
+  <option value="">Välj beskrivning</option>
+  <option data-num="1" value="Betyg 1 – Mindre bra skick: Karossen visar tydliga tecken på användning med flera synliga märken." <?php if($car['exterior_body_description'] == '1') echo 'selected'; ?>>Betyg 1 – Mindre bra skick...</option>
+  <option data-num="2" value="Betyg 2 – Acceptabelt skick: Mindre bucklor, repor eller bruksspår förekommer." <?php if($car['exterior_body_description'] == '2') echo 'selected'; ?>>Betyg 2 – Acceptabelt skick...</option>
+  <option data-num="3" value="Betyg 3 – Normalt skick: Karossen är i normalt skick för ålder och användning, med mindre skavanker." <?php if($car['exterior_body_description'] == '3') echo 'selected'; ?>>Betyg 3 – Normalt skick...</option>
+  <option data-num="4" value="Betyg 4 – Bra skick: Karossen är i gott skick med få och mindre bruksspår." <?php if($car['exterior_body_description'] == '4') echo 'selected'; ?>>Betyg 4 – Bra skick...</option>
+  <option data-num="5" value="Betyg 5 – Mycket bra skick: Karossen är i mycket fint skick med ett välvårdat intryck." <?php if($car['exterior_body_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket bra skick...</option>
 </select>
 <input type="hidden" name="exterior_body" id="exterior_body" value="<?php echo $exterior_body_val; ?>">
 </div>
@@ -494,12 +494,12 @@ if (!empty($remark_images)) {
 <div class="add_sty1 mt-3 mb-0">
 <label>Beskrivning</label>
 <select name="tires_description" id="tires_description" class="form-control" onchange="syncRatingFromDropdown(this, 'tires', 'tires')">
-    <option value="">Välj beskrivning</option>
-    <option value="1" <?php if ($car['tires_description'] == '1') echo 'selected'; ?>>Betyg 1 – Mycket dåligt skick: Däcken är kraftigt slitna med mönsterdjup under rekommenderad nivå. Sprickor och ojämnt slitage förekommer. Bör bytas omedelbart.</option>
-    <option value="2" <?php if ($car['tires_description'] == '2') echo 'selected'; ?>>Betyg 2 – Dåligt skick: Däcken är tydligt slitna och har begränsat grepp, särskilt på vått underlag. Kan användas kortvarigt men byte rekommenderas snarast.</option>
-    <option value="3" <?php if ($car['tires_description'] == '3') echo 'selected'; ?>>Betyg 3 – Godkänt skick: Däcken har acceptabelt mönsterdjup och jämnt slitage. Fungerar tillfredsställande under normala förhållanden men är på väg att behöva bytas.</option>
-    <option value="4" <?php if ($car['tires_description'] == '4') echo 'selected'; ?>>Betyg 4 – Bra skick: Däcken är i gott skick med bra mönsterdjup och goda köregenskaper. Inga synliga skador.</option>
-    <option value="5" <?php if ($car['tires_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket bra skick: Däcken är nästan nya med utmärkt mönsterdjup och optimalt grepp. Inga anmärkningar.</option>
+  <option value="">Välj beskrivning</option>
+  <option data-num="1" value="Betyg 1 – Mycket dåligt skick: Däcken är kraftigt slitna med mönsterdjup under rekommenderad nivå. Sprickor och ojämnt slitage förekommer. Bör bytas omedelbart." <?php if($car['tires_description'] == '1') echo 'selected'; ?>>Betyg 1 – Mycket dåligt skick...</option>
+  <option data-num="2" value="Betyg 2 – Dåligt skick: Däcken är tydligt slitna och har begränsat grepp, särskilt på vått underlag. Kan användas kortvarigt men byte rekommenderas snarast." <?php if($car['tires_description'] == '2') echo 'selected'; ?>>Betyg 2 – Dåligt skick...</option>
+  <option data-num="3" value="Betyg 3 – Godkänt skick: Däcken har acceptabelt mönsterdjup och jämnt slitage. Fungerar tillfredsställande under normala förhållanden men är på väg att behöva bytas." <?php if($car['tires_description'] == '3') echo 'selected'; ?>>Betyg 3 – Godkänt skick...</option>
+  <option data-num="4" value="Betyg 4 – Bra skick: Däcken är i gott skick med bra mönsterdjup och goda köregenskaper. Inga synliga skador." <?php if($car['tires_description'] == '4') echo 'selected'; ?>>Betyg 4 – Bra skick...</option>
+  <option data-num="5" value="Betyg 5 – Mycket bra skick: Däcken är nästan nya med utmärkt mönsterdjup och optimalt grepp. Inga anmärkningar." <?php if($car['tires_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket bra skick...</option>
 </select>
 <input type="hidden" name="tires" id="tires" value="<?php echo $tires_val; ?>">
 </div>
@@ -516,12 +516,12 @@ if (!empty($remark_images)) {
 <div class="add_sty1 mt-3 mb-0">
 <label>Beskrivning</label>
 <select name="interior_body_description" id="interior_body_description" class="form-control" onchange="syncRatingFromDropdown(this, 'interior_body', 'interior_body')">
-    <option value="">Välj beskrivning</option>
-    <option value="1" <?php if ($car['interior_body_description'] == '1') echo 'selected'; ?>>Betyg 1 – Enklare skick: Interiören är använd och har tydliga bruksspår.</option>
-    <option value="2" <?php if ($car['interior_body_description'] == '2') echo 'selected'; ?>>Betyg 2 – Godtagbart skick: Viss synlig användning förekommer, exempelvis slitage på säten eller paneler.</option>
-    <option value="3" <?php if ($car['interior_body_description'] == '3') echo 'selected'; ?>>Betyg 3 – Normalt skick: Interiören är i normalt skick för ålder och användning, med mindre bruksspår.</option>
-    <option value="4" <?php if ($car['interior_body_description'] == '4') echo 'selected'; ?>>Betyg 4 – Välskött skick: Interiören är i bra skick och upplevs som väl omhändertagen.</option>
-    <option value="5" <?php if ($car['interior_body_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket välskött skick: Interiören är i mycket fint skick med ett trivsamt helhetsintryck.</option>
+  <option value="">Välj beskrivning</option>
+  <option data-num="1" value="Betyg 1 – Enklare skick: Interiören är använd och har tydliga bruksspår." <?php if($car['interior_body_description'] == '1') echo 'selected'; ?>>Betyg 1 – Enklare skick...</option>
+  <option data-num="2" value="Betyg 2 – Godtagbart skick: Viss synlig användning förekommer, exempelvis slitage på säten eller paneler." <?php if($car['interior_body_description'] == '2') echo 'selected'; ?>>Betyg 2 – Godtagbart skick...</option>
+  <option data-num="3" value="Betyg 3 – Normalt skick: Interiören är i normalt skick för ålder och användning, med mindre bruksspår." <?php if($car['interior_body_description'] == '3') echo 'selected'; ?>>Betyg 3 – Normalt skick...</option>
+  <option data-num="4" value="Betyg 4 – Välskött skick: Interiören är i bra skick och upplevs som väl omhändertagen." <?php if($car['interior_body_description'] == '4') echo 'selected'; ?>>Betyg 4 – Välskött skick...</option>
+  <option data-num="5" value="Betyg 5 – Mycket välskött skick: Interiören är i mycket fint skick med ett trivsamt helhetsintryck." <?php if($car['interior_body_description'] == '5') echo 'selected'; ?>>Betyg 5 – Mycket välskött skick...</option>
 </select>
 <input type="hidden" name="interior_body" id="interior_body" value="<?php echo $interior_body_val; ?>">
 </div>
@@ -552,11 +552,14 @@ if (!empty($remark_images)) {
      * Called when a description dropdown changes.
      */
     function syncRatingFromDropdown(selectEl, spanClass, hiddenId) {
-        var rating = parseInt(selectEl.value);
+        var selectedOption = selectEl.options[selectEl.selectedIndex];
+        var rating = parseInt(selectedOption.getAttribute('data-num'));
         if (!rating) return;
 
+        // Update hidden numeric input
         document.getElementById(hiddenId).value = rating;
 
+        // Update active span
         var spans = document.querySelectorAll('.' + spanClass);
         spans.forEach(function(span) {
             span.classList.remove('active');
@@ -565,7 +568,6 @@ if (!empty($remark_images)) {
             }
         });
     }
-
     (function () {
         'use strict';
 

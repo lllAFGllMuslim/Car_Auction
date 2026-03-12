@@ -18,9 +18,10 @@ if (!function_exists('get_auction_timer_data')) {
             return null;
         }
         
-        $created_at = new DateTime($auction->created);
-        $current_time = new DateTime();
-        
+        $created_at = new DateTime($auction->created, new DateTimeZone('Europe/Stockholm'));
+        $current_time = new DateTime('now', new DateTimeZone('Europe/Stockholm'));
+
+        $current_time = new DateTime('now', new DateTimeZone('Europe/Stockholm'));        
         // Calculate time elapsed since creation
         $interval = $created_at->diff($current_time);
         $elapsed_seconds = ($interval->days * 24 * 60 * 60) + 
@@ -354,20 +355,16 @@ if (!function_exists('get_post_status')) {
       $CI =& get_instance();
       $CI->load->model('Image_model');
 
-      // Fetch post data
       $post = $CI->Image_model->get_post($post_id);
 
       if (!$post) return null;
 
+      // ✅ Treat DB time as Stockholm, no UTC conversion
+      $created_at = new DateTime($post->created, new DateTimeZone('Europe/Stockholm'));
+      $expiration_time = clone $created_at;
+      $expiration_time->add(new DateInterval('P14D'));
 
-      // Calculate expiration time
-      $created_at = new DateTime($post->created);
-
-  
-
-      $expiration_time = $created_at->add(new DateInterval('P14D')); // 14 days expiration
-
-      $current_time = new DateTime();
+      $current_time = new DateTime('now', new DateTimeZone('Europe/Stockholm'));
       $interval = $current_time->diff($expiration_time);
 
       $days = $interval->days;
@@ -375,41 +372,35 @@ if (!function_exists('get_post_status')) {
       $minutes = $interval->i;
       $seconds = $interval->s;
 
-      // Determine status
       if ($current_time > $expiration_time) {
-        return 'Auction Time Completed';
-    } elseif ($days >= 7) {
-        return $days . ' Dagar Kvar';
-    } elseif ($days >= 1) {
-        return '1 Dag Kvar';
-    } else {
-        return  'timer'; // sprintf('%dH %dM %dS Left', $hours, $minutes, $seconds);
-    }
+          return 'Auction Time Completed';
+      } elseif ($days >= 7) {
+          return $days . ' Dagar Kvar';
+      } elseif ($days >= 1) {
+          return $days . ' Dag' . ($days > 1 ? 'ar' : '') . ' Kvar';
+      } else {
+          return 'timer';
+      }
   }
 }
-
 
 if (!function_exists('get_post_expiration_timestamp')) {
   function get_post_expiration_timestamp($post_id) {
       $CI =& get_instance();
       $CI->load->model('Image_model');
 
-      // Fetch post data
       $post = $CI->Image_model->get_post($post_id);
 
       if (!$post) return null;
 
+      // ✅ Timezone fix + clone fix
+      $created_at = new DateTime($post->created, new DateTimeZone('Europe/Stockholm'));
+      $expiration_time = clone $created_at;
+      $expiration_time->add(new DateInterval('P14D'));
 
-           // Calculate expiration timestamp
-           $created_at = new DateTime($post->created);
-           $expiration_time = $created_at->add(new DateInterval('P14D')); // 14 days expiration
-          $expiration_timestamp= $expiration_time->getTimestamp();
-
-          return $expiration_timestamp * 1000;
+      return $expiration_time->getTimestamp() * 1000;
   }
-
 }
-
 
 if (!function_exists('get_car_by_id')) {
   function get_car_by_id($id) {

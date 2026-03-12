@@ -18,9 +18,11 @@ class Notification_model extends CI_Model {
      * Get user's unread notifications
      */
     public function get_unread_notifications($user_id) {
-        $this->db->where('user_id', $user_id);
-        $this->db->where('is_read', 0);
-        $this->db->order_by('created_at', 'DESC');
+        $this->db->select('notifications.*, cars.car_slug');
+        $this->db->join('cars', 'cars.id = notifications.car_id', 'left');
+        $this->db->where('notifications.user_id', $user_id);
+        $this->db->where('notifications.is_read', 0);
+        $this->db->order_by('notifications.created_at', 'DESC');
         $query = $this->db->get('notifications');
         return $query->result_array();
     }
